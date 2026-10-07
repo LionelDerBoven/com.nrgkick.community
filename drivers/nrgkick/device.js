@@ -535,10 +535,13 @@ class NrgkickDevice extends Homey.Device {
     await this.setStoreValue('session', { wh: this.sessionWh, cost: round(this.sessionCost, 4) }).catch(this.error);
   }
 
-  /** "Charge … kWh and then stop": the limit counts from what this session already charged. */
+  /**
+   * "Charge … kWh and then stop": the limit counts from what this session already charged, capped at the
+   * 100 kWh the energy limit capability can show.
+   */
   async chargeEnergy(kwhToAdd) {
     const already = this.sessionWh && m.isPluggedIn(this.statusId) ? this.sessionWh : 0;
-    await this.writeControl('energy_limit', Math.round(already + kwhToAdd * 1000));
+    await this.writeControl('energy_limit', Math.min(100000, Math.round(already + kwhToAdd * 1000)));
     await this.setPaused(false);
   }
 

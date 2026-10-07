@@ -660,6 +660,9 @@ test('charge an amount of energy on top of this session, and step the current', 
     await device.poll();
     await device.chargeEnergy(5);
     assert.deepStrictEqual(dev.state.writes, ['energy_limit=7000', 'charge_pause=0']);
+    await device.chargeEnergy(100); // capped at the 100 kWh the capability can show
+    assert.strictEqual(dev.state.writes[2], 'energy_limit=100000');
+    dev.state.writes.length = 2;
 
     await device.changeCurrent(2); // already at the 16 A maximum
     assert.strictEqual(dev.state.writes.length, 2);
