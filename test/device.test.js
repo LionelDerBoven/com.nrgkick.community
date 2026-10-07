@@ -324,8 +324,23 @@ test('capability listeners write the device', async () => {
     assert.deepStrictEqual(dev.state.writes, ['current_set=10.5', 'energy_limit=7500', 'phase_count=1', 'charge_pause=1']);
     assert.strictEqual(device.getCapabilityValue('nrgkick_energy_limit'), 7.5);
     assert.strictEqual(device.getCapabilityValue('evcharger_charging'), false);
-    await device.listeners.multi({ target_power: 5000 });
-    assert.strictEqual(dev.state.writes.length, 4, 'target power is ignored outside Homey mode');
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
+test('setting a target power by hand switches to Homey mode; back to device restores', async () => {
+  const { dev, device } = await startDevice();
+  try {
+    await device.poll();
+    assert.strictEqual(device.getCapabilityValue('target_power_mode'), 'device');
+    await device.listeners.multi({ target_power: 1610 });
+    assert.strictEqual(device.getCapabilityValue('target_power_mode'), 'homey');
+    assert.deepStrictEqual(dev.state.writes, ['current_set=7']);
+    assert.deepStrictEqual(device.store.beforeHomey, { current_set: 16, charge_pause: 0 });
+    await device.listeners.multi({ target_power_mode: 'device' });
+    assert.deepStrictEqual(dev.state.writes.slice(1), ['current_set=16']);
   } finally {
     device.stop();
     await dev.close();

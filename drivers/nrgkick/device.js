@@ -634,6 +634,12 @@ class NrgkickDevice extends Homey.Device {
    * batches run one after another; otherwise the second batch could still see the old mode and be ignored.
    */
   queueChargingControl(changed) {
+    // Setting a target power by hand only makes sense in Homey mode, so it switches to it.
+    const currentMode = this.mode || this.getCapabilityValue('target_power_mode');
+    if (changed.target_power !== undefined && changed.target_power_mode === undefined && currentMode !== 'homey') {
+      changed = { ...changed, target_power_mode: 'homey' };
+      this.setCapabilityValue('target_power_mode', 'homey').catch(this.error);
+    }
     if (changed.target_power_mode !== undefined) this.mode = changed.target_power_mode;
     if (changed.target_power !== undefined) this.targetPower = changed.target_power;
     const run = this.controlQueue.then(() => this.onChargingControl(changed));
