@@ -77,7 +77,8 @@ test('wattsToCurrent and back', () => {
   assert.strictEqual(m.wattsToCurrent(-500, opts), 0);
   assert.strictEqual(m.wattsToCurrent(2300, opts), 10);
   assert.strictEqual(m.wattsToCurrent(2350, opts), 10.2);
-  assert.strictEqual(m.wattsToCurrent(1000, opts), 6);
+  assert.strictEqual(m.wattsToCurrent(1000, opts), 0, 'below 6 A: pause');
+  assert.strictEqual(m.wattsToCurrent(1380, opts), 6);
   assert.strictEqual(m.wattsToCurrent(9999, opts), 16);
   assert.strictEqual(m.wattsToCurrent(11040, { voltage: 230, phases: 3, max: 32 }), 16);
   assert.strictEqual(m.currentToWatts(16, { voltage: 230, phases: 3 }), 11040);

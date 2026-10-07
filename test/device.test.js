@@ -371,6 +371,42 @@ test('Homey mode follows target power and hands control back', async () => {
   }
 });
 
+test('a target power below 6 A pauses, and a higher one resumes on its own', async () => {
+  const { dev, device } = await startDevice();
+  try {
+    await device.poll();
+    await device.listeners.multi({ target_power: 1000 });
+    assert.strictEqual(device.getCapabilityValue('target_power_mode'), 'homey');
+    assert.deepStrictEqual(dev.state.writes, ['charge_pause=1']);
+    await device.poll();
+    assert.strictEqual(device.getCapabilityValue('evcharger_charging'), false);
+    await device.listeners.multi({ target_power: 1610 });
+    assert.deepStrictEqual(dev.state.writes.slice(1), ['current_set=7', 'charge_pause=0']);
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
+test('the Homey control toggle switches the mode and follows it', async () => {
+  const { dev, device } = await startDevice();
+  try {
+    await device.poll();
+    assert.strictEqual(device.getCapabilityValue('nrgkick_homey_control'), false);
+    await device.listeners.multi({ target_power: 2300 });
+    assert.strictEqual(device.getCapabilityValue('nrgkick_homey_control'), true, 'follows the automatic switch');
+    await device.listeners.nrgkick_homey_control(false);
+    assert.strictEqual(device.getCapabilityValue('target_power_mode'), 'device');
+    assert.deepStrictEqual(dev.state.writes, ['current_set=10', 'current_set=16']);
+    await device.listeners.nrgkick_homey_control(true);
+    assert.strictEqual(device.getCapabilityValue('target_power_mode'), 'homey');
+    assert.deepStrictEqual(dev.state.writes.slice(2), ['current_set=10']);
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
 test('a refused write surfaces the device reason', async () => {
   const { dev, device } = await startDevice();
   try {

@@ -49,6 +49,7 @@ class NrgkickDevice extends Homey.Device {
     this.controlQueue = Promise.resolve(); // charging control batches run one after another
     this.mode = null; // target_power_mode as last requested; Homey stores it only after the listener returns
     this.targetPower = null;
+    this.targetPaused = false; // paused because the target power was too low, not by the user
     this.pluggedIn = null; // null: not read yet, so the first read never triggers a Flow
     this.sessionDone = false; // "charging session ended" fires once per plug-in
     this.price = null; // price per kWh from the Flow action; falls back to the price_per_kwh setting
@@ -67,6 +68,11 @@ class NrgkickDevice extends Homey.Device {
     this.registerCapabilityListener('nrgkick_current_set', (value) => this.writeControl('current_set', Math.min(value, this.maxCurrent())));
     this.registerCapabilityListener('nrgkick_energy_limit', (value) => this.writeControl('energy_limit', Math.round(value * 1000)));
     this.registerPhaseListener();
+    this.registerCapabilityListener('nrgkick_homey_control', async (on) => {
+      const mode = on ? 'homey' : 'device';
+      this.setCapabilityValue('target_power_mode', mode).catch(this.error);
+      await this.queueChargingControl({ target_power_mode: mode });
+    });
     // Homey sets these together (e.g. the "Set target power" card), so handle them as one change.
     this.registerMultipleCapabilityListener(
       ['evcharger_charging', 'target_power', 'target_power_mode'],
@@ -402,6 +408,7 @@ class NrgkickDevice extends Homey.Device {
     if (c.phase_count) await this.set('nrgkick_phase_count', String(c.phase_count));
     // Homey Energy needs a starting point: device mode, and the power the current setting allows.
     if (this.getCapabilityValue('target_power_mode') === null) await this.set('target_power_mode', 'device');
+    await this.set('nrgkick_homey_control', (this.mode || this.getCapabilityValue('target_power_mode')) === 'homey');
     if (this.getCapabilityValue('target_power') === null && c.current_set !== null) {
       const voltage = m.nominalVoltage(this.info);
       const phases = m.activePhases(this.info, c);
@@ -640,7 +647,10 @@ class NrgkickDevice extends Homey.Device {
       changed = { ...changed, target_power_mode: 'homey' };
       this.setCapabilityValue('target_power_mode', 'homey').catch(this.error);
     }
-    if (changed.target_power_mode !== undefined) this.mode = changed.target_power_mode;
+    if (changed.target_power_mode !== undefined) {
+      this.mode = changed.target_power_mode;
+      this.set('nrgkick_homey_control', this.mode === 'homey').catch(this.error);
+    }
     if (changed.target_power !== undefined) this.targetPower = changed.target_power;
     const run = this.controlQueue.then(() => this.onChargingControl(changed));
     this.controlQueue = run.catch(() => {});
@@ -663,16 +673,19 @@ class NrgkickDevice extends Homey.Device {
 
     let target = power;
     if (target === undefined) target = this.targetPower !== null ? this.targetPower : (this.getCapabilityValue('target_power') || 0);
-    const enabled = charging !== undefined ? charging : this.getCapabilityValue('evcharger_charging') !== false;
-    if (!enabled || target <= 0) {
-      await this.setPaused(true);
-      return;
-    }
+    // A pause that only came from a too low target power must not block charging once the target rises again.
+    const enabled = charging !== undefined ? charging : (this.targetPaused || this.getCapabilityValue('evcharger_charging') !== false);
     const amps = m.wattsToCurrent(target, {
       voltage: m.nominalVoltage(this.info),
       phases: m.activePhases(this.info, this.control),
       max: this.maxCurrent(),
     });
+    if (!enabled || amps <= 0) {
+      this.targetPaused = enabled;
+      await this.setPaused(true);
+      return;
+    }
+    this.targetPaused = false;
     const current = this.control && this.control.current_set;
     if (current === null || current === undefined || Math.abs(current - amps) >= 0.05) {
       await this.writeControl('current_set', amps);
@@ -690,6 +703,7 @@ class NrgkickDevice extends Homey.Device {
   }
 
   async leaveHomeyMode() {
+    this.targetPaused = false;
     const before = this.getStoreValue('beforeHomey');
     if (!before) return;
     await this.unsetStoreValue('beforeHomey');

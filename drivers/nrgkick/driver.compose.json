@@ -12,6 +12,7 @@
     "measure_power",
     "target_power",
     "target_power_mode",
+    "nrgkick_homey_control",
     "nrgkick_current_set",
     "nrgkick_phase_count",
     "nrgkick_energy_limit",
@@ -261,29 +262,7 @@
       "uiComponent": null
     },
     "target_power_mode": {
-      "title": {
-        "en": "Charging power controlled by",
-        "nl": "Laadvermogen bepaald door",
-        "fr": "Puissance de charge gérée par"
-      },
-      "values": [
-        {
-          "id": "device",
-          "title": {
-            "en": "NRGkick (own charging current)",
-            "nl": "NRGkick (eigen laadstroom)",
-            "fr": "NRGkick (courant propre)"
-          }
-        },
-        {
-          "id": "homey",
-          "title": {
-            "en": "Homey (target power)",
-            "nl": "Homey (doelvermogen)",
-            "fr": "Homey (puissance cible)"
-          }
-        }
-      ]
+      "uiComponent": null
     }
   },
   "energy": {

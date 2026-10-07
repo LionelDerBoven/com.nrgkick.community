@@ -1,0 +1,18 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Homey control",
+    "nl": "Homey-sturing",
+    "fr": "Pilotage par Homey"
+  },
+  "desc": {
+    "en": "On: Homey (Energy or a Flow) sets the charging power through the target power. Off: the NRGkick charges with its own charging current.",
+    "nl": "Aan: Homey (Energy of een Flow) bepaalt het laadvermogen via het doelvermogen. Uit: de NRGkick laadt met zijn eigen laadstroom.",
+    "fr": "Activé : Homey (Energy ou un Flow) règle la puissance de charge via la puissance cible. Désactivé : le NRGkick charge avec son propre courant de charge."
+  },
+  "getable": true,
+  "setable": true,
+  "insights": false,
+  "uiComponent": "toggle",
+  "icon": "/assets/capabilities/homey.svg"
+}
