@@ -35,6 +35,7 @@ class NrgkickDriver extends Homey.Driver {
     // address, or a NRGkick on another subnet), so the strategy is not linked to the driver's availability.
     this.discovery = this.homey.discovery.getStrategy('nrgkick');
     this.discovery.on('result', (result) => this.onDiscoveryResult(result));
+    this.log(`mDNS: ${Object.keys(this.discovery.getDiscoveryResults()).length} NRGkick(s) known at start`);
   }
 
   /** The current mDNS address of the NRGkick with this serial number, or null. */
@@ -46,6 +47,7 @@ class NrgkickDriver extends Homey.Driver {
   }
 
   onDiscoveryResult(result) {
+    this.log(`mDNS: NRGkick announced${result.address ? '' : ' without an address'}`);
     const serial = String((result.txt && result.txt.serial_number) || '').toLowerCase();
     if (!serial || !result.address) return;
     const device = this.getDevices().find((d) => String(d.getData().id).toLowerCase() === serial);
@@ -54,6 +56,7 @@ class NrgkickDriver extends Homey.Driver {
 
   async onPair(session) {
     session.setHandler('discover', async () => {
+      this.log(`Pairing: ${Object.keys(this.discovery.getDiscoveryResults()).length} NRGkick(s) found by mDNS`);
       const added = new Set(this.getDevices().map((d) => String(d.getData().id).toLowerCase()));
       return Object.values(this.discovery.getDiscoveryResults())
         .filter((r) => r.txt && r.txt.serial_number && !added.has(String(r.txt.serial_number).toLowerCase()))

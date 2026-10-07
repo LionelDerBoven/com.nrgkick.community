@@ -90,7 +90,7 @@
     "host": "Adresse IP ou nom d'hôte",
     "username": "Nom d'utilisateur (facultatif)",
     "password": "Mot de passe (facultatif)",
-    "credentials_hint": "Nécessaire uniquement si Authentication (JSON) est activée dans l'application NRGkick.",
+    "credentials_hint": "Laissez vide, sauf si vous avez défini un nom d'utilisateur et un mot de passe sous Authentication (JSON) dans l'app NRGkick. C'est un verrou facultatif sur l'API JSON, distinct de l'activation de l'API.",
     "connect": "Connecter",
     "connecting": "Connexion…"
   }

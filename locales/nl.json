@@ -90,7 +90,7 @@
     "host": "IP-adres of hostnaam",
     "username": "Gebruikersnaam (optioneel)",
     "password": "Wachtwoord (optioneel)",
-    "credentials_hint": "Alleen nodig als Authentication (JSON) aan staat in de NRGkick-app.",
+    "credentials_hint": "Laat leeg, tenzij je in de NRGkick-app onder Authentication (JSON) een gebruikersnaam en wachtwoord hebt ingesteld. Dat is een optioneel extra slot op de JSON-API, los van het aanzetten van de API zelf.",
     "connect": "Verbinden",
     "connecting": "Verbinden…"
   }

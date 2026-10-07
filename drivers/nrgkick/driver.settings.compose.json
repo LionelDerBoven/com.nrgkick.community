@@ -32,9 +32,9 @@
           "fr": "Nom d'utilisateur"
         },
         "hint": {
-          "en": "Only needed when Authentication (JSON) is on in the NRGkick app.",
-          "nl": "Alleen nodig als Authenticatie (JSON) aan staat in de NRGkick-app.",
-          "fr": "Uniquement nécessaire si l'authentification (JSON) est activée dans l'app NRGkick."
+          "en": "Leave empty unless you set a username and password under Authentication (JSON) in the NRGkick app. That is an optional extra lock on the JSON API, separate from turning the API on.",
+          "nl": "Laat leeg, tenzij je in de NRGkick-app onder Authentication (JSON) een gebruikersnaam en wachtwoord hebt ingesteld. Dat is een optioneel extra slot op de JSON-API, los van het aanzetten van de API zelf.",
+          "fr": "Laissez vide, sauf si vous avez défini un nom d'utilisateur et un mot de passe sous Authentication (JSON) dans l'app NRGkick. C'est un verrou facultatif sur l'API JSON, distinct de l'activation de l'API."
         }
       },
       {
