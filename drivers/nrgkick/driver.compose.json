@@ -259,9 +259,6 @@
       },
       "decimals": 0,
       "uiComponent": null
-    },
-    "target_power_mode": {
-      "uiComponent": null
     }
   },
   "energy": {
