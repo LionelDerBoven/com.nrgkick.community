@@ -1,0 +1,16 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Mobile operator",
+    "nl": "Mobiele operator",
+    "fr": "Opérateur mobile"
+  },
+  "desc": {
+    "en": "Only on NRGkick models with a SIM card.",
+    "nl": "Alleen op NRGkick-modellen met een simkaart.",
+    "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor"
+}

@@ -82,3 +82,18 @@ test('wattsToCurrent and back', () => {
   assert.strictEqual(m.wattsToCurrent(11040, { voltage: 230, phases: 3, max: 32 }), 16);
   assert.strictEqual(m.currentToWatts(16, { voltage: 230, phases: 3 }), 11040);
 });
+
+test('SIM detection, GPS fix and distance', () => {
+  assert.strictEqual(m.isSimModel('NRGkick Gen2 SIM'), true);
+  assert.strictEqual(m.isSimModel('NRGkick Gen2'), false);
+  assert.strictEqual(m.isSimModel('NRGkick Simple'), false);
+  assert.strictEqual(m.isSimModel(undefined), false);
+  assert.deepStrictEqual(m.gpsFix({ latitude: 47.1, longitude: 15.4, accuracy: 0 }), { latitude: 47.1, longitude: 15.4, accuracy: null });
+  assert.deepStrictEqual(m.gpsFix({ latitude: 47.1, longitude: 15.4, accuracy: 3 }), { latitude: 47.1, longitude: 15.4, accuracy: 3 });
+  assert.strictEqual(m.gpsFix({ latitude: 0, longitude: 0 }), null);
+  assert.strictEqual(m.gpsFix({ latitude: 95, longitude: 0 }), null);
+  assert.strictEqual(m.gpsFix(undefined), null);
+  assert.strictEqual(m.codeToId(m.CELLULAR_MODES, 4), 'lte_nb_iot');
+  const d = m.distanceMeters({ latitude: 0, longitude: 0 }, { latitude: 1, longitude: 0 });
+  assert.ok(Math.abs(d - 111195) < 10, d);
+});

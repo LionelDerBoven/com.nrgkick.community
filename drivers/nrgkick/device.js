@@ -10,6 +10,12 @@ const MAX_BACKOFF_MS = 5 * 60 * 1000;
 const AFTER_WRITE_MS = 2000; // /control lags a moment behind a write; re-read shortly after
 const FAILURES_BEFORE_UNAVAILABLE = 2; // ride out a single dropped poll
 const CONNECTION_KEYS = ['host', 'username', 'password'];
+// Only SIM models report these; they are added when /info shows a SIM model and removed otherwise.
+const SIM_CAPABILITIES = [
+  'nrgkick_cellular_mode', 'nrgkick_cellular_signal', 'nrgkick_cellular_operator',
+  'nrgkick_latitude', 'nrgkick_longitude', 'nrgkick_gps_accuracy',
+];
+const LOCATION_TRIGGER_METERS = 100; // above normal GPS jitter, well below a trip
 
 const round = (value, decimals) => {
   if (value === null || value === undefined) return value;
@@ -28,6 +34,7 @@ class NrgkickDevice extends Homey.Device {
     this.statusId = null;
     this.faultId = undefined; // undefined: not read yet, so the first read never triggers a Flow
     this.warningId = undefined;
+    this.location = null; // last position that was reported to Flows
     this.failures = 0;
     this.pollTimer = null;
     this.polling = false;
@@ -71,14 +78,14 @@ class NrgkickDevice extends Homey.Device {
     if (this.client) this.client.destroy();
   }
 
-  /** Adds capabilities that a newer app version introduced, and drops ones it removed. */
+  /** Adds capabilities that a newer app version introduced, and drops ones it removed (SIM ones are managed in applySim). */
   async ensureCapabilities() {
     const wanted = this.driver.manifest.capabilities;
     for (const cap of wanted) {
       if (!this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
     }
     for (const cap of this.getCapabilities()) {
-      if (!wanted.includes(cap)) await this.removeCapability(cap).catch(this.error);
+      if (!wanted.includes(cap) && !SIM_CAPABILITIES.includes(cap)) await this.removeCapability(cap).catch(this.error);
     }
   }
 
@@ -213,8 +220,48 @@ class NrgkickDevice extends Homey.Device {
       info_fw_main: fw('sw_ma', 'hw_ma'),
       info_fw_touch: fw('sw_to', 'hw_to'),
       info_fw_star: fw('sw_st', 'hw_st'),
+      info_fw_cellular: text(m.pick(versions, 'sw_cm')),
     });
     await this.set('measure_signal_strength', m.num(network, 'rssi'));
+    await this.applySim(m.isSimModel(m.pick(general, 'model_type')), info.cellular, info.gps);
+  }
+
+  /**
+   * Cellular and GPS data of SIM models. Built from the API documentation and tested against a simulated
+   * device only: no SIM model was available while writing it.
+   */
+  async applySim(isSim, cellular, gps) {
+    for (const cap of SIM_CAPABILITIES) {
+      if (isSim && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
+      if (!isSim && this.hasCapability(cap)) await this.removeCapability(cap).catch(this.error);
+    }
+    if (!isSim) return;
+
+    if (cellular) {
+      const mode = m.pick(cellular, 'mode');
+      if (mode !== undefined) await this.set('nrgkick_cellular_mode', m.codeToId(m.CELLULAR_MODES, mode));
+      await this.set('nrgkick_cellular_signal', m.num(cellular, 'rssi'));
+      const operator = m.pick(cellular, 'operator');
+      if (operator !== undefined) await this.set('nrgkick_cellular_operator', String(operator || ''));
+    }
+
+    const fix = m.gpsFix(gps);
+    if (!fix) return;
+    await this.set('nrgkick_latitude', round(fix.latitude, 6));
+    await this.set('nrgkick_longitude', round(fix.longitude, 6));
+    await this.set('nrgkick_gps_accuracy', fix.accuracy === null ? null : round(fix.accuracy, 0));
+
+    const previous = this.location;
+    if (!previous) {
+      this.location = fix; // the first fix after a start never triggers
+      return;
+    }
+    const distance = m.distanceMeters(previous, fix);
+    if (distance <= Math.max(LOCATION_TRIGGER_METERS, fix.accuracy || 0)) return;
+    this.location = fix;
+    await this.driver.triggers.locationChanged.trigger(this, {
+      latitude: round(fix.latitude, 6), longitude: round(fix.longitude, 6), distance: Math.round(distance),
+    }).catch(this.error);
   }
 
   /** Writes only labels that changed: every settings write is a flash write. */

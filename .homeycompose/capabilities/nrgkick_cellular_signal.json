@@ -1,0 +1,21 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Mobile signal",
+    "nl": "Mobiel signaal",
+    "fr": "Signal mobile"
+  },
+  "desc": {
+    "en": "Only on NRGkick models with a SIM card.",
+    "nl": "Alleen op NRGkick-modellen met een simkaart.",
+    "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+  },
+  "units": {
+    "en": "dBm"
+  },
+  "decimals": 0,
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "uiComponent": "sensor"
+}

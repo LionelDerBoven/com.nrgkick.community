@@ -182,6 +182,7 @@ async function startDevice() {
       faultOccurred: card('fault_occurred'),
       warningOccurred: card('warning_occurred'),
       energyLimitReached: card('energy_limit_reached'),
+      locationChanged: card('location_changed'),
     },
   };
   const device = new NrgkickDevice({
@@ -356,6 +357,76 @@ test('wrong credentials make the device unavailable at once; a later poll recove
     dev.state.status = 200;
     await device.poll();
     assert.strictEqual(device.available, true);
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
+test('SIM models get cellular and GPS data; moving more than 100 m triggers a Flow', async () => {
+  const { dev, device, triggered } = await startDevice();
+  const SIM = ['nrgkick_cellular_mode', 'nrgkick_cellular_signal', 'nrgkick_cellular_operator',
+    'nrgkick_latitude', 'nrgkick_longitude', 'nrgkick_gps_accuracy'];
+  try {
+    await device.poll();
+    assert.ok(SIM.every((cap) => !device.hasCapability(cap)), 'not on a model without SIM');
+
+    Object.assign(dev.state.info, {
+      general: { ...dev.state.info.general, model_type: 'NRGkick Gen2 SIM' },
+      cellular: {
+        imei: '0', imsi: '0', operator: 'Operator', rssi: -87, mode: 3,
+      },
+      gps: {
+        latitude: 47.070714, longitude: 15.439504, altitude: 353, accuracy: 4.2,
+      },
+      versions: { ...dev.state.info.versions, sw_cm: 'B15' },
+    });
+    device.infoAt = 0; // force an /info read on the next poll
+    await device.poll();
+    const v = (cap) => device.getCapabilityValue(cap);
+    assert.ok(SIM.every((cap) => device.hasCapability(cap)));
+    assert.strictEqual(v('nrgkick_cellular_mode'), 'lte_cat_m1');
+    assert.strictEqual(v('nrgkick_cellular_signal'), -87);
+    assert.strictEqual(v('nrgkick_cellular_operator'), 'Operator');
+    assert.strictEqual(v('nrgkick_latitude'), 47.070714);
+    assert.strictEqual(v('nrgkick_gps_accuracy'), 4);
+    assert.strictEqual(device.settings.info_fw_cellular, 'B15');
+    assert.deepStrictEqual(triggered, [], 'the first fix never triggers');
+
+    dev.state.info.gps = { latitude: 47.0709, longitude: 15.4397 }; // about 25 m
+    device.infoAt = 0;
+    await device.poll();
+    assert.deepStrictEqual(triggered, []);
+
+    dev.state.info.gps = { latitude: 47.0752, longitude: 15.4395 }; // about 500 m north
+    device.infoAt = 0;
+    await device.poll();
+    assert.strictEqual(triggered.length, 1);
+    assert.strictEqual(triggered[0].name, 'location_changed');
+    assert.ok(triggered[0].tokens.distance > 450 && triggered[0].tokens.distance < 550, triggered[0].tokens.distance);
+    assert.strictEqual(device.getCapabilityValue('nrgkick_gps_accuracy'), null);
+
+    dev.state.info.gps = { latitude: 0, longitude: 0 }; // no fix: keep the last position
+    device.infoAt = 0;
+    await device.poll();
+    assert.strictEqual(device.getCapabilityValue('nrgkick_latitude'), 47.0752);
+
+    dev.state.info.general.model_type = 'NRGkick Gen2';
+    device.infoAt = 0;
+    await device.poll();
+    assert.ok(SIM.every((cap) => !device.hasCapability(cap)), 'removed again without SIM');
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
+test('ensureCapabilities keeps SIM capabilities that are present', async () => {
+  const { dev, device } = await startDevice();
+  try {
+    await device.addCapability('nrgkick_latitude');
+    await device.ensureCapabilities();
+    assert.strictEqual(device.hasCapability('nrgkick_latitude'), true);
   } finally {
     device.stop();
     await dev.close();

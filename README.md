@@ -18,7 +18,7 @@ to that API directly, without a cloud service. Unofficial, not affiliated with D
 | Energy limit | Slider in kWh (0 = no limit), or *Set the energy limit* |
 | Phases | Picker, or *Set the number of phases* (needs phase switching enabled in the NRGkick app) |
 | Homey Energy | Set *Target power mode* to Homey: the target power becomes a charging current; back to Automatic restores your own settings |
-| Flows | Triggers: status changed, fault, warning, energy limit reached. Conditions: status is, fault active |
+| Flows | Triggers: status changed, fault, warning, energy limit reached, location changed (SIM models). Conditions: status is, fault active |
 
 ## Limits
 
@@ -26,7 +26,10 @@ to that API directly, without a cloud service. Unofficial, not affiliated with D
   (Bluetooth only) has no local API.
 - The device offers no push, so the app polls (default every 30 s, configurable 10-300 s).
 - Solar charging and scheduled charging in the NRGkick app cannot be switched through the API.
-- Cellular and GPS data of SIM models are not shown.
+- **SIM models: untested.** Mobile network, signal, operator and GPS position (plus a *location changed* Flow
+  card) are built from DiniTech's API documentation and tested against a simulated device only; no SIM model was
+  available. They appear only on a model whose type contains "SIM". The position is read every 10 minutes.
+  Feedback from SIM owners is welcome in the issues.
 
 ## Development
 

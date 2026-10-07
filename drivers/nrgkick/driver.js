@@ -14,6 +14,7 @@ class NrgkickDriver extends Homey.Driver {
       faultOccurred: flow.getDeviceTriggerCard('fault_occurred'),
       warningOccurred: flow.getDeviceTriggerCard('warning_occurred'),
       energyLimitReached: flow.getDeviceTriggerCard('energy_limit_reached'),
+      locationChanged: flow.getDeviceTriggerCard('location_changed'),
     };
 
     flow.getConditionCard('status_is')

@@ -212,6 +212,58 @@
             "filter": "driver_id=nrgkick"
           }
         ]
+      },
+      {
+        "id": "location_changed",
+        "title": {
+          "en": "The location changed",
+          "nl": "De locatie veranderde",
+          "fr": "La position a changé"
+        },
+        "hint": {
+          "en": "Only NRGkick models with a SIM card report a location. Fires when the NRGkick moved more than 100 m.",
+          "nl": "Alleen NRGkick-modellen met een simkaart melden een locatie. Wordt geactiveerd als de NRGkick meer dan 100 m verplaatst is.",
+          "fr": "Seuls les modèles NRGkick avec carte SIM indiquent une position. Se déclenche quand le NRGkick s'est déplacé de plus de 100 m."
+        },
+        "tokens": [
+          {
+            "name": "latitude",
+            "type": "number",
+            "title": {
+              "en": "Latitude",
+              "nl": "Breedtegraad",
+              "fr": "Latitude"
+            },
+            "example": 47.07
+          },
+          {
+            "name": "longitude",
+            "type": "number",
+            "title": {
+              "en": "Longitude",
+              "nl": "Lengtegraad",
+              "fr": "Longitude"
+            },
+            "example": 15.44
+          },
+          {
+            "name": "distance",
+            "type": "number",
+            "title": {
+              "en": "Distance moved (m)",
+              "nl": "Afgelegde afstand (m)",
+              "fr": "Distance parcourue (m)"
+            },
+            "example": 250
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          }
+        ]
       }
     ],
     "conditions": [
@@ -936,6 +988,21 @@
                 "nl": "Star-controller software / hardware",
                 "fr": "Contrôleur Star logiciel / matériel"
               }
+            },
+            {
+              "id": "info_fw_cellular",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Mobile module software",
+                "nl": "Software mobiele module",
+                "fr": "Logiciel du module mobile"
+              },
+              "hint": {
+                "en": "Only on NRGkick models with a SIM card.",
+                "nl": "Alleen op NRGkick-modellen met een simkaart.",
+                "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+              }
             }
           ]
         }
@@ -943,6 +1010,101 @@
     }
   ],
   "capabilities": {
+    "nrgkick_cellular_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Mobile network",
+        "nl": "Mobiel netwerk",
+        "fr": "Réseau mobile"
+      },
+      "desc": {
+        "en": "Only on NRGkick models with a SIM card.",
+        "nl": "Alleen op NRGkick-modellen met een simkaart.",
+        "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "values": [
+        {
+          "id": "no_service",
+          "title": {
+            "en": "No service",
+            "nl": "Geen bereik",
+            "fr": "Pas de service"
+          }
+        },
+        {
+          "id": "gsm",
+          "title": {
+            "en": "GSM",
+            "nl": "GSM",
+            "fr": "GSM"
+          }
+        },
+        {
+          "id": "lte_cat_m1",
+          "title": {
+            "en": "LTE-M",
+            "nl": "LTE-M",
+            "fr": "LTE-M"
+          }
+        },
+        {
+          "id": "lte_nb_iot",
+          "title": {
+            "en": "NB-IoT",
+            "nl": "NB-IoT",
+            "fr": "NB-IoT"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown",
+            "nl": "Onbekend",
+            "fr": "Inconnu"
+          }
+        }
+      ]
+    },
+    "nrgkick_cellular_operator": {
+      "type": "string",
+      "title": {
+        "en": "Mobile operator",
+        "nl": "Mobiele operator",
+        "fr": "Opérateur mobile"
+      },
+      "desc": {
+        "en": "Only on NRGkick models with a SIM card.",
+        "nl": "Alleen op NRGkick-modellen met een simkaart.",
+        "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_cellular_signal": {
+      "type": "number",
+      "title": {
+        "en": "Mobile signal",
+        "nl": "Mobiel signaal",
+        "fr": "Signal mobile"
+      },
+      "desc": {
+        "en": "Only on NRGkick models with a SIM card.",
+        "nl": "Alleen op NRGkick-modellen met een simkaart.",
+        "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+      },
+      "units": {
+        "en": "dBm"
+      },
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor"
+    },
     "nrgkick_charge_permitted": {
       "type": "boolean",
       "title": {
@@ -1070,6 +1232,73 @@
       },
       "getable": true,
       "setable": false,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_gps_accuracy": {
+      "type": "number",
+      "title": {
+        "en": "GPS accuracy",
+        "nl": "GPS-nauwkeurigheid",
+        "fr": "Précision GPS"
+      },
+      "desc": {
+        "en": "Only on NRGkick models with a SIM card.",
+        "nl": "Alleen op NRGkick-modellen met een simkaart.",
+        "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+      },
+      "units": {
+        "en": "m"
+      },
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_latitude": {
+      "type": "number",
+      "title": {
+        "en": "Latitude",
+        "nl": "Breedtegraad",
+        "fr": "Latitude"
+      },
+      "desc": {
+        "en": "Only on NRGkick models with a SIM card.",
+        "nl": "Alleen op NRGkick-modellen met een simkaart.",
+        "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+      },
+      "units": {
+        "en": "°"
+      },
+      "min": -90,
+      "max": 90,
+      "decimals": 6,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_longitude": {
+      "type": "number",
+      "title": {
+        "en": "Longitude",
+        "nl": "Lengtegraad",
+        "fr": "Longitude"
+      },
+      "desc": {
+        "en": "Only on NRGkick models with a SIM card.",
+        "nl": "Alleen op NRGkick-modellen met een simkaart.",
+        "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+      },
+      "units": {
+        "en": "°"
+      },
+      "min": -180,
+      "max": 180,
+      "decimals": 6,
+      "getable": true,
+      "setable": false,
+      "insights": false,
       "uiComponent": "sensor"
     },
     "nrgkick_phase_count": {

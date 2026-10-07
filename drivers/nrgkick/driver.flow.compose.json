@@ -145,6 +145,51 @@
           "example": 10
         }
       ]
+    },
+    {
+      "id": "location_changed",
+      "title": {
+        "en": "The location changed",
+        "nl": "De locatie veranderde",
+        "fr": "La position a changé"
+      },
+      "hint": {
+        "en": "Only NRGkick models with a SIM card report a location. Fires when the NRGkick moved more than 100 m.",
+        "nl": "Alleen NRGkick-modellen met een simkaart melden een locatie. Wordt geactiveerd als de NRGkick meer dan 100 m verplaatst is.",
+        "fr": "Seuls les modèles NRGkick avec carte SIM indiquent une position. Se déclenche quand le NRGkick s'est déplacé de plus de 100 m."
+      },
+      "tokens": [
+        {
+          "name": "latitude",
+          "type": "number",
+          "title": {
+            "en": "Latitude",
+            "nl": "Breedtegraad",
+            "fr": "Latitude"
+          },
+          "example": 47.07
+        },
+        {
+          "name": "longitude",
+          "type": "number",
+          "title": {
+            "en": "Longitude",
+            "nl": "Lengtegraad",
+            "fr": "Longitude"
+          },
+          "example": 15.44
+        },
+        {
+          "name": "distance",
+          "type": "number",
+          "title": {
+            "en": "Distance moved (m)",
+            "nl": "Afgelegde afstand (m)",
+            "fr": "Distance parcourue (m)"
+          },
+          "example": 250
+        }
+      ]
     }
   ],
   "conditions": [

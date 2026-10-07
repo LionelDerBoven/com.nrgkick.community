@@ -1,0 +1,58 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Mobile network",
+    "nl": "Mobiel netwerk",
+    "fr": "Réseau mobile"
+  },
+  "desc": {
+    "en": "Only on NRGkick models with a SIM card.",
+    "nl": "Alleen op NRGkick-modellen met een simkaart.",
+    "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "values": [
+    {
+      "id": "no_service",
+      "title": {
+        "en": "No service",
+        "nl": "Geen bereik",
+        "fr": "Pas de service"
+      }
+    },
+    {
+      "id": "gsm",
+      "title": {
+        "en": "GSM",
+        "nl": "GSM",
+        "fr": "GSM"
+      }
+    },
+    {
+      "id": "lte_cat_m1",
+      "title": {
+        "en": "LTE-M",
+        "nl": "LTE-M",
+        "fr": "LTE-M"
+      }
+    },
+    {
+      "id": "lte_nb_iot",
+      "title": {
+        "en": "NB-IoT",
+        "nl": "NB-IoT",
+        "fr": "NB-IoT"
+      }
+    },
+    {
+      "id": "unknown",
+      "title": {
+        "en": "Unknown",
+        "nl": "Onbekend",
+        "fr": "Inconnu"
+      }
+    }
+  ]
+}
