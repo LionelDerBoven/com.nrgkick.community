@@ -194,27 +194,34 @@ class NrgkickDevice extends Homey.Device {
     this.relocating = true;
     this.relocatedAt = Date.now();
     const { host, username, password } = this.getSettings();
+    const serial = String(this.getData().id);
     try {
-      for (const address of this.driver.discoveredAddresses()) {
+      for (const address of this.driver.discoveredAddresses(serial)) {
         if (address === host || this.stopped) continue;
-        const probe = new NrgkickClient({
-          host: address, username, password, timeout: 5000, sleep: (ms) => new Promise((resolve) => this.homey.setTimeout(resolve, ms)),
-        });
-        try {
-          const info = await probe.getInfo();
-          if (String(m.pick(info.general, 'serial_number')) === String(this.getData().id)) {
-            await this.updateHost(address);
-            return true;
-          }
-        } catch (err) {
-          // Not reachable or not ours: try the next address.
-        } finally {
-          probe.destroy();
+        // Ask without the login first, so it only goes to an address that is an NRGkick asking for one.
+        const info = await this.probeInfo(address)
+          .catch((err) => (err.code === 'auth' && username && password ? this.probeInfo(address, username, password) : null))
+          .catch(() => null); // not reachable or not ours: try the next address
+        if (info && String(m.pick(info.general, 'serial_number')) === serial) {
+          await this.updateHost(address);
+          return true;
         }
       }
       return false;
     } finally {
       this.relocating = false;
+    }
+  }
+
+  /** Reads /info at another address with a short-lived client. */
+  async probeInfo(address, username, password) {
+    const probe = new NrgkickClient({
+      host: address, username, password, timeout: 5000, sleep: (ms) => new Promise((resolve) => this.homey.setTimeout(resolve, ms)),
+    });
+    try {
+      return await probe.getInfo();
+    } finally {
+      probe.destroy();
     }
   }
 

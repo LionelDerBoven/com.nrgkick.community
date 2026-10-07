@@ -22,8 +22,6 @@ class NrgkickDriver extends Homey.Driver {
 
     flow.getConditionCard('status_is')
       .registerRunListener(({ device, status }) => device.getCapabilityValue('nrgkick_status') === status);
-    flow.getConditionCard('fault_active')
-      .registerRunListener(({ device }) => device.getCapabilityValue('alarm_generic') === true);
 
     flow.getConditionCard('car_plugged_in')
       .registerRunListener(({ device }) => m.isPluggedIn(device.getCapabilityValue('nrgkick_status')));
@@ -51,9 +49,18 @@ class NrgkickDriver extends Homey.Driver {
     this.log(`mDNS: ${Object.keys(this.discovery.getDiscoveryResults()).length} NRGkick(s) known at start`);
   }
 
-  /** Addresses of the NRGkicks mDNS currently knows (at most 5: a home has one or two). */
-  discoveredAddresses() {
-    const addresses = Object.values(this.discovery.getDiscoveryResults()).map((r) => r.address).filter(Boolean);
+  /**
+   * Addresses mDNS knows that could be the NRGkick with this serial (at most 5: a home has one or two).
+   * An address whose TXT record names another serial is left out.
+   */
+  discoveredAddresses(serial) {
+    const wanted = String(serial || '').toLowerCase();
+    const addresses = Object.values(this.discovery.getDiscoveryResults())
+      .filter((r) => {
+        const announced = String((r.txt && r.txt.serial_number) || '').toLowerCase();
+        return r.address && (!announced || !wanted || announced === wanted);
+      })
+      .map((r) => r.address);
     return [...new Set(addresses)].slice(0, 5);
   }
 

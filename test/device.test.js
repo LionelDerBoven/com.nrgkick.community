@@ -147,9 +147,17 @@ function fakeNrgkick() {
     },
     status: 200,
     writes: [],
+    login: null,
+    authHeaders: [],
   };
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://x');
+    state.authHeaders.push(req.headers.authorization || null);
+    if (state.login && req.headers.authorization !== `Basic ${Buffer.from(state.login).toString('base64')}`) {
+      res.writeHead(401);
+      res.end();
+      return;
+    }
     let body;
     if (state.status !== 200) body = { Response: 'nope' };
     else if (url.pathname === '/info') body = state.info;
@@ -661,5 +669,24 @@ test('charge an amount of energy on top of this session, and step the current', 
   } finally {
     device.stop();
     await dev.close();
+  }
+});
+
+test('relocating sends the login only to an NRGkick that asks for it', async () => {
+  const { dev, device } = await startDevice();
+  const other = await fakeNrgkick();
+  try {
+    other.state.info.general.serial_number = 'SERIAL2'; // an open NRGkick that is not ours
+    dev.state.login = 'user:secret';
+    await device.setSettings({ host: '127.0.0.1:1', username: 'user', password: 'secret' });
+    device.driver.discovered = [other.host, dev.host];
+    assert.strictEqual(await device.relocate(), true);
+    assert.strictEqual(device.getSetting('host'), dev.host);
+    assert.deepStrictEqual(other.state.authHeaders, [null], 'the other NRGkick never got the login');
+    assert.strictEqual(dev.state.authHeaders[0], null, 'asked without the login first');
+  } finally {
+    device.stop();
+    await dev.close();
+    await other.close();
   }
 });

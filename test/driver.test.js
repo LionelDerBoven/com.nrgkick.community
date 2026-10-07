@@ -130,3 +130,14 @@ test('errors are translated: no address, unreachable, already added', async () =
     await dev.close();
   }
 });
+
+test('relocation candidates leave out NRGkicks that announce another serial', () => {
+  const driver = makeDriver({
+    results: {
+      a: { address: '192.0.2.10', txt: { serial_number: 'OTHER' } },
+      b: { address: '192.0.2.11', txt: { serial_number: 'serial1' } },
+      c: { address: '192.0.2.12', txt: {} },
+    },
+  });
+  assert.deepStrictEqual(driver.discoveredAddresses('SERIAL1'), ['192.0.2.11', '192.0.2.12']);
+});
