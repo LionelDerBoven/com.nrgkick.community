@@ -1,9 +1,9 @@
 {
   "type": "boolean",
   "title": {
-    "en": "Homey control",
-    "nl": "Homey-sturing",
-    "fr": "Pilotage par Homey"
+    "en": "Homey override",
+    "nl": "Homey override",
+    "fr": "Contrôle Homey"
   },
   "desc": {
     "en": "On: Homey (Energy or a Flow) sets the charging power through the target power. Off: the NRGkick charges with its own charging current.",
