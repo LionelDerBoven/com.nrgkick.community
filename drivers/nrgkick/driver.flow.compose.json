@@ -606,9 +606,9 @@
     {
       "id": "set_energy_price",
       "title": {
-        "en": "Set the electricity price",
-        "nl": "Stel de stroomprijs in",
-        "fr": "Régler le prix de l'électricité"
+        "en": "Set the electricity price per kWh",
+        "nl": "Stel de stroomprijs per kWh in",
+        "fr": "Régler le prix de l'électricité par kWh"
       },
       "titleFormatted": {
         "en": "Set the electricity price to [[price]] per kWh",

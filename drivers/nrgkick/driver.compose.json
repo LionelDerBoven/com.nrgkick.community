@@ -255,7 +255,9 @@
         "fr": "Signal WiFi"
       },
       "units": {
-        "en": "dBm"
+        "en": "dBm",
+        "nl": "dBm",
+        "fr": "dBm"
       },
       "decimals": 0,
       "uiComponent": null

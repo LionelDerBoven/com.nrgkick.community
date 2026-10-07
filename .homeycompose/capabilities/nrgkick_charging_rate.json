@@ -11,7 +11,9 @@
     "fr": "Autonomie ajoutée par heure, selon la consommation réglée dans l'app NRGkick."
   },
   "units": {
-    "en": "km/h"
+    "en": "km/h",
+    "nl": "km/u",
+    "fr": "km/h"
   },
   "decimals": 1,
   "getable": true,

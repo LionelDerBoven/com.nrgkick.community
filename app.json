@@ -750,9 +750,9 @@
       {
         "id": "set_energy_price",
         "title": {
-          "en": "Set the electricity price",
-          "nl": "Stel de stroomprijs in",
-          "fr": "Régler le prix de l'électricité"
+          "en": "Set the electricity price per kWh",
+          "nl": "Stel de stroomprijs per kWh in",
+          "fr": "Régler le prix de l'électricité par kWh"
         },
         "titleFormatted": {
           "en": "Set the electricity price to [[price]] per kWh",
@@ -1049,7 +1049,9 @@
             "fr": "Signal WiFi"
           },
           "units": {
-            "en": "dBm"
+            "en": "dBm",
+            "nl": "dBm",
+            "fr": "dBm"
           },
           "decimals": 0,
           "uiComponent": null
@@ -1181,7 +1183,9 @@
               "min": 10,
               "max": 300,
               "units": {
-                "en": "s"
+                "en": "s",
+                "nl": "s",
+                "fr": "s"
               },
               "label": {
                 "en": "Update interval",
@@ -1212,7 +1216,9 @@
               "max": 32,
               "step": 1,
               "units": {
-                "en": "A"
+                "en": "A",
+                "nl": "A",
+                "fr": "A"
               },
               "label": {
                 "en": "Maximum charging current",
@@ -1483,7 +1489,9 @@
         "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
       },
       "units": {
-        "en": "dBm"
+        "en": "dBm",
+        "nl": "dBm",
+        "fr": "dBm"
       },
       "decimals": 0,
       "getable": true,
@@ -1518,7 +1526,9 @@
         "fr": "Durée de charge de la charge en cours ou de la dernière charge."
       },
       "units": {
-        "en": "min"
+        "en": "min",
+        "nl": "min",
+        "fr": "min"
       },
       "decimals": 0,
       "getable": true,
@@ -1540,7 +1550,9 @@
         "fr": "Autonomie ajoutée par heure, selon la consommation réglée dans l'app NRGkick."
       },
       "units": {
-        "en": "km/h"
+        "en": "km/h",
+        "nl": "km/u",
+        "fr": "km/h"
       },
       "decimals": 1,
       "getable": true,
@@ -1562,7 +1574,9 @@
         "fr": "Durée de connexion du véhicule pour la charge en cours ou la dernière charge."
       },
       "units": {
-        "en": "min"
+        "en": "min",
+        "nl": "min",
+        "fr": "min"
       },
       "decimals": 0,
       "getable": true,
@@ -1579,7 +1593,9 @@
         "fr": "Courant de charge"
       },
       "units": {
-        "en": "A"
+        "en": "A",
+        "nl": "A",
+        "fr": "A"
       },
       "min": 6,
       "max": 32,
@@ -1604,7 +1620,9 @@
         "fr": "Arrête la charge après cette quantité d'énergie. 0 signifie sans limite."
       },
       "units": {
-        "en": "kWh"
+        "en": "kWh",
+        "nl": "kWh",
+        "fr": "kWh"
       },
       "min": 0,
       "max": 100,
@@ -1641,7 +1659,9 @@
         "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
       },
       "units": {
-        "en": "m"
+        "en": "m",
+        "nl": "m",
+        "fr": "m"
       },
       "decimals": 0,
       "getable": true,
@@ -1663,7 +1683,9 @@
         "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
       },
       "units": {
-        "en": "°"
+        "en": "°",
+        "nl": "°",
+        "fr": "°"
       },
       "min": -90,
       "max": 90,
@@ -1687,7 +1709,9 @@
         "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
       },
       "units": {
-        "en": "°"
+        "en": "°",
+        "nl": "°",
+        "fr": "°"
       },
       "min": -180,
       "max": 180,

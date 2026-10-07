@@ -11,7 +11,9 @@
     "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
   },
   "units": {
-    "en": "dBm"
+    "en": "dBm",
+    "nl": "dBm",
+    "fr": "dBm"
   },
   "decimals": 0,
   "getable": true,

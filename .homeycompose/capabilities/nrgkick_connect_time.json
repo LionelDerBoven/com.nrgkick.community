@@ -11,7 +11,9 @@
     "fr": "Durée de connexion du véhicule pour la charge en cours ou la dernière charge."
   },
   "units": {
-    "en": "min"
+    "en": "min",
+    "nl": "min",
+    "fr": "min"
   },
   "decimals": 0,
   "getable": true,

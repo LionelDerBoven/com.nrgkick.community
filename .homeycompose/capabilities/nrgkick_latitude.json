@@ -11,7 +11,9 @@
     "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
   },
   "units": {
-    "en": "°"
+    "en": "°",
+    "nl": "°",
+    "fr": "°"
   },
   "min": -90,
   "max": 90,

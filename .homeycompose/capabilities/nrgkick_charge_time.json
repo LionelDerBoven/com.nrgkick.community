@@ -11,7 +11,9 @@
     "fr": "Durée de charge de la charge en cours ou de la dernière charge."
   },
   "units": {
-    "en": "min"
+    "en": "min",
+    "nl": "min",
+    "fr": "min"
   },
   "decimals": 0,
   "getable": true,

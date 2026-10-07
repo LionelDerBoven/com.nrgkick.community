@@ -11,7 +11,9 @@
     "fr": "Arrête la charge après cette quantité d'énergie. 0 signifie sans limite."
   },
   "units": {
-    "en": "kWh"
+    "en": "kWh",
+    "nl": "kWh",
+    "fr": "kWh"
   },
   "min": 0,
   "max": 100,

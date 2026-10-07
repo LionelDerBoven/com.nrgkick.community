@@ -6,7 +6,9 @@
     "fr": "Courant de charge"
   },
   "units": {
-    "en": "A"
+    "en": "A",
+    "nl": "A",
+    "fr": "A"
   },
   "min": 6,
   "max": 32,
