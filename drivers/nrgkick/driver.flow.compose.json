@@ -1,6 +1,87 @@
 {
   "triggers": [
     {
+      "id": "car_plugged_in",
+      "title": {
+        "en": "The car was plugged in",
+        "nl": "De auto werd ingeplugd",
+        "fr": "Le véhicule a été branché"
+      },
+      "hint": {
+        "en": "Fires when the NRGkick detects a car on the charging cable.",
+        "nl": "Wordt geactiveerd als de NRGkick een auto aan de laadkabel detecteert.",
+        "fr": "Se déclenche quand le NRGkick détecte un véhicule sur le câble de recharge."
+      }
+    },
+    {
+      "id": "car_unplugged",
+      "title": {
+        "en": "The car was unplugged",
+        "nl": "De auto werd uitgetrokken",
+        "fr": "Le véhicule a été débranché"
+      },
+      "hint": {
+        "en": "Fires when the charging cable is taken out of the car.",
+        "nl": "Wordt geactiveerd als de laadkabel uit de auto wordt gehaald.",
+        "fr": "Se déclenche quand le câble de recharge est retiré du véhicule."
+      }
+    },
+    {
+      "id": "session_ended",
+      "title": {
+        "en": "A charging session ended",
+        "nl": "Een laadbeurt is afgelopen",
+        "fr": "Une session de recharge est terminée"
+      },
+      "hint": {
+        "en": "Fires once per plug-in: when charging stops on its own (car full or energy limit), or at the latest when the car is unplugged. Not when you pause.",
+        "nl": "Wordt één keer per inpluggen geactiveerd: als het laden vanzelf stopt (auto vol of energielimiet), of ten laatste bij het uittrekken. Niet bij pauzeren.",
+        "fr": "Se déclenche une fois par branchement : quand la charge s'arrête d'elle-même (véhicule plein ou limite d'énergie), ou au plus tard au débranchement. Pas lors d'une pause."
+      },
+      "tokens": [
+        {
+          "name": "energy",
+          "type": "number",
+          "title": {
+            "en": "Charged energy (kWh)",
+            "nl": "Geladen energie (kWh)",
+            "fr": "Énergie chargée (kWh)"
+          },
+          "example": 8.4
+        },
+        {
+          "name": "charge_time",
+          "type": "number",
+          "title": {
+            "en": "Charge time (min)",
+            "nl": "Laadtijd (min)",
+            "fr": "Durée de charge (min)"
+          },
+          "example": 170
+        },
+        {
+          "name": "connected_time",
+          "type": "number",
+          "title": {
+            "en": "Connected time (min)",
+            "nl": "Verbonden tijd (min)",
+            "fr": "Durée de connexion (min)"
+          },
+          "example": 420
+        },
+        {
+          "name": "cost",
+          "type": "number",
+          "title": {
+            "en": "Cost",
+            "nl": "Kosten",
+            "fr": "Coût"
+          },
+          "example": 1.85
+        }
+      ]
+    },
+    {
       "id": "status_changed",
       "title": {
         "en": "The status changed",
@@ -271,6 +352,14 @@
         "nl": "Waar zolang de NRGkick een fout of een lekstroomdetectie meldt.",
         "fr": "Vrai tant que le NRGkick signale une erreur ou un déclenchement du différentiel."
       }
+    },
+    {
+      "id": "car_plugged_in",
+      "title": {
+        "en": "The car !{{is|isn't}} plugged in",
+        "nl": "De auto is !{{|niet}} ingeplugd",
+        "fr": "Le véhicule !{{est|n'est pas}} branché"
+      }
     }
   ],
   "actions": [
@@ -399,6 +488,154 @@
             "en": "Phases",
             "nl": "Fases",
             "fr": "Phases"
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge_energy",
+      "title": {
+        "en": "Charge an amount of energy and then stop",
+        "nl": "Laad een hoeveelheid energie en stop dan",
+        "fr": "Charger une quantité d'énergie puis s'arrêter"
+      },
+      "titleFormatted": {
+        "en": "Charge [[energy]] kWh and then stop",
+        "nl": "Laad [[energy]] kWh en stop dan",
+        "fr": "Charger [[energy]] kWh puis s'arrêter"
+      },
+      "hint": {
+        "en": "Starts charging and sets the energy limit, counted on top of what this charge already added.",
+        "nl": "Start het laden en zet de energielimiet, bovenop wat deze laadbeurt al geladen heeft.",
+        "fr": "Démarre la charge et règle la limite d'énergie, en plus de ce que cette charge a déjà ajouté."
+      },
+      "args": [
+        {
+          "name": "energy",
+          "type": "number",
+          "min": 0.1,
+          "max": 100,
+          "step": 0.1,
+          "title": {
+            "en": "Energy",
+            "nl": "Energie",
+            "fr": "Énergie"
+          },
+          "placeholder": {
+            "en": "kWh",
+            "nl": "kWh",
+            "fr": "kWh"
+          }
+        }
+      ]
+    },
+    {
+      "id": "increase_current",
+      "title": {
+        "en": "Raise the charging current",
+        "nl": "Verhoog de laadstroom",
+        "fr": "Augmenter le courant de charge"
+      },
+      "titleFormatted": {
+        "en": "Raise the charging current by [[amps]] A",
+        "nl": "Verhoog de laadstroom met [[amps]] A",
+        "fr": "Augmenter le courant de charge de [[amps]] A"
+      },
+      "hint": {
+        "en": "Stops at the maximum charging current.",
+        "nl": "Stopt bij de maximale laadstroom.",
+        "fr": "S'arrête au courant de charge maximal."
+      },
+      "args": [
+        {
+          "name": "amps",
+          "type": "number",
+          "min": 0.1,
+          "max": 26,
+          "step": 0.1,
+          "title": {
+            "en": "Current",
+            "nl": "Stroom",
+            "fr": "Courant"
+          },
+          "placeholder": {
+            "en": "Ampere",
+            "nl": "Ampère",
+            "fr": "Ampère"
+          }
+        }
+      ]
+    },
+    {
+      "id": "decrease_current",
+      "title": {
+        "en": "Lower the charging current",
+        "nl": "Verlaag de laadstroom",
+        "fr": "Diminuer le courant de charge"
+      },
+      "titleFormatted": {
+        "en": "Lower the charging current by [[amps]] A",
+        "nl": "Verlaag de laadstroom met [[amps]] A",
+        "fr": "Diminuer le courant de charge de [[amps]] A"
+      },
+      "hint": {
+        "en": "Stops at 6 A, the lowest current a car accepts. Pause charging to go lower.",
+        "nl": "Stopt bij 6 A, de laagste stroom die een auto aanvaardt. Pauzeer het laden om lager te gaan.",
+        "fr": "S'arrête à 6 A, le courant le plus bas qu'un véhicule accepte. Mettez la charge en pause pour descendre plus bas."
+      },
+      "args": [
+        {
+          "name": "amps",
+          "type": "number",
+          "min": 0.1,
+          "max": 26,
+          "step": 0.1,
+          "title": {
+            "en": "Current",
+            "nl": "Stroom",
+            "fr": "Courant"
+          },
+          "placeholder": {
+            "en": "Ampere",
+            "nl": "Ampère",
+            "fr": "Ampère"
+          }
+        }
+      ]
+    },
+    {
+      "id": "set_energy_price",
+      "title": {
+        "en": "Set the electricity price",
+        "nl": "Stel de stroomprijs in",
+        "fr": "Régler le prix de l'électricité"
+      },
+      "titleFormatted": {
+        "en": "Set the electricity price to [[price]] per kWh",
+        "nl": "Stel de stroomprijs in op [[price]] per kWh",
+        "fr": "Régler le prix de l'électricité à [[price]] par kWh"
+      },
+      "hint": {
+        "en": "Used for the cost of the charging session from now on. Use it with Homey Energy's price trigger for a dynamic tariff.",
+        "nl": "Wordt vanaf nu gebruikt voor de kosten van de laadbeurt. Gebruik het met de prijstrigger van Homey Energy voor een dynamisch tarief.",
+        "fr": "Sert dès maintenant au coût de la session de recharge. Utilisez-la avec le déclencheur de prix de Homey Energy pour un tarif dynamique."
+      },
+      "args": [
+        {
+          "name": "price",
+          "type": "number",
+          "min": 0,
+          "max": 10,
+          "step": 0.0001,
+          "title": {
+            "en": "Price",
+            "nl": "Prijs",
+            "fr": "Prix"
+          },
+          "placeholder": {
+            "en": "per kWh",
+            "nl": "per kWh",
+            "fr": "par kWh"
           }
         }
       ]

@@ -72,6 +72,55 @@
   {
     "type": "group",
     "label": {
+      "en": "Charging",
+      "nl": "Laden",
+      "fr": "Recharge"
+    },
+    "children": [
+      {
+        "id": "max_current",
+        "type": "number",
+        "value": 32,
+        "min": 6,
+        "max": 32,
+        "step": 1,
+        "units": {
+          "en": "A"
+        },
+        "label": {
+          "en": "Maximum charging current",
+          "nl": "Maximale laadstroom",
+          "fr": "Courant de charge maximal"
+        },
+        "hint": {
+          "en": "A safety limit, for example for an older socket. The slider, Flows and Homey Energy never go above it, and a higher current set in the NRGkick app is lowered to it. The NRGkick's own maximum still applies.",
+          "nl": "Een veiligheidsgrens, bijvoorbeeld voor een ouder stopcontact. De slider, Flows en Homey Energy gaan er nooit boven, en een hogere stroom die in de NRGkick-app is ingesteld, wordt erop teruggezet. Het eigen maximum van de NRGkick blijft gelden.",
+          "fr": "Une limite de sécurité, par exemple pour une prise ancienne. Le curseur, les Flows et Homey Energy ne la dépassent jamais, et un courant plus élevé réglé dans l'app NRGkick est ramené à cette valeur. Le maximum propre du NRGkick reste valable."
+        }
+      },
+      {
+        "id": "price_per_kwh",
+        "type": "number",
+        "value": 0,
+        "min": 0,
+        "max": 10,
+        "step": 0.001,
+        "label": {
+          "en": "Electricity price per kWh",
+          "nl": "Stroomprijs per kWh",
+          "fr": "Prix de l'électricité par kWh"
+        },
+        "hint": {
+          "en": "Used for the cost of a charging session. With a dynamic tariff, set the price from a Flow with the card Set the electricity price; that price then wins until Homey restarts the app.",
+          "nl": "Wordt gebruikt voor de kosten van een laadbeurt. Met een dynamisch tarief stel je de prijs in vanuit een Flow met de kaart Stel de stroomprijs in; die prijs gaat dan voor tot Homey de app herstart.",
+          "fr": "Sert au coût d'une session de recharge. Avec un tarif dynamique, réglez le prix depuis un Flow avec la carte Régler le prix de l'électricité ; ce prix prévaut alors jusqu'au redémarrage de l'app par Homey."
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
       "en": "Device information",
       "nl": "Toestelinformatie",
       "fr": "Informations sur l'appareil"

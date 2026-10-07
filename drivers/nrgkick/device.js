@@ -18,6 +18,7 @@ const SIM_CAPABILITIES = [
   'nrgkick_latitude', 'nrgkick_longitude', 'nrgkick_gps_accuracy',
 ];
 const LOCATION_TRIGGER_METERS = 100; // above normal GPS jitter, well below a trip
+const SESSION_SAVE_MS = 5 * 60 * 1000; // persist the running session cost at most every 5 minutes (flash writes)
 
 const round = (value, decimals) => {
   if (value === null || value === undefined) return value;
@@ -46,6 +47,13 @@ class NrgkickDevice extends Homey.Device {
     this.controlQueue = Promise.resolve(); // charging control batches run one after another
     this.mode = null; // target_power_mode as last requested; Homey stores it only after the listener returns
     this.targetPower = null;
+    this.pluggedIn = null; // null: not read yet, so the first read never triggers a Flow
+    this.sessionDone = false; // "charging session ended" fires once per plug-in
+    this.price = null; // price per kWh from the Flow action; falls back to the price_per_kwh setting
+    const session = this.getStoreValue('session') || {};
+    this.sessionWh = Number.isFinite(session.wh) ? session.wh : null;
+    this.sessionCost = Number.isFinite(session.cost) ? session.cost : 0;
+    this.sessionSavedAt = 0;
 
     await this.ensureCapabilities();
 
@@ -54,7 +62,7 @@ class NrgkickDevice extends Homey.Device {
       host: host || '0.0.0.0', username, password, sleep: (ms) => new Promise((resolve) => this.homey.setTimeout(resolve, ms)),
     });
 
-    this.registerCapabilityListener('nrgkick_current_set', (value) => this.writeControl('current_set', value));
+    this.registerCapabilityListener('nrgkick_current_set', (value) => this.writeControl('current_set', Math.min(value, this.maxCurrent())));
     this.registerCapabilityListener('nrgkick_energy_limit', (value) => this.writeControl('energy_limit', Math.round(value * 1000)));
     this.registerCapabilityListener('nrgkick_phase_count', (value) => this.writeControl('phase_count', Number(value)));
     // Homey sets these together (e.g. the "Set target power" card), so handle them as one change.
@@ -116,7 +124,32 @@ class NrgkickDevice extends Homey.Device {
       this.client.configure(newSettings);
       this.info = null;
     }
+    if (changedKeys.includes('max_current')) {
+      await this.updateLimits(newSettings);
+      await this.enforceMaxCurrent(newSettings).catch(this.error);
+    }
     if (changedKeys.some((key) => CONNECTION_KEYS.includes(key) || key === 'poll_interval')) this.refreshSoon(1000);
+  }
+
+  /** Highest current allowed: the charger and attachment maximum, lowered by the user's max_current setting. */
+  maxCurrent(settings = this.getSettings()) {
+    const hardware = m.maxCurrent(this.info);
+    const limit = Number(settings.max_current);
+    return limit >= m.MIN_CURRENT ? Math.min(hardware, limit) : hardware;
+  }
+
+  /** A current set above the user's limit (e.g. in the NRGkick app) is brought back down. */
+  async enforceMaxCurrent(settings = this.getSettings()) {
+    const max = this.maxCurrent(settings);
+    const current = this.control && this.control.current_set;
+    if (this.enforcing || current === null || current === undefined || current <= max + 0.05) return;
+    this.enforcing = true;
+    try {
+      this.log(`Charging current above the limit, lowering it to ${max} A`);
+      await this.writeControl('current_set', max);
+    } finally {
+      this.enforcing = false;
+    }
   }
 
   /** Called with an address found through mDNS for this device. */
@@ -315,9 +348,9 @@ class NrgkickDevice extends Homey.Device {
   }
 
   /** Slider and Homey Energy ranges follow the unit, attachment and grid. setCapabilityOptions is costly: only on change. */
-  async updateLimits() {
-    const maxCurrent = m.maxCurrent(this.info);
-    const targetPower = m.targetPowerOptions(this.info);
+  async updateLimits(settings = this.getSettings()) {
+    const maxCurrent = this.maxCurrent(settings);
+    const targetPower = m.targetPowerOptions(this.info, maxCurrent);
     const key = JSON.stringify([maxCurrent, targetPower]);
     if (this.getStoreValue('limits') === key) return;
     await this.setCapabilityOptions('nrgkick_current_set', {
@@ -349,6 +382,7 @@ class NrgkickDevice extends Homey.Device {
       const phases = m.activePhases(this.info, c);
       await this.set('target_power', m.currentToWatts(c.current_set, { voltage, phases }));
     }
+    if (!this.enforcing) await this.enforceMaxCurrent().catch(this.error);
   }
 
   async applyValues(values) {
@@ -397,9 +431,90 @@ class NrgkickDevice extends Homey.Device {
     const chargeCount = m.num(general, 'charge_count');
     if (chargeCount !== null) await this.updateLabels({ info_charge_count: String(chargeCount) });
 
+    const previousStatus = this.statusId;
     await this.applyStatus(general);
+    await this.applySession(previousStatus, energy, general);
     await this.applyFault(general);
     await this.applyWarning(general, m.num(energy, 'charged_energy'));
+  }
+
+  /** Price per kWh for the session cost: the latest from a Flow, else the fixed price in the settings. */
+  currentPrice() {
+    if (Number.isFinite(this.price)) return this.price;
+    const fixed = Number(this.getSetting('price_per_kwh'));
+    return Number.isFinite(fixed) && fixed > 0 ? fixed : 0;
+  }
+
+  /** Set from the "Set the electricity price" Flow card, e.g. fed by Homey Energy's price trigger. */
+  setPrice(price) {
+    this.price = Number.isFinite(price) && price >= 0 ? price : null;
+  }
+
+  /**
+   * Plug-in and unplug triggers, and the session that runs in between. The cost adds up each kWh at the
+   * price of that moment, so a price change during a charge counts correctly. "Charging session ended" fires
+   * once per plug-in: when the charge stops on its own (car full or energy limit) or at the latest on unplug.
+   */
+  async applySession(previousStatus, energy, general) {
+    const { statusId } = this;
+    if (statusId === null || statusId === 'unknown') return;
+    const wh = m.num(energy, 'charged_energy');
+    if (wh !== null) {
+      if (this.sessionWh !== null && wh >= this.sessionWh) this.sessionCost += ((wh - this.sessionWh) / 1000) * this.currentPrice();
+      else if (this.sessionWh !== null) this.sessionCost = 0; // the NRGkick started a new session
+      this.sessionWh = wh;
+    }
+
+    const plugged = m.isPluggedIn(statusId);
+    const was = this.pluggedIn;
+    this.pluggedIn = plugged;
+    if (was === null) {
+      this.sessionDone = !plugged;
+    } else if (plugged && !was) {
+      this.sessionDone = false;
+      this.sessionCost = 0;
+      await this.driver.triggers.carPluggedIn.trigger(this, {}).catch(this.error);
+    } else if (!plugged && was) {
+      await this.finishSession(general);
+      await this.driver.triggers.carUnplugged.trigger(this, {}).catch(this.error);
+    } else if (plugged && previousStatus === 'charging' && statusId === 'connected'
+      && this.control && this.control.charge_pause === 0) {
+      await this.finishSession(general); // stopped on its own: car full or energy limit reached
+    }
+
+    if (Date.now() - this.sessionSavedAt > SESSION_SAVE_MS) await this.saveSession();
+  }
+
+  async finishSession(general) {
+    if (this.sessionDone) return;
+    this.sessionDone = true;
+    await this.saveSession();
+    if (!this.sessionWh) return; // plugged in and out without charging
+    await this.driver.triggers.sessionEnded.trigger(this, {
+      energy: kwh(this.sessionWh),
+      charge_time: minutes(m.num(general, 'vehicle_charging_time')) || 0,
+      connected_time: minutes(m.num(general, 'vehicle_connect_time')) || 0,
+      cost: round(this.sessionCost, 2),
+    }).catch(this.error);
+  }
+
+  async saveSession() {
+    this.sessionSavedAt = Date.now();
+    await this.setStoreValue('session', { wh: this.sessionWh, cost: round(this.sessionCost, 4) }).catch(this.error);
+  }
+
+  /** "Charge … kWh and then stop": the limit counts from what this session already charged. */
+  async chargeEnergy(kwhToAdd) {
+    const already = this.sessionWh && m.isPluggedIn(this.statusId) ? this.sessionWh : 0;
+    await this.writeControl('energy_limit', Math.round(already + kwhToAdd * 1000));
+    await this.setPaused(false);
+  }
+
+  /** Raises or lowers the charging current by `delta` A, within 6 A and the maximum. */
+  async changeCurrent(delta) {
+    const current = this.control && this.control.current_set !== null ? this.control.current_set : this.getCapabilityValue('nrgkick_current_set');
+    const target = Math.round(Math.min(this.maxCurrent(), Math.max(m.MIN_CURRENT, (current || m.MIN_CURRENT) + delta)) * 10) / 10;
+    if (target !== current) await this.triggerCapabilityListener('nrgkick_current_set', target);
   }
 
   async applyStatus(general) {
@@ -525,7 +640,7 @@ class NrgkickDevice extends Homey.Device {
     const amps = m.wattsToCurrent(target, {
       voltage: m.nominalVoltage(this.info),
       phases: m.activePhases(this.info, this.control),
-      max: m.maxCurrent(this.info),
+      max: this.maxCurrent(),
     });
     const current = this.control && this.control.current_set;
     if (current === null || current === undefined || Math.abs(current - amps) >= 0.05) {

@@ -40,6 +40,108 @@
   "flow": {
     "triggers": [
       {
+        "id": "car_plugged_in",
+        "title": {
+          "en": "The car was plugged in",
+          "nl": "De auto werd ingeplugd",
+          "fr": "Le véhicule a été branché"
+        },
+        "hint": {
+          "en": "Fires when the NRGkick detects a car on the charging cable.",
+          "nl": "Wordt geactiveerd als de NRGkick een auto aan de laadkabel detecteert.",
+          "fr": "Se déclenche quand le NRGkick détecte un véhicule sur le câble de recharge."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          }
+        ]
+      },
+      {
+        "id": "car_unplugged",
+        "title": {
+          "en": "The car was unplugged",
+          "nl": "De auto werd uitgetrokken",
+          "fr": "Le véhicule a été débranché"
+        },
+        "hint": {
+          "en": "Fires when the charging cable is taken out of the car.",
+          "nl": "Wordt geactiveerd als de laadkabel uit de auto wordt gehaald.",
+          "fr": "Se déclenche quand le câble de recharge est retiré du véhicule."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          }
+        ]
+      },
+      {
+        "id": "session_ended",
+        "title": {
+          "en": "A charging session ended",
+          "nl": "Een laadbeurt is afgelopen",
+          "fr": "Une session de recharge est terminée"
+        },
+        "hint": {
+          "en": "Fires once per plug-in: when charging stops on its own (car full or energy limit), or at the latest when the car is unplugged. Not when you pause.",
+          "nl": "Wordt één keer per inpluggen geactiveerd: als het laden vanzelf stopt (auto vol of energielimiet), of ten laatste bij het uittrekken. Niet bij pauzeren.",
+          "fr": "Se déclenche une fois par branchement : quand la charge s'arrête d'elle-même (véhicule plein ou limite d'énergie), ou au plus tard au débranchement. Pas lors d'une pause."
+        },
+        "tokens": [
+          {
+            "name": "energy",
+            "type": "number",
+            "title": {
+              "en": "Charged energy (kWh)",
+              "nl": "Geladen energie (kWh)",
+              "fr": "Énergie chargée (kWh)"
+            },
+            "example": 8.4
+          },
+          {
+            "name": "charge_time",
+            "type": "number",
+            "title": {
+              "en": "Charge time (min)",
+              "nl": "Laadtijd (min)",
+              "fr": "Durée de charge (min)"
+            },
+            "example": 170
+          },
+          {
+            "name": "connected_time",
+            "type": "number",
+            "title": {
+              "en": "Connected time (min)",
+              "nl": "Verbonden tijd (min)",
+              "fr": "Durée de connexion (min)"
+            },
+            "example": 420
+          },
+          {
+            "name": "cost",
+            "type": "number",
+            "title": {
+              "en": "Cost",
+              "nl": "Kosten",
+              "fr": "Coût"
+            },
+            "example": 1.85
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          }
+        ]
+      },
+      {
         "id": "status_changed",
         "title": {
           "en": "The status changed",
@@ -357,6 +459,21 @@
             "filter": "driver_id=nrgkick"
           }
         ]
+      },
+      {
+        "id": "car_plugged_in",
+        "title": {
+          "en": "The car !{{is|isn't}} plugged in",
+          "nl": "De auto is !{{|niet}} ingeplugd",
+          "fr": "Le véhicule !{{est|n'est pas}} branché"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          }
+        ]
       }
     ],
     "actions": [
@@ -500,6 +617,174 @@
               "en": "Phases",
               "nl": "Fases",
               "fr": "Phases"
+            }
+          }
+        ]
+      },
+      {
+        "id": "charge_energy",
+        "title": {
+          "en": "Charge an amount of energy and then stop",
+          "nl": "Laad een hoeveelheid energie en stop dan",
+          "fr": "Charger une quantité d'énergie puis s'arrêter"
+        },
+        "titleFormatted": {
+          "en": "Charge [[energy]] kWh and then stop",
+          "nl": "Laad [[energy]] kWh en stop dan",
+          "fr": "Charger [[energy]] kWh puis s'arrêter"
+        },
+        "hint": {
+          "en": "Starts charging and sets the energy limit, counted on top of what this charge already added.",
+          "nl": "Start het laden en zet de energielimiet, bovenop wat deze laadbeurt al geladen heeft.",
+          "fr": "Démarre la charge et règle la limite d'énergie, en plus de ce que cette charge a déjà ajouté."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          },
+          {
+            "name": "energy",
+            "type": "number",
+            "min": 0.1,
+            "max": 100,
+            "step": 0.1,
+            "title": {
+              "en": "Energy",
+              "nl": "Energie",
+              "fr": "Énergie"
+            },
+            "placeholder": {
+              "en": "kWh",
+              "nl": "kWh",
+              "fr": "kWh"
+            }
+          }
+        ]
+      },
+      {
+        "id": "increase_current",
+        "title": {
+          "en": "Raise the charging current",
+          "nl": "Verhoog de laadstroom",
+          "fr": "Augmenter le courant de charge"
+        },
+        "titleFormatted": {
+          "en": "Raise the charging current by [[amps]] A",
+          "nl": "Verhoog de laadstroom met [[amps]] A",
+          "fr": "Augmenter le courant de charge de [[amps]] A"
+        },
+        "hint": {
+          "en": "Stops at the maximum charging current.",
+          "nl": "Stopt bij de maximale laadstroom.",
+          "fr": "S'arrête au courant de charge maximal."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          },
+          {
+            "name": "amps",
+            "type": "number",
+            "min": 0.1,
+            "max": 26,
+            "step": 0.1,
+            "title": {
+              "en": "Current",
+              "nl": "Stroom",
+              "fr": "Courant"
+            },
+            "placeholder": {
+              "en": "Ampere",
+              "nl": "Ampère",
+              "fr": "Ampère"
+            }
+          }
+        ]
+      },
+      {
+        "id": "decrease_current",
+        "title": {
+          "en": "Lower the charging current",
+          "nl": "Verlaag de laadstroom",
+          "fr": "Diminuer le courant de charge"
+        },
+        "titleFormatted": {
+          "en": "Lower the charging current by [[amps]] A",
+          "nl": "Verlaag de laadstroom met [[amps]] A",
+          "fr": "Diminuer le courant de charge de [[amps]] A"
+        },
+        "hint": {
+          "en": "Stops at 6 A, the lowest current a car accepts. Pause charging to go lower.",
+          "nl": "Stopt bij 6 A, de laagste stroom die een auto aanvaardt. Pauzeer het laden om lager te gaan.",
+          "fr": "S'arrête à 6 A, le courant le plus bas qu'un véhicule accepte. Mettez la charge en pause pour descendre plus bas."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          },
+          {
+            "name": "amps",
+            "type": "number",
+            "min": 0.1,
+            "max": 26,
+            "step": 0.1,
+            "title": {
+              "en": "Current",
+              "nl": "Stroom",
+              "fr": "Courant"
+            },
+            "placeholder": {
+              "en": "Ampere",
+              "nl": "Ampère",
+              "fr": "Ampère"
+            }
+          }
+        ]
+      },
+      {
+        "id": "set_energy_price",
+        "title": {
+          "en": "Set the electricity price",
+          "nl": "Stel de stroomprijs in",
+          "fr": "Régler le prix de l'électricité"
+        },
+        "titleFormatted": {
+          "en": "Set the electricity price to [[price]] per kWh",
+          "nl": "Stel de stroomprijs in op [[price]] per kWh",
+          "fr": "Régler le prix de l'électricité à [[price]] par kWh"
+        },
+        "hint": {
+          "en": "Used for the cost of the charging session from now on. Use it with Homey Energy's price trigger for a dynamic tariff.",
+          "nl": "Wordt vanaf nu gebruikt voor de kosten van de laadbeurt. Gebruik het met de prijstrigger van Homey Energy voor een dynamisch tarief.",
+          "fr": "Sert dès maintenant au coût de la session de recharge. Utilisez-la avec le déclencheur de prix de Homey Energy pour un tarif dynamique."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          },
+          {
+            "name": "price",
+            "type": "number",
+            "min": 0,
+            "max": 10,
+            "step": 0.0001,
+            "title": {
+              "en": "Price",
+              "nl": "Prijs",
+              "fr": "Prix"
+            },
+            "placeholder": {
+              "en": "per kWh",
+              "nl": "per kWh",
+              "fr": "par kWh"
             }
           }
         ]
@@ -903,6 +1188,55 @@
                 "en": "How often Homey reads the NRGkick. Shorter is more responsive, longer is lighter for Homey and the network.",
                 "nl": "Hoe vaak Homey de NRGkick uitleest. Korter reageert sneller, langer is lichter voor Homey en het netwerk.",
                 "fr": "Fréquence de lecture du NRGkick par Homey. Plus court réagit plus vite, plus long allège Homey et le réseau."
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Charging",
+            "nl": "Laden",
+            "fr": "Recharge"
+          },
+          "children": [
+            {
+              "id": "max_current",
+              "type": "number",
+              "value": 32,
+              "min": 6,
+              "max": 32,
+              "step": 1,
+              "units": {
+                "en": "A"
+              },
+              "label": {
+                "en": "Maximum charging current",
+                "nl": "Maximale laadstroom",
+                "fr": "Courant de charge maximal"
+              },
+              "hint": {
+                "en": "A safety limit, for example for an older socket. The slider, Flows and Homey Energy never go above it, and a higher current set in the NRGkick app is lowered to it. The NRGkick's own maximum still applies.",
+                "nl": "Een veiligheidsgrens, bijvoorbeeld voor een ouder stopcontact. De slider, Flows en Homey Energy gaan er nooit boven, en een hogere stroom die in de NRGkick-app is ingesteld, wordt erop teruggezet. Het eigen maximum van de NRGkick blijft gelden.",
+                "fr": "Une limite de sécurité, par exemple pour une prise ancienne. Le curseur, les Flows et Homey Energy ne la dépassent jamais, et un courant plus élevé réglé dans l'app NRGkick est ramené à cette valeur. Le maximum propre du NRGkick reste valable."
+              }
+            },
+            {
+              "id": "price_per_kwh",
+              "type": "number",
+              "value": 0,
+              "min": 0,
+              "max": 10,
+              "step": 0.001,
+              "label": {
+                "en": "Electricity price per kWh",
+                "nl": "Stroomprijs per kWh",
+                "fr": "Prix de l'électricité par kWh"
+              },
+              "hint": {
+                "en": "Used for the cost of a charging session. With a dynamic tariff, set the price from a Flow with the card Set the electricity price; that price then wins until Homey restarts the app.",
+                "nl": "Wordt gebruikt voor de kosten van een laadbeurt. Met een dynamisch tarief stel je de prijs in vanuit een Flow met de kaart Stel de stroomprijs in; die prijs gaat dan voor tot Homey de app herstart.",
+                "fr": "Sert au coût d'une session de recharge. Avec un tarif dynamique, réglez le prix depuis un Flow avec la carte Régler le prix de l'électricité ; ce prix prévaut alors jusqu'au redémarrage de l'app par Homey."
               }
             }
           ]

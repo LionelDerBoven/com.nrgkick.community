@@ -11,6 +11,9 @@ class NrgkickDriver extends Homey.Driver {
     const { flow } = this.homey;
     this.triggers = {
       statusChanged: flow.getDeviceTriggerCard('status_changed'),
+      carPluggedIn: flow.getDeviceTriggerCard('car_plugged_in'),
+      carUnplugged: flow.getDeviceTriggerCard('car_unplugged'),
+      sessionEnded: flow.getDeviceTriggerCard('session_ended'),
       faultOccurred: flow.getDeviceTriggerCard('fault_occurred'),
       warningOccurred: flow.getDeviceTriggerCard('warning_occurred'),
       energyLimitReached: flow.getDeviceTriggerCard('energy_limit_reached'),
@@ -22,10 +25,17 @@ class NrgkickDriver extends Homey.Driver {
     flow.getConditionCard('fault_active')
       .registerRunListener(({ device }) => device.getCapabilityValue('alarm_generic') === true);
 
+    flow.getConditionCard('car_plugged_in')
+      .registerRunListener(({ device }) => m.isPluggedIn(device.getCapabilityValue('nrgkick_status')));
+
     flow.getActionCard('set_current').registerRunListener(({ device, current }) => {
-      const max = m.maxCurrent(device.info);
+      const max = device.maxCurrent();
       return device.triggerCapabilityListener('nrgkick_current_set', Math.min(max, Math.max(m.MIN_CURRENT, current)));
     });
+    flow.getActionCard('charge_energy').registerRunListener(({ device, energy }) => device.chargeEnergy(energy));
+    flow.getActionCard('increase_current').registerRunListener(({ device, amps }) => device.changeCurrent(amps));
+    flow.getActionCard('decrease_current').registerRunListener(({ device, amps }) => device.changeCurrent(-amps));
+    flow.getActionCard('set_energy_price').registerRunListener(({ device, price }) => device.setPrice(price));
     flow.getActionCard('set_energy_limit')
       .registerRunListener(({ device, limit }) => device.triggerCapabilityListener('nrgkick_energy_limit', Math.max(0, limit)));
     flow.getActionCard('set_phase_count')

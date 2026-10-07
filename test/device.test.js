@@ -63,6 +63,11 @@ class FakeDevice {
 
   registerCapabilityListener(cap, fn) { this.listeners[cap] = fn; }
 
+  async triggerCapabilityListener(cap, value) {
+    await this.listeners[cap](value);
+    this.caps.set(cap, value);
+  }
+
   registerMultipleCapabilityListener(caps, fn) { this.listeners.multi = fn; }
 
   getAvailable() { return this.available; }
@@ -186,11 +191,14 @@ async function startDevice() {
       warningOccurred: card('warning_occurred'),
       energyLimitReached: card('energy_limit_reached'),
       locationChanged: card('location_changed'),
+      carPluggedIn: card('car_plugged_in'),
+      carUnplugged: card('car_unplugged'),
+      sessionEnded: card('session_ended'),
     },
   };
   const device = new NrgkickDevice({
     settings: {
-      host: dev.host, username: '', password: '', poll_interval: 30,
+      host: dev.host, username: '', password: '', poll_interval: 30, max_current: 32, price_per_kwh: 0,
     },
     capabilities: ['onoff'], // a stale capability that ensureCapabilities must remove
     driver,
@@ -255,6 +263,7 @@ test('changes trigger Flows once', async () => {
     await device.poll();
     assert.strictEqual(device.getCapabilityValue('alarm_generic'), true);
     assert.strictEqual(device.getCapabilityValue('nrgkick_error'), 'fault.housing_overtemperature');
+    assert.strictEqual(triggered.shift().name, 'car_plugged_in', 'standby to charging means a car was plugged in');
     assert.deepStrictEqual(triggered.map((t) => t.name), ['fault_occurred', 'warning_occurred', 'energy_limit_reached']);
     assert.deepStrictEqual(triggered[0].tokens, { fault: 'fault.housing_overtemperature', code: 81 });
     assert.deepStrictEqual(triggered[2].tokens, { energy: 10 });
@@ -487,6 +496,109 @@ test('a write is re-read after 2 s and once more after 8 s', async () => {
     assert.strictEqual(device.timers[device.timers.length - 1].ms, 8000);
     await device.poll();
     assert.strictEqual(device.timers[device.timers.length - 1].ms, 30000);
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
+const named = (triggered, ...names) => triggered.filter((t) => names.includes(t.name));
+
+test('plug-in, unplug and the session with its cost at the price of each moment', async () => {
+  const { dev, device, triggered } = await startDevice();
+  const g = dev.state.values.general;
+  const e = dev.state.values.energy;
+  try {
+    await device.poll(); // standby
+    g.status = 2;
+    await device.poll();
+    assert.deepStrictEqual(named(triggered, 'car_plugged_in', 'car_unplugged', 'session_ended').map((t) => t.name), ['car_plugged_in']);
+
+    device.setPrice(0.30);
+    g.status = 3;
+    e.charged_energy = 1000;
+    await device.poll();
+    device.setPrice(0.10);
+    e.charged_energy = 3000;
+    await device.poll();
+
+    g.status = 1;
+    g.vehicle_charging_time = 3600;
+    g.vehicle_connect_time = 7200;
+    await device.poll();
+    const events = named(triggered, 'car_plugged_in', 'car_unplugged', 'session_ended');
+    assert.deepStrictEqual(events.map((t) => t.name), ['car_plugged_in', 'session_ended', 'car_unplugged']);
+    assert.deepStrictEqual(events[1].tokens, {
+      energy: 3, charge_time: 60, connected_time: 120, cost: 0.5,
+    });
+    assert.deepStrictEqual(device.store.session, { wh: 3000, cost: 0.5 });
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
+test('a session ends once when the car is full; pausing does not end it', async () => {
+  const { dev, device, triggered } = await startDevice();
+  const g = dev.state.values.general;
+  try {
+    g.status = 3;
+    dev.state.values.energy.charged_energy = 500;
+    await device.poll(); // first read: already plugged in and charging
+    dev.state.control.charge_pause = 1;
+    g.status = 2;
+    await device.poll();
+    assert.deepStrictEqual(named(triggered, 'session_ended'), [], 'paused, not finished');
+
+    dev.state.control.charge_pause = 0;
+    g.status = 3;
+    await device.poll();
+    g.status = 2; // stopped on its own
+    await device.poll();
+    g.status = 1;
+    await device.poll();
+    assert.deepStrictEqual(named(triggered, 'session_ended', 'car_unplugged').map((t) => t.name), ['session_ended', 'car_unplugged']);
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
+test('the maximum current setting limits the slider, Homey Energy and the device itself', async () => {
+  const { dev, device } = await startDevice();
+  try {
+    await device.poll(); // device at 16 A
+    await device.onSettings({ newSettings: { ...device.getSettings(), max_current: 10 }, changedKeys: ['max_current'] });
+    await device.setSettings({ max_current: 10 });
+    assert.strictEqual(device.options.nrgkick_current_set.max, 10);
+    assert.strictEqual(device.options.target_power.max, 2300);
+    assert.deepStrictEqual(dev.state.writes, ['current_set=10'], 'lowered on the device');
+    await device.listeners.nrgkick_current_set(16);
+    assert.strictEqual(dev.state.writes[1], 'current_set=10', 'the slider cannot exceed it');
+    dev.state.control.current_set = 16; // set higher in the NRGkick app
+    await device.poll();
+    assert.strictEqual(dev.state.writes[2], 'current_set=10');
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
+test('charge an amount of energy on top of this session, and step the current', async () => {
+  const { dev, device } = await startDevice();
+  try {
+    dev.state.values.general.status = 3;
+    dev.state.values.energy.charged_energy = 2000;
+    dev.state.control.charge_pause = 1;
+    await device.poll();
+    await device.chargeEnergy(5);
+    assert.deepStrictEqual(dev.state.writes, ['energy_limit=7000', 'charge_pause=0']);
+
+    await device.changeCurrent(2); // already at the 16 A maximum
+    assert.strictEqual(dev.state.writes.length, 2);
+    await device.changeCurrent(-3.5);
+    await device.changeCurrent(-20);
+    assert.deepStrictEqual(dev.state.writes.slice(2), ['current_set=12.5', 'current_set=6']);
   } finally {
     device.stop();
     await dev.close();
