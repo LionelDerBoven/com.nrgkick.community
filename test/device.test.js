@@ -23,6 +23,7 @@ class FakeDevice {
     this.driver = driver;
     this.homey = {
       setTimeout: (fn, ms) => {
+        if (ms <= 1500) return setTimeout(fn, 0); // client retry back-off: run at once
         const timer = { fn, ms };
         this.timers.push(timer);
         return timer;
@@ -177,6 +178,8 @@ async function startDevice() {
   const driver = {
     manifest,
     findAddress: () => null,
+    discovered: [],
+    discoveredAddresses() { return this.discovered; },
     triggers: {
       statusChanged: card('status_changed'),
       faultOccurred: card('fault_occurred'),
@@ -427,6 +430,26 @@ test('ensureCapabilities keeps SIM capabilities that are present', async () => {
     await device.addCapability('nrgkick_latitude');
     await device.ensureCapabilities();
     assert.strictEqual(device.hasCapability('nrgkick_latitude'), true);
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
+test('a device that stops answering is found again at a discovered address', async () => {
+  const { dev, device } = await startDevice();
+  try {
+    await device.poll();
+    device.driver.discovered = ['127.0.0.1:1', dev.host];
+    device.client.configure({ host: '127.0.0.1:1' }); // simulate an address that changed
+    await device.setSettings({ host: '127.0.0.1:1' });
+    await device.poll();
+    await device.poll();
+    await new Promise((resolve) => setTimeout(resolve, 200)); // relocate runs in the background
+    assert.strictEqual(device.getSetting('host'), dev.host);
+    await device.poll();
+    assert.strictEqual(device.available, true);
+    assert.strictEqual(await device.relocate(), false, 'rate-limited');
   } finally {
     device.stop();
     await dev.close();

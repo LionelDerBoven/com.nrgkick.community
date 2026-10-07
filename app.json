@@ -1438,7 +1438,7 @@
         "name": "nrgkick",
         "protocol": "tcp"
       },
-      "id": "{{txt.serial_number}}"
+      "id": "{{host}}"
     }
   }
 }

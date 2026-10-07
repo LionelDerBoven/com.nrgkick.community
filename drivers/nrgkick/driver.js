@@ -33,12 +33,21 @@ class NrgkickDriver extends Homey.Driver {
 
     // mDNS keeps the address current when DHCP hands out a new one. Devices also work without it (a manual
     // address, or a NRGkick on another subnet), so the strategy is not linked to the driver's availability.
+    // Homey does not always pass on every TXT record (the serial number can be missing, seen across VLANs
+    // through an mDNS proxy), so a result is matched by its serial when present and otherwise by asking
+    // the NRGkick at that address (see Device#relocate).
     this.discovery = this.homey.discovery.getStrategy('nrgkick');
     this.discovery.on('result', (result) => this.onDiscoveryResult(result));
     this.log(`mDNS: ${Object.keys(this.discovery.getDiscoveryResults()).length} NRGkick(s) known at start`);
   }
 
-  /** The current mDNS address of the NRGkick with this serial number, or null. */
+  /** Addresses of the NRGkicks mDNS currently knows (at most 5: a home has one or two). */
+  discoveredAddresses() {
+    const addresses = Object.values(this.discovery.getDiscoveryResults()).map((r) => r.address).filter(Boolean);
+    return [...new Set(addresses)].slice(0, 5);
+  }
+
+  /** The current mDNS address of the NRGkick with this serial number, when its TXT record carries one. */
   findAddress(serial) {
     const wanted = String(serial).toLowerCase();
     const result = Object.values(this.discovery.getDiscoveryResults())
@@ -47,25 +56,31 @@ class NrgkickDriver extends Homey.Driver {
   }
 
   onDiscoveryResult(result) {
-    this.log(`mDNS: NRGkick announced${result.address ? '' : ' without an address'}`);
+    if (!result.address) return;
     const serial = String((result.txt && result.txt.serial_number) || '').toLowerCase();
-    if (!serial || !result.address) return;
-    const device = this.getDevices().find((d) => String(d.getData().id).toLowerCase() === serial);
-    if (device && device.client) device.updateHost(result.address).catch(this.error);
+    for (const device of this.getDevices()) {
+      if (!device.client) continue;
+      if (serial && String(device.getData().id).toLowerCase() === serial) device.updateHost(result.address).catch(this.error);
+      else if (!serial && !device.getAvailable()) device.relocate().catch(this.error);
+    }
   }
 
   async onPair(session) {
     session.setHandler('discover', async () => {
       this.log(`Pairing: ${Object.keys(this.discovery.getDiscoveryResults()).length} NRGkick(s) found by mDNS`);
-      const added = new Set(this.getDevices().map((d) => String(d.getData().id).toLowerCase()));
+      const usedHosts = new Set(this.getDevices().map((d) => d.getSetting('host')));
       return Object.values(this.discovery.getDiscoveryResults())
-        .filter((r) => r.txt && r.txt.serial_number && !added.has(String(r.txt.serial_number).toLowerCase()))
-        .map((r) => ({
-          host: r.address,
-          name: r.txt.device_name || 'NRGkick',
-          model: r.txt.model_type || '',
-          apiEnabled: r.txt.json_api_enabled !== '0',
-        }));
+        .filter((r) => r.address && !usedHosts.has(r.address))
+        .slice(0, 5)
+        .map((r) => {
+          const txt = r.txt || {};
+          return {
+            host: r.address,
+            name: txt.device_name || txt.model_type || 'NRGkick',
+            model: txt.model_type || '',
+            apiEnabled: txt.json_api_enabled !== '0',
+          };
+        });
     });
 
     session.setHandler('connect', async ({ host, username, password }) => {

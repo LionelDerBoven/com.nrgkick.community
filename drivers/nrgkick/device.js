@@ -9,6 +9,7 @@ const INFO_REFRESH_MS = 10 * 60 * 1000; // firmware, attachment and network chan
 const MAX_BACKOFF_MS = 5 * 60 * 1000;
 const AFTER_WRITE_MS = 2000; // /control lags a moment behind a write; re-read shortly after
 const FAILURES_BEFORE_UNAVAILABLE = 2; // ride out a single dropped poll
+const RELOCATE_INTERVAL_MS = 5 * 60 * 1000; // at most one address search per 5 minutes
 const CONNECTION_KEYS = ['host', 'username', 'password'];
 // Only SIM models report these; they are added when /info shows a SIM model and removed otherwise.
 const SIM_CAPABILITIES = [
@@ -122,6 +123,39 @@ class NrgkickDevice extends Homey.Device {
     if (!this.getAvailable()) this.refreshSoon(0);
   }
 
+  /**
+   * Looks for this NRGkick at the other addresses mDNS knows, by asking each one for its serial number.
+   * Used when the device stopped answering and mDNS did not say which address is ours.
+   */
+  async relocate() {
+    if (this.stopped || this.relocating || Date.now() - (this.relocatedAt || 0) < RELOCATE_INTERVAL_MS) return false;
+    this.relocating = true;
+    this.relocatedAt = Date.now();
+    const { host, username, password } = this.getSettings();
+    try {
+      for (const address of this.driver.discoveredAddresses()) {
+        if (address === host || this.stopped) continue;
+        const probe = new NrgkickClient({
+          host: address, username, password, timeout: 5000, sleep: (ms) => new Promise((resolve) => this.homey.setTimeout(resolve, ms)),
+        });
+        try {
+          const info = await probe.getInfo();
+          if (String(m.pick(info.general, 'serial_number')) === String(this.getData().id)) {
+            await this.updateHost(address);
+            return true;
+          }
+        } catch (err) {
+          // Not reachable or not ours: try the next address.
+        } finally {
+          probe.destroy();
+        }
+      }
+      return false;
+    } finally {
+      this.relocating = false;
+    }
+  }
+
   // ---- Polling ----
 
   interval() {
@@ -160,6 +194,7 @@ class NrgkickDevice extends Homey.Device {
       if (permanent || this.failures >= FAILURES_BEFORE_UNAVAILABLE) {
         await this.setUnavailable(describeError(this.homey, err)).catch(this.error);
       }
+      if (!permanent && this.failures >= FAILURES_BEFORE_UNAVAILABLE) this.relocate().catch(this.error);
     } finally {
       this.polling = false;
       if (this.pollSoon) {
