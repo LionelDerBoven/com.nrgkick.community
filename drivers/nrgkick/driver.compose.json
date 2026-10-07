@@ -53,7 +53,8 @@
       "max": 22080,
       "step": 230,
       "excludeMin": 0,
-      "excludeMax": 1380
+      "excludeMax": 1380,
+      "uiComponent": null
     },
     "meter_power": {
       "title": {
@@ -257,6 +258,9 @@
         "en": "dBm"
       },
       "decimals": 0,
+      "uiComponent": null
+    },
+    "target_power_mode": {
       "uiComponent": null
     }
   },

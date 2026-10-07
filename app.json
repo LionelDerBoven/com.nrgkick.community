@@ -847,7 +847,8 @@
           "max": 22080,
           "step": 230,
           "excludeMin": 0,
-          "excludeMax": 1380
+          "excludeMax": 1380,
+          "uiComponent": null
         },
         "meter_power": {
           "title": {
@@ -1051,6 +1052,9 @@
             "en": "dBm"
           },
           "decimals": 0,
+          "uiComponent": null
+        },
+        "target_power_mode": {
           "uiComponent": null
         }
       },
@@ -1446,7 +1450,8 @@
             "fr": "Inconnu"
           }
         }
-      ]
+      ],
+      "icon": "/assets/capabilities/cellular.svg"
     },
     "nrgkick_cellular_operator": {
       "type": "string",
@@ -1462,7 +1467,8 @@
       },
       "getable": true,
       "setable": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/cellular.svg"
     },
     "nrgkick_cellular_signal": {
       "type": "number",
@@ -1483,7 +1489,8 @@
       "getable": true,
       "setable": false,
       "insights": true,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/cellular.svg"
     },
     "nrgkick_charge_permitted": {
       "type": "boolean",
@@ -1495,7 +1502,8 @@
       "getable": true,
       "setable": false,
       "insights": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/permitted.svg"
     },
     "nrgkick_charge_time": {
       "type": "number",
@@ -1516,7 +1524,8 @@
       "getable": true,
       "setable": false,
       "insights": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/time.svg"
     },
     "nrgkick_charging_rate": {
       "type": "number",
@@ -1537,7 +1546,8 @@
       "getable": true,
       "setable": false,
       "insights": true,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/rate.svg"
     },
     "nrgkick_connect_time": {
       "type": "number",
@@ -1558,7 +1568,8 @@
       "getable": true,
       "setable": false,
       "insights": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/time.svg"
     },
     "nrgkick_current_set": {
       "type": "number",
@@ -1577,7 +1588,8 @@
       "getable": true,
       "setable": true,
       "insights": true,
-      "uiComponent": "slider"
+      "uiComponent": "slider",
+      "icon": "/assets/capabilities/current.svg"
     },
     "nrgkick_energy_limit": {
       "type": "number",
@@ -1601,7 +1613,8 @@
       "getable": true,
       "setable": true,
       "insights": false,
-      "uiComponent": "slider"
+      "uiComponent": "slider",
+      "icon": "/assets/capabilities/limit.svg"
     },
     "nrgkick_error": {
       "type": "string",
@@ -1612,7 +1625,8 @@
       },
       "getable": true,
       "setable": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/error.svg"
     },
     "nrgkick_gps_accuracy": {
       "type": "number",
@@ -1633,7 +1647,8 @@
       "getable": true,
       "setable": false,
       "insights": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/location.svg"
     },
     "nrgkick_latitude": {
       "type": "number",
@@ -1656,7 +1671,8 @@
       "getable": true,
       "setable": false,
       "insights": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/location.svg"
     },
     "nrgkick_longitude": {
       "type": "number",
@@ -1679,7 +1695,8 @@
       "getable": true,
       "setable": false,
       "insights": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/location.svg"
     },
     "nrgkick_phase_count": {
       "type": "enum",
@@ -1721,7 +1738,8 @@
             "fr": "3 phases"
           }
         }
-      ]
+      ],
+      "icon": "/assets/capabilities/phases.svg"
     },
     "nrgkick_power_factor": {
       "type": "number",
@@ -1736,7 +1754,8 @@
       "getable": true,
       "setable": false,
       "insights": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/factor.svg"
     },
     "nrgkick_status": {
       "type": "enum",
@@ -1797,7 +1816,8 @@
             "fr": "Inconnu"
           }
         }
-      ]
+      ],
+      "icon": "/assets/capabilities/status.svg"
     },
     "nrgkick_warning": {
       "type": "string",
@@ -1808,7 +1828,8 @@
       },
       "getable": true,
       "setable": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/capabilities/warning.svg"
     }
   },
   "discovery": {

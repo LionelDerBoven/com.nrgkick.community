@@ -15,5 +15,6 @@
   "getable": true,
   "setable": true,
   "insights": true,
-  "uiComponent": "slider"
+  "uiComponent": "slider",
+  "icon": "/assets/capabilities/current.svg"
 }

@@ -57,5 +57,6 @@
         "fr": "Inconnu"
       }
     }
-  ]
+  ],
+  "icon": "/assets/capabilities/status.svg"
 }

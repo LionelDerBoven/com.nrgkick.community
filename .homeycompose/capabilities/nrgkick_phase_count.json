@@ -38,5 +38,6 @@
         "fr": "3 phases"
       }
     }
-  ]
+  ],
+  "icon": "/assets/capabilities/phases.svg"
 }

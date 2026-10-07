@@ -20,5 +20,6 @@
   "getable": true,
   "setable": true,
   "insights": false,
-  "uiComponent": "slider"
+  "uiComponent": "slider",
+  "icon": "/assets/capabilities/limit.svg"
 }

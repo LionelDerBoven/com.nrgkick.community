@@ -54,5 +54,6 @@
         "fr": "Inconnu"
       }
     }
-  ]
+  ],
+  "icon": "/assets/capabilities/cellular.svg"
 }

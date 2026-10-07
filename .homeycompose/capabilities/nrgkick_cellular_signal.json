@@ -17,5 +17,6 @@
   "getable": true,
   "setable": false,
   "insights": true,
-  "uiComponent": "sensor"
+  "uiComponent": "sensor",
+  "icon": "/assets/capabilities/cellular.svg"
 }
