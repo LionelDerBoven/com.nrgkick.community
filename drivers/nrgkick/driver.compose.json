@@ -1,0 +1,283 @@
+{
+  "name": {
+    "en": "NRGkick",
+    "nl": "NRGkick",
+    "fr": "NRGkick"
+  },
+  "class": "evcharger",
+  "capabilities": [
+    "evcharger_charging",
+    "evcharger_charging_state",
+    "nrgkick_status",
+    "measure_power",
+    "target_power",
+    "target_power_mode",
+    "nrgkick_current_set",
+    "nrgkick_phase_count",
+    "nrgkick_energy_limit",
+    "meter_power",
+    "meter_power.session",
+    "measure_current.l1",
+    "measure_current.l2",
+    "measure_current.l3",
+    "measure_voltage",
+    "measure_temperature",
+    "nrgkick_charging_rate",
+    "nrgkick_charge_time",
+    "nrgkick_error",
+    "nrgkick_warning",
+    "alarm_generic",
+    "measure_power.l1",
+    "measure_power.l2",
+    "measure_power.l3",
+    "measure_power.peak",
+    "measure_current.n",
+    "measure_current.offered",
+    "measure_voltage.l1",
+    "measure_voltage.l2",
+    "measure_voltage.l3",
+    "measure_frequency",
+    "nrgkick_power_factor",
+    "measure_temperature.connector_l1",
+    "measure_temperature.connector_l2",
+    "measure_temperature.connector_l3",
+    "measure_temperature.plug_1",
+    "measure_temperature.plug_2",
+    "nrgkick_connect_time",
+    "nrgkick_charge_permitted",
+    "measure_signal_strength"
+  ],
+  "capabilitiesOptions": {
+    "target_power": {
+      "min": 0,
+      "max": 22080,
+      "step": 230,
+      "excludeMin": 0,
+      "excludeMax": 1380
+    },
+    "meter_power": {
+      "title": {
+        "en": "Total charged energy",
+        "nl": "Totaal geladen energie",
+        "fr": "Énergie chargée totale"
+      }
+    },
+    "meter_power.session": {
+      "title": {
+        "en": "Last charge energy",
+        "nl": "Energie laatste laadbeurt",
+        "fr": "Énergie de la dernière charge"
+      }
+    },
+    "measure_power": {
+      "title": {
+        "en": "Charging power",
+        "nl": "Laadvermogen",
+        "fr": "Puissance de charge"
+      }
+    },
+    "measure_current.l1": {
+      "title": {
+        "en": "Current L1",
+        "nl": "Stroom L1",
+        "fr": "Courant L1"
+      }
+    },
+    "measure_current.l2": {
+      "title": {
+        "en": "Current L2",
+        "nl": "Stroom L2",
+        "fr": "Courant L2"
+      }
+    },
+    "measure_current.l3": {
+      "title": {
+        "en": "Current L3",
+        "nl": "Stroom L3",
+        "fr": "Courant L3"
+      }
+    },
+    "measure_voltage": {
+      "title": {
+        "en": "Average voltage",
+        "nl": "Gemiddelde spanning",
+        "fr": "Tension moyenne"
+      }
+    },
+    "measure_temperature": {
+      "title": {
+        "en": "Housing temperature",
+        "nl": "Temperatuur behuizing",
+        "fr": "Température du boîtier"
+      }
+    },
+    "alarm_generic": {
+      "title": {
+        "en": "Fault",
+        "nl": "Storing",
+        "fr": "Défaut"
+      }
+    },
+    "measure_power.l1": {
+      "title": {
+        "en": "Power L1",
+        "nl": "Vermogen L1",
+        "fr": "Puissance L1"
+      },
+      "uiComponent": null
+    },
+    "measure_power.l2": {
+      "title": {
+        "en": "Power L2",
+        "nl": "Vermogen L2",
+        "fr": "Puissance L2"
+      },
+      "uiComponent": null
+    },
+    "measure_power.l3": {
+      "title": {
+        "en": "Power L3",
+        "nl": "Vermogen L3",
+        "fr": "Puissance L3"
+      },
+      "uiComponent": null
+    },
+    "measure_power.peak": {
+      "title": {
+        "en": "Peak power last charge",
+        "nl": "Piekvermogen laatste laadbeurt",
+        "fr": "Puissance maximale de la dernière charge"
+      },
+      "uiComponent": null
+    },
+    "measure_current.n": {
+      "title": {
+        "en": "Current N",
+        "nl": "Stroom N",
+        "fr": "Courant N"
+      },
+      "uiComponent": null
+    },
+    "measure_current.offered": {
+      "title": {
+        "en": "Current offered to the car",
+        "nl": "Stroom aangeboden aan de auto",
+        "fr": "Courant proposé au véhicule"
+      },
+      "uiComponent": null
+    },
+    "measure_voltage.l1": {
+      "title": {
+        "en": "Voltage L1",
+        "nl": "Spanning L1",
+        "fr": "Tension L1"
+      },
+      "uiComponent": null
+    },
+    "measure_voltage.l2": {
+      "title": {
+        "en": "Voltage L2",
+        "nl": "Spanning L2",
+        "fr": "Tension L2"
+      },
+      "uiComponent": null
+    },
+    "measure_voltage.l3": {
+      "title": {
+        "en": "Voltage L3",
+        "nl": "Spanning L3",
+        "fr": "Tension L3"
+      },
+      "uiComponent": null
+    },
+    "measure_frequency": {
+      "title": {
+        "en": "Grid frequency",
+        "nl": "Netfrequentie",
+        "fr": "Fréquence du réseau"
+      },
+      "uiComponent": null
+    },
+    "nrgkick_power_factor": {
+      "uiComponent": null
+    },
+    "measure_temperature.connector_l1": {
+      "title": {
+        "en": "Attachment temperature L1",
+        "nl": "Temperatuur adapter L1",
+        "fr": "Température de l'adaptateur L1"
+      },
+      "uiComponent": null
+    },
+    "measure_temperature.connector_l2": {
+      "title": {
+        "en": "Attachment temperature L2",
+        "nl": "Temperatuur adapter L2",
+        "fr": "Température de l'adaptateur L2"
+      },
+      "uiComponent": null
+    },
+    "measure_temperature.connector_l3": {
+      "title": {
+        "en": "Attachment temperature L3",
+        "nl": "Temperatuur adapter L3",
+        "fr": "Température de l'adaptateur L3"
+      },
+      "uiComponent": null
+    },
+    "measure_temperature.plug_1": {
+      "title": {
+        "en": "Plug temperature pin 1",
+        "nl": "Temperatuur stekker pin 1",
+        "fr": "Température de la fiche broche 1"
+      },
+      "uiComponent": null
+    },
+    "measure_temperature.plug_2": {
+      "title": {
+        "en": "Plug temperature pin 2",
+        "nl": "Temperatuur stekker pin 2",
+        "fr": "Température de la fiche broche 2"
+      },
+      "uiComponent": null
+    },
+    "nrgkick_connect_time": {
+      "uiComponent": null
+    },
+    "nrgkick_charge_permitted": {
+      "uiComponent": null
+    },
+    "measure_signal_strength": {
+      "title": {
+        "en": "WiFi signal",
+        "nl": "WiFi-signaal",
+        "fr": "Signal WiFi"
+      },
+      "units": {
+        "en": "dBm"
+      },
+      "decimals": 0,
+      "uiComponent": null
+    }
+  },
+  "energy": {
+    "evCharger": true,
+    "meterPowerImportedCapability": "meter_power"
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "lan"
+  ],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "connect"
+    }
+  ]
+}

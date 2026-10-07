@@ -1,0 +1,42 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Phases",
+    "nl": "Fases",
+    "fr": "Phases"
+  },
+  "desc": {
+    "en": "Only works when phase switching is enabled in the NRGkick app.",
+    "nl": "Werkt alleen als fasewisseling aan staat in de NRGkick-app.",
+    "fr": "Ne fonctionne que si la commutation de phases est activée dans l'app NRGkick."
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "values": [
+    {
+      "id": "1",
+      "title": {
+        "en": "1 phase",
+        "nl": "1 fase",
+        "fr": "1 phase"
+      }
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "2 phases",
+        "nl": "2 fases",
+        "fr": "2 phases"
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "3 phases",
+        "nl": "3 fases",
+        "fr": "3 phases"
+      }
+    }
+  ]
+}

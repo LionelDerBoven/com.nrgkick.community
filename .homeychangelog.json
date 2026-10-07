@@ -1,0 +1,7 @@
+{
+  "0.1.0": {
+    "en": "First test version: live charging data, pause and resume, charging current, energy limit, phases, Flow cards and Homey Energy control.",
+    "nl": "Eerste testversie: live laadgegevens, pauzeren en hervatten, laadstroom, energielimiet, fases, Flowkaarten en sturing via Homey Energy.",
+    "fr": "Première version de test : données de charge en direct, pause et reprise, courant de charge, limite d'énergie, phases, cartes Flow et pilotage par Homey Energy."
+  }
+}

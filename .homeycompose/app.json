@@ -1,0 +1,39 @@
+{
+  "id": "com.nrgkick.community",
+  "version": "0.1.0",
+  "compatibility": ">=12.13.0",
+  "sdk": 3,
+  "runtime": "nodejs",
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "NRGkick",
+    "nl": "NRGkick",
+    "fr": "NRGkick"
+  },
+  "description": {
+    "en": "Smart charging from the plug you already have",
+    "nl": "Slim laden vanuit het stopcontact dat je al hebt",
+    "fr": "La recharge intelligente depuis la prise que vous avez déjà"
+  },
+  "brandColor": "#00787A",
+  "category": [
+    "energy"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "assets/images/small.jpg",
+    "large": "assets/images/large.jpg",
+    "xlarge": "assets/images/xlarge.jpg"
+  },
+  "author": {
+    "name": "LDB Technology",
+    "email": "homey@ldbtechnology.be"
+  },
+  "support": "mailto:support@ldbtechnology.be",
+  "source": "https://github.com/LionelDerBoven/com.nrgkick.community",
+  "bugs": {
+    "url": "https://github.com/LionelDerBoven/com.nrgkick.community/issues"
+  }
+}

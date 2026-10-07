@@ -1,0 +1,21 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Charge time",
+    "nl": "Laadtijd",
+    "fr": "Durée de charge"
+  },
+  "desc": {
+    "en": "Charging time of the current or last charge.",
+    "nl": "Laadtijd van de huidige of laatste laadbeurt.",
+    "fr": "Durée de charge de la charge en cours ou de la dernière charge."
+  },
+  "units": {
+    "en": "min"
+  },
+  "decimals": 0,
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "uiComponent": "sensor"
+}

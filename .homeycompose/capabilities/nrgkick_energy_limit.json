@@ -1,0 +1,24 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Energy limit",
+    "nl": "Energielimiet",
+    "fr": "Limite d'énergie"
+  },
+  "desc": {
+    "en": "Stops the charge after this amount of energy. 0 means no limit.",
+    "nl": "Stopt het laden na deze hoeveelheid energie. 0 betekent geen limiet.",
+    "fr": "Arrête la charge après cette quantité d'énergie. 0 signifie sans limite."
+  },
+  "units": {
+    "en": "kWh"
+  },
+  "min": 0,
+  "max": 100,
+  "step": 0.5,
+  "decimals": 1,
+  "getable": true,
+  "setable": true,
+  "insights": false,
+  "uiComponent": "slider"
+}

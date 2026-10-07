@@ -1,0 +1,18 @@
+{
+  "extends": "athom/homey-app",
+  "overrides": [
+    {
+      "files": [
+        "test/**/*.js",
+        "tools/**/*.js"
+      ],
+      "rules": {
+        "homey-app/global-timers": "off",
+        "no-console": "off",
+        "brace-style": "off",
+        "max-classes-per-file": "off",
+        "max-len": "off"
+      }
+    }
+  ]
+}

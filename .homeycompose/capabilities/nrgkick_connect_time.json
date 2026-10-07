@@ -1,0 +1,21 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Connected time",
+    "nl": "Verbonden tijd",
+    "fr": "Durée de connexion"
+  },
+  "desc": {
+    "en": "How long the car is or was connected for the current or last charge.",
+    "nl": "Hoelang de auto verbonden is of was bij de huidige of laatste laadbeurt.",
+    "fr": "Durée de connexion du véhicule pour la charge en cours ou la dernière charge."
+  },
+  "units": {
+    "en": "min"
+  },
+  "decimals": 0,
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "uiComponent": "sensor"
+}

@@ -1,0 +1,11 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Warning",
+    "nl": "Waarschuwing",
+    "fr": "Avertissement"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor"
+}

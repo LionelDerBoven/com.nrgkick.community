@@ -1,0 +1,1215 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "com.nrgkick.community",
+  "version": "0.1.0",
+  "compatibility": ">=12.13.0",
+  "sdk": 3,
+  "runtime": "nodejs",
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "NRGkick",
+    "nl": "NRGkick",
+    "fr": "NRGkick"
+  },
+  "description": {
+    "en": "Smart charging from the plug you already have",
+    "nl": "Slim laden vanuit het stopcontact dat je al hebt",
+    "fr": "La recharge intelligente depuis la prise que vous avez déjà"
+  },
+  "brandColor": "#00787A",
+  "category": [
+    "energy"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "assets/images/small.jpg",
+    "large": "assets/images/large.jpg",
+    "xlarge": "assets/images/xlarge.jpg"
+  },
+  "author": {
+    "name": "LDB Technology",
+    "email": "homey@ldbtechnology.be"
+  },
+  "support": "mailto:support@ldbtechnology.be",
+  "source": "https://github.com/LionelDerBoven/com.nrgkick.community",
+  "bugs": {
+    "url": "https://github.com/LionelDerBoven/com.nrgkick.community/issues"
+  },
+  "flow": {
+    "triggers": [
+      {
+        "id": "status_changed",
+        "title": {
+          "en": "The status changed",
+          "nl": "De status veranderde",
+          "fr": "Le statut a changé"
+        },
+        "hint": {
+          "en": "Fires when the NRGkick status changes, for example from Connected to Charging.",
+          "nl": "Wordt geactiveerd als de status van de NRGkick verandert, bijvoorbeeld van Verbonden naar Aan het laden.",
+          "fr": "Se déclenche quand le statut du NRGkick change, par exemple de Connecté à En charge."
+        },
+        "tokens": [
+          {
+            "name": "status",
+            "type": "string",
+            "title": {
+              "en": "Status",
+              "nl": "Status",
+              "fr": "Statut"
+            },
+            "example": {
+              "en": "Charging",
+              "nl": "Aan het laden",
+              "fr": "En charge"
+            }
+          },
+          {
+            "name": "previous_status",
+            "type": "string",
+            "title": {
+              "en": "Previous status",
+              "nl": "Vorige status",
+              "fr": "Statut précédent"
+            },
+            "example": {
+              "en": "Connected",
+              "nl": "Verbonden",
+              "fr": "Connecté"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          }
+        ]
+      },
+      {
+        "id": "fault_occurred",
+        "title": {
+          "en": "A fault occurred",
+          "nl": "Er trad een storing op",
+          "fr": "Un défaut est survenu"
+        },
+        "hint": {
+          "en": "Fires when the NRGkick reports a new error or a residual current trip.",
+          "nl": "Wordt geactiveerd als de NRGkick een nieuwe fout of een lekstroomdetectie meldt.",
+          "fr": "Se déclenche quand le NRGkick signale une nouvelle erreur ou un déclenchement du différentiel."
+        },
+        "tokens": [
+          {
+            "name": "fault",
+            "type": "string",
+            "title": {
+              "en": "Fault",
+              "nl": "Storing",
+              "fr": "Défaut"
+            },
+            "example": {
+              "en": "Housing overtemperature",
+              "nl": "Behuizing oververhit",
+              "fr": "Surchauffe du boîtier"
+            }
+          },
+          {
+            "name": "code",
+            "type": "number",
+            "title": {
+              "en": "Error code",
+              "nl": "Foutcode",
+              "fr": "Code d'erreur"
+            },
+            "example": 81
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          }
+        ]
+      },
+      {
+        "id": "warning_occurred",
+        "title": {
+          "en": "A warning occurred",
+          "nl": "Er verscheen een waarschuwing",
+          "fr": "Un avertissement est apparu"
+        },
+        "hint": {
+          "en": "Fires when the NRGkick reports a new warning, such as a raised temperature.",
+          "nl": "Wordt geactiveerd als de NRGkick een nieuwe waarschuwing meldt, zoals een verhoogde temperatuur.",
+          "fr": "Se déclenche quand le NRGkick signale un nouvel avertissement, comme une température élevée."
+        },
+        "tokens": [
+          {
+            "name": "warning",
+            "type": "string",
+            "title": {
+              "en": "Warning",
+              "nl": "Waarschuwing",
+              "fr": "Avertissement"
+            },
+            "example": {
+              "en": "Raised housing temperature",
+              "nl": "Verhoogde temperatuur behuizing",
+              "fr": "Température du boîtier élevée"
+            }
+          },
+          {
+            "name": "code",
+            "type": "number",
+            "title": {
+              "en": "Warning code",
+              "nl": "Waarschuwingscode",
+              "fr": "Code d'avertissement"
+            },
+            "example": 17
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          }
+        ]
+      },
+      {
+        "id": "energy_limit_reached",
+        "title": {
+          "en": "The energy limit was reached",
+          "nl": "De energielimiet werd bereikt",
+          "fr": "La limite d'énergie a été atteinte"
+        },
+        "hint": {
+          "en": "Fires when the NRGkick stops charging because the energy limit was reached.",
+          "nl": "Wordt geactiveerd als de NRGkick stopt met laden omdat de energielimiet bereikt is.",
+          "fr": "Se déclenche quand le NRGkick arrête la charge parce que la limite d'énergie est atteinte."
+        },
+        "tokens": [
+          {
+            "name": "energy",
+            "type": "number",
+            "title": {
+              "en": "Charged energy (kWh)",
+              "nl": "Geladen energie (kWh)",
+              "fr": "Énergie chargée (kWh)"
+            },
+            "example": 10
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "status_is",
+        "title": {
+          "en": "Status is !{{|not}} …",
+          "nl": "Status is !{{|niet}} …",
+          "fr": "Le statut !{{est|n'est pas}} …"
+        },
+        "titleFormatted": {
+          "en": "Status is !{{|not}} [[status]]",
+          "nl": "Status is !{{|niet}} [[status]]",
+          "fr": "Le statut !{{est|n'est pas}} [[status]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          },
+          {
+            "name": "status",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "standby",
+                "title": {
+                  "en": "Standby",
+                  "nl": "Stand-by",
+                  "fr": "Veille"
+                }
+              },
+              {
+                "id": "connected",
+                "title": {
+                  "en": "Connected",
+                  "nl": "Verbonden",
+                  "fr": "Connecté"
+                }
+              },
+              {
+                "id": "charging",
+                "title": {
+                  "en": "Charging",
+                  "nl": "Aan het laden",
+                  "fr": "En charge"
+                }
+              },
+              {
+                "id": "error",
+                "title": {
+                  "en": "Error",
+                  "nl": "Fout",
+                  "fr": "Erreur"
+                }
+              },
+              {
+                "id": "wakeup",
+                "title": {
+                  "en": "Waking up the car",
+                  "nl": "Auto wekken",
+                  "fr": "Réveil du véhicule"
+                }
+              }
+            ],
+            "title": {
+              "en": "Status",
+              "nl": "Status",
+              "fr": "Statut"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fault_active",
+        "title": {
+          "en": "A fault !{{is|isn't}} active",
+          "nl": "Er is !{{een|geen}} storing actief",
+          "fr": "Un défaut !{{est|n'est pas}} actif"
+        },
+        "hint": {
+          "en": "True while the NRGkick reports an error or a residual current trip.",
+          "nl": "Waar zolang de NRGkick een fout of een lekstroomdetectie meldt.",
+          "fr": "Vrai tant que le NRGkick signale une erreur ou un déclenchement du différentiel."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "set_current",
+        "title": {
+          "en": "Set the charging current",
+          "nl": "Stel de laadstroom in",
+          "fr": "Régler le courant de charge"
+        },
+        "titleFormatted": {
+          "en": "Set the charging current to [[current]] A",
+          "nl": "Stel de laadstroom in op [[current]] A",
+          "fr": "Régler le courant de charge à [[current]] A"
+        },
+        "hint": {
+          "en": "From 6 A up to the maximum of the NRGkick and its attachment. Higher values are capped.",
+          "nl": "Van 6 A tot het maximum van de NRGkick en zijn adapter. Hogere waarden worden begrensd.",
+          "fr": "De 6 A jusqu'au maximum du NRGkick et de son adaptateur. Les valeurs plus élevées sont plafonnées."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          },
+          {
+            "name": "current",
+            "type": "number",
+            "min": 6,
+            "max": 32,
+            "step": 0.1,
+            "placeholder": {
+              "en": "Ampere",
+              "nl": "Ampère",
+              "fr": "Ampère"
+            },
+            "title": {
+              "en": "Charging current",
+              "nl": "Laadstroom",
+              "fr": "Courant de charge"
+            }
+          }
+        ]
+      },
+      {
+        "id": "set_energy_limit",
+        "title": {
+          "en": "Set the energy limit",
+          "nl": "Stel de energielimiet in",
+          "fr": "Régler la limite d'énergie"
+        },
+        "titleFormatted": {
+          "en": "Set the energy limit to [[limit]] kWh",
+          "nl": "Stel de energielimiet in op [[limit]] kWh",
+          "fr": "Régler la limite d'énergie à [[limit]] kWh"
+        },
+        "hint": {
+          "en": "The NRGkick stops charging after this amount of energy. 0 removes the limit.",
+          "nl": "De NRGkick stopt met laden na deze hoeveelheid energie. 0 schakelt de limiet uit.",
+          "fr": "Le NRGkick arrête la charge après cette quantité d'énergie. 0 supprime la limite."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          },
+          {
+            "name": "limit",
+            "type": "number",
+            "min": 0,
+            "max": 100,
+            "step": 0.1,
+            "placeholder": {
+              "en": "kWh",
+              "nl": "kWh",
+              "fr": "kWh"
+            },
+            "title": {
+              "en": "Energy limit",
+              "nl": "Energielimiet",
+              "fr": "Limite d'énergie"
+            }
+          }
+        ]
+      },
+      {
+        "id": "set_phase_count",
+        "title": {
+          "en": "Set the number of phases",
+          "nl": "Stel het aantal fases in",
+          "fr": "Régler le nombre de phases"
+        },
+        "titleFormatted": {
+          "en": "Set the number of phases to [[phases]]",
+          "nl": "Stel het aantal fases in op [[phases]]",
+          "fr": "Régler le nombre de phases à [[phases]]"
+        },
+        "hint": {
+          "en": "Only works when phase switching is enabled in the NRGkick app.",
+          "nl": "Werkt alleen als fasewisseling aan staat in de NRGkick-app.",
+          "fr": "Ne fonctionne que si la commutation de phases est activée dans l'app NRGkick."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick"
+          },
+          {
+            "name": "phases",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "1",
+                "title": {
+                  "en": "1",
+                  "nl": "1",
+                  "fr": "1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "2",
+                  "nl": "2",
+                  "fr": "2"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "3",
+                  "nl": "3",
+                  "fr": "3"
+                }
+              }
+            ],
+            "title": {
+              "en": "Phases",
+              "nl": "Fases",
+              "fr": "Phases"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "NRGkick",
+        "nl": "NRGkick",
+        "fr": "NRGkick"
+      },
+      "class": "evcharger",
+      "capabilities": [
+        "evcharger_charging",
+        "evcharger_charging_state",
+        "nrgkick_status",
+        "measure_power",
+        "target_power",
+        "target_power_mode",
+        "nrgkick_current_set",
+        "nrgkick_phase_count",
+        "nrgkick_energy_limit",
+        "meter_power",
+        "meter_power.session",
+        "measure_current.l1",
+        "measure_current.l2",
+        "measure_current.l3",
+        "measure_voltage",
+        "measure_temperature",
+        "nrgkick_charging_rate",
+        "nrgkick_charge_time",
+        "nrgkick_error",
+        "nrgkick_warning",
+        "alarm_generic",
+        "measure_power.l1",
+        "measure_power.l2",
+        "measure_power.l3",
+        "measure_power.peak",
+        "measure_current.n",
+        "measure_current.offered",
+        "measure_voltage.l1",
+        "measure_voltage.l2",
+        "measure_voltage.l3",
+        "measure_frequency",
+        "nrgkick_power_factor",
+        "measure_temperature.connector_l1",
+        "measure_temperature.connector_l2",
+        "measure_temperature.connector_l3",
+        "measure_temperature.plug_1",
+        "measure_temperature.plug_2",
+        "nrgkick_connect_time",
+        "nrgkick_charge_permitted",
+        "measure_signal_strength"
+      ],
+      "capabilitiesOptions": {
+        "target_power": {
+          "min": 0,
+          "max": 22080,
+          "step": 230,
+          "excludeMin": 0,
+          "excludeMax": 1380
+        },
+        "meter_power": {
+          "title": {
+            "en": "Total charged energy",
+            "nl": "Totaal geladen energie",
+            "fr": "Énergie chargée totale"
+          }
+        },
+        "meter_power.session": {
+          "title": {
+            "en": "Last charge energy",
+            "nl": "Energie laatste laadbeurt",
+            "fr": "Énergie de la dernière charge"
+          }
+        },
+        "measure_power": {
+          "title": {
+            "en": "Charging power",
+            "nl": "Laadvermogen",
+            "fr": "Puissance de charge"
+          }
+        },
+        "measure_current.l1": {
+          "title": {
+            "en": "Current L1",
+            "nl": "Stroom L1",
+            "fr": "Courant L1"
+          }
+        },
+        "measure_current.l2": {
+          "title": {
+            "en": "Current L2",
+            "nl": "Stroom L2",
+            "fr": "Courant L2"
+          }
+        },
+        "measure_current.l3": {
+          "title": {
+            "en": "Current L3",
+            "nl": "Stroom L3",
+            "fr": "Courant L3"
+          }
+        },
+        "measure_voltage": {
+          "title": {
+            "en": "Average voltage",
+            "nl": "Gemiddelde spanning",
+            "fr": "Tension moyenne"
+          }
+        },
+        "measure_temperature": {
+          "title": {
+            "en": "Housing temperature",
+            "nl": "Temperatuur behuizing",
+            "fr": "Température du boîtier"
+          }
+        },
+        "alarm_generic": {
+          "title": {
+            "en": "Fault",
+            "nl": "Storing",
+            "fr": "Défaut"
+          }
+        },
+        "measure_power.l1": {
+          "title": {
+            "en": "Power L1",
+            "nl": "Vermogen L1",
+            "fr": "Puissance L1"
+          },
+          "uiComponent": null
+        },
+        "measure_power.l2": {
+          "title": {
+            "en": "Power L2",
+            "nl": "Vermogen L2",
+            "fr": "Puissance L2"
+          },
+          "uiComponent": null
+        },
+        "measure_power.l3": {
+          "title": {
+            "en": "Power L3",
+            "nl": "Vermogen L3",
+            "fr": "Puissance L3"
+          },
+          "uiComponent": null
+        },
+        "measure_power.peak": {
+          "title": {
+            "en": "Peak power last charge",
+            "nl": "Piekvermogen laatste laadbeurt",
+            "fr": "Puissance maximale de la dernière charge"
+          },
+          "uiComponent": null
+        },
+        "measure_current.n": {
+          "title": {
+            "en": "Current N",
+            "nl": "Stroom N",
+            "fr": "Courant N"
+          },
+          "uiComponent": null
+        },
+        "measure_current.offered": {
+          "title": {
+            "en": "Current offered to the car",
+            "nl": "Stroom aangeboden aan de auto",
+            "fr": "Courant proposé au véhicule"
+          },
+          "uiComponent": null
+        },
+        "measure_voltage.l1": {
+          "title": {
+            "en": "Voltage L1",
+            "nl": "Spanning L1",
+            "fr": "Tension L1"
+          },
+          "uiComponent": null
+        },
+        "measure_voltage.l2": {
+          "title": {
+            "en": "Voltage L2",
+            "nl": "Spanning L2",
+            "fr": "Tension L2"
+          },
+          "uiComponent": null
+        },
+        "measure_voltage.l3": {
+          "title": {
+            "en": "Voltage L3",
+            "nl": "Spanning L3",
+            "fr": "Tension L3"
+          },
+          "uiComponent": null
+        },
+        "measure_frequency": {
+          "title": {
+            "en": "Grid frequency",
+            "nl": "Netfrequentie",
+            "fr": "Fréquence du réseau"
+          },
+          "uiComponent": null
+        },
+        "nrgkick_power_factor": {
+          "uiComponent": null
+        },
+        "measure_temperature.connector_l1": {
+          "title": {
+            "en": "Attachment temperature L1",
+            "nl": "Temperatuur adapter L1",
+            "fr": "Température de l'adaptateur L1"
+          },
+          "uiComponent": null
+        },
+        "measure_temperature.connector_l2": {
+          "title": {
+            "en": "Attachment temperature L2",
+            "nl": "Temperatuur adapter L2",
+            "fr": "Température de l'adaptateur L2"
+          },
+          "uiComponent": null
+        },
+        "measure_temperature.connector_l3": {
+          "title": {
+            "en": "Attachment temperature L3",
+            "nl": "Temperatuur adapter L3",
+            "fr": "Température de l'adaptateur L3"
+          },
+          "uiComponent": null
+        },
+        "measure_temperature.plug_1": {
+          "title": {
+            "en": "Plug temperature pin 1",
+            "nl": "Temperatuur stekker pin 1",
+            "fr": "Température de la fiche broche 1"
+          },
+          "uiComponent": null
+        },
+        "measure_temperature.plug_2": {
+          "title": {
+            "en": "Plug temperature pin 2",
+            "nl": "Temperatuur stekker pin 2",
+            "fr": "Température de la fiche broche 2"
+          },
+          "uiComponent": null
+        },
+        "nrgkick_connect_time": {
+          "uiComponent": null
+        },
+        "nrgkick_charge_permitted": {
+          "uiComponent": null
+        },
+        "measure_signal_strength": {
+          "title": {
+            "en": "WiFi signal",
+            "nl": "WiFi-signaal",
+            "fr": "Signal WiFi"
+          },
+          "units": {
+            "en": "dBm"
+          },
+          "decimals": 0,
+          "uiComponent": null
+        }
+      },
+      "energy": {
+        "evCharger": true,
+        "meterPowerImportedCapability": "meter_power"
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "images": {
+        "small": "/drivers/nrgkick/assets/images/small.png",
+        "large": "/drivers/nrgkick/assets/images/large.png",
+        "xlarge": "/drivers/nrgkick/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "connect"
+        }
+      ],
+      "id": "nrgkick",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Connection",
+            "nl": "Verbinding",
+            "fr": "Connexion"
+          },
+          "children": [
+            {
+              "id": "host",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "IP address or host name",
+                "nl": "IP-adres of hostnaam",
+                "fr": "Adresse IP ou nom d'hôte"
+              },
+              "hint": {
+                "en": "Updated automatically when the NRGkick is found on the network with a new address.",
+                "nl": "Wordt automatisch aangepast als de NRGkick met een nieuw adres op het netwerk gevonden wordt.",
+                "fr": "Mis à jour automatiquement quand le NRGkick est trouvé sur le réseau avec une nouvelle adresse."
+              }
+            },
+            {
+              "id": "username",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Username",
+                "nl": "Gebruikersnaam",
+                "fr": "Nom d'utilisateur"
+              },
+              "hint": {
+                "en": "Only needed when Authentication (JSON) is on in the NRGkick app.",
+                "nl": "Alleen nodig als Authenticatie (JSON) aan staat in de NRGkick-app.",
+                "fr": "Uniquement nécessaire si l'authentification (JSON) est activée dans l'app NRGkick."
+              }
+            },
+            {
+              "id": "password",
+              "type": "password",
+              "value": "",
+              "label": {
+                "en": "Password",
+                "nl": "Wachtwoord",
+                "fr": "Mot de passe"
+              }
+            },
+            {
+              "id": "poll_interval",
+              "type": "number",
+              "value": 30,
+              "min": 10,
+              "max": 300,
+              "units": {
+                "en": "s"
+              },
+              "label": {
+                "en": "Update interval",
+                "nl": "Update-interval",
+                "fr": "Intervalle de mise à jour"
+              },
+              "hint": {
+                "en": "How often Homey reads the NRGkick. Shorter is more responsive, longer is lighter for Homey and the network.",
+                "nl": "Hoe vaak Homey de NRGkick uitleest. Korter reageert sneller, langer is lichter voor Homey en het netwerk.",
+                "fr": "Fréquence de lecture du NRGkick par Homey. Plus court réagit plus vite, plus long allège Homey et le réseau."
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Device information",
+            "nl": "Toestelinformatie",
+            "fr": "Informations sur l'appareil"
+          },
+          "children": [
+            {
+              "id": "info_model",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Model",
+                "nl": "Model",
+                "fr": "Modèle"
+              }
+            },
+            {
+              "id": "info_serial",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Serial number",
+                "nl": "Serienummer",
+                "fr": "Numéro de série"
+              }
+            },
+            {
+              "id": "info_rated_current",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Rated current",
+                "nl": "Nominale stroom",
+                "fr": "Courant nominal"
+              }
+            },
+            {
+              "id": "info_attachment",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Attachment",
+                "nl": "Adapter",
+                "fr": "Adaptateur"
+              }
+            },
+            {
+              "id": "info_grid",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Grid",
+                "nl": "Net",
+                "fr": "Réseau"
+              }
+            },
+            {
+              "id": "info_network",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "WiFi",
+                "nl": "WiFi",
+                "fr": "WiFi"
+              }
+            },
+            {
+              "id": "info_mac",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "MAC address",
+                "nl": "MAC-adres",
+                "fr": "Adresse MAC"
+              }
+            },
+            {
+              "id": "info_charge_count",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Plug-in count",
+                "nl": "Aantal keer ingeplugd",
+                "fr": "Nombre de branchements"
+              }
+            },
+            {
+              "id": "info_fw_smartmodule",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "SmartModule software / hardware",
+                "nl": "SmartModule software / hardware",
+                "fr": "SmartModule logiciel / matériel"
+              }
+            },
+            {
+              "id": "info_fw_main",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Main controller software / hardware",
+                "nl": "Hoofdcontroller software / hardware",
+                "fr": "Contrôleur principal logiciel / matériel"
+              }
+            },
+            {
+              "id": "info_fw_touch",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Touch controller software / hardware",
+                "nl": "Touchcontroller software / hardware",
+                "fr": "Contrôleur tactile logiciel / matériel"
+              }
+            },
+            {
+              "id": "info_fw_star",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Star controller software / hardware",
+                "nl": "Star-controller software / hardware",
+                "fr": "Contrôleur Star logiciel / matériel"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "capabilities": {
+    "nrgkick_charge_permitted": {
+      "type": "boolean",
+      "title": {
+        "en": "Charging permitted",
+        "nl": "Laden toegestaan",
+        "fr": "Charge autorisée"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_charge_time": {
+      "type": "number",
+      "title": {
+        "en": "Charge time",
+        "nl": "Laadtijd",
+        "fr": "Durée de charge"
+      },
+      "desc": {
+        "en": "Charging time of the current or last charge.",
+        "nl": "Laadtijd van de huidige of laatste laadbeurt.",
+        "fr": "Durée de charge de la charge en cours ou de la dernière charge."
+      },
+      "units": {
+        "en": "min"
+      },
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_charging_rate": {
+      "type": "number",
+      "title": {
+        "en": "Charging rate",
+        "nl": "Laadsnelheid",
+        "fr": "Vitesse de charge"
+      },
+      "desc": {
+        "en": "Range added per hour, based on the consumption set in the NRGkick app.",
+        "nl": "Bereik dat er per uur bijkomt, op basis van het verbruik dat in de NRGkick-app is ingesteld.",
+        "fr": "Autonomie ajoutée par heure, selon la consommation réglée dans l'app NRGkick."
+      },
+      "units": {
+        "en": "km/h"
+      },
+      "decimals": 1,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_connect_time": {
+      "type": "number",
+      "title": {
+        "en": "Connected time",
+        "nl": "Verbonden tijd",
+        "fr": "Durée de connexion"
+      },
+      "desc": {
+        "en": "How long the car is or was connected for the current or last charge.",
+        "nl": "Hoelang de auto verbonden is of was bij de huidige of laatste laadbeurt.",
+        "fr": "Durée de connexion du véhicule pour la charge en cours ou la dernière charge."
+      },
+      "units": {
+        "en": "min"
+      },
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_current_set": {
+      "type": "number",
+      "title": {
+        "en": "Charging current",
+        "nl": "Laadstroom",
+        "fr": "Courant de charge"
+      },
+      "units": {
+        "en": "A"
+      },
+      "min": 6,
+      "max": 32,
+      "step": 0.1,
+      "decimals": 1,
+      "getable": true,
+      "setable": true,
+      "insights": true,
+      "uiComponent": "slider"
+    },
+    "nrgkick_energy_limit": {
+      "type": "number",
+      "title": {
+        "en": "Energy limit",
+        "nl": "Energielimiet",
+        "fr": "Limite d'énergie"
+      },
+      "desc": {
+        "en": "Stops the charge after this amount of energy. 0 means no limit.",
+        "nl": "Stopt het laden na deze hoeveelheid energie. 0 betekent geen limiet.",
+        "fr": "Arrête la charge après cette quantité d'énergie. 0 signifie sans limite."
+      },
+      "units": {
+        "en": "kWh"
+      },
+      "min": 0,
+      "max": 100,
+      "step": 0.5,
+      "decimals": 1,
+      "getable": true,
+      "setable": true,
+      "insights": false,
+      "uiComponent": "slider"
+    },
+    "nrgkick_error": {
+      "type": "string",
+      "title": {
+        "en": "Error",
+        "nl": "Fout",
+        "fr": "Erreur"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_phase_count": {
+      "type": "enum",
+      "title": {
+        "en": "Phases",
+        "nl": "Fases",
+        "fr": "Phases"
+      },
+      "desc": {
+        "en": "Only works when phase switching is enabled in the NRGkick app.",
+        "nl": "Werkt alleen als fasewisseling aan staat in de NRGkick-app.",
+        "fr": "Ne fonctionne que si la commutation de phases est activée dans l'app NRGkick."
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "1 phase",
+            "nl": "1 fase",
+            "fr": "1 phase"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "2 phases",
+            "nl": "2 fases",
+            "fr": "2 phases"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "3 phases",
+            "nl": "3 fases",
+            "fr": "3 phases"
+          }
+        }
+      ]
+    },
+    "nrgkick_power_factor": {
+      "type": "number",
+      "title": {
+        "en": "Power factor",
+        "nl": "Arbeidsfactor",
+        "fr": "Facteur de puissance"
+      },
+      "min": -1,
+      "max": 1,
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_status": {
+      "type": "enum",
+      "title": {
+        "en": "Status",
+        "nl": "Status",
+        "fr": "Statut"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "values": [
+        {
+          "id": "standby",
+          "title": {
+            "en": "Standby",
+            "nl": "Stand-by",
+            "fr": "Veille"
+          }
+        },
+        {
+          "id": "connected",
+          "title": {
+            "en": "Connected",
+            "nl": "Verbonden",
+            "fr": "Connecté"
+          }
+        },
+        {
+          "id": "charging",
+          "title": {
+            "en": "Charging",
+            "nl": "Aan het laden",
+            "fr": "En charge"
+          }
+        },
+        {
+          "id": "error",
+          "title": {
+            "en": "Error",
+            "nl": "Fout",
+            "fr": "Erreur"
+          }
+        },
+        {
+          "id": "wakeup",
+          "title": {
+            "en": "Waking up the car",
+            "nl": "Auto wekken",
+            "fr": "Réveil du véhicule"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown",
+            "nl": "Onbekend",
+            "fr": "Inconnu"
+          }
+        }
+      ]
+    },
+    "nrgkick_warning": {
+      "type": "string",
+      "title": {
+        "en": "Warning",
+        "nl": "Waarschuwing",
+        "fr": "Avertissement"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    }
+  },
+  "discovery": {
+    "nrgkick": {
+      "type": "mdns-sd",
+      "mdns-sd": {
+        "name": "nrgkick",
+        "protocol": "tcp"
+      },
+      "id": "{{txt.serial_number}}"
+    }
+  }
+}

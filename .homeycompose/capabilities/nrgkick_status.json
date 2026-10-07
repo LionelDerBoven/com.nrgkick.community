@@ -1,0 +1,61 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Status",
+    "nl": "Status",
+    "fr": "Statut"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "values": [
+    {
+      "id": "standby",
+      "title": {
+        "en": "Standby",
+        "nl": "Stand-by",
+        "fr": "Veille"
+      }
+    },
+    {
+      "id": "connected",
+      "title": {
+        "en": "Connected",
+        "nl": "Verbonden",
+        "fr": "Connecté"
+      }
+    },
+    {
+      "id": "charging",
+      "title": {
+        "en": "Charging",
+        "nl": "Aan het laden",
+        "fr": "En charge"
+      }
+    },
+    {
+      "id": "error",
+      "title": {
+        "en": "Error",
+        "nl": "Fout",
+        "fr": "Erreur"
+      }
+    },
+    {
+      "id": "wakeup",
+      "title": {
+        "en": "Waking up the car",
+        "nl": "Auto wekken",
+        "fr": "Réveil du véhicule"
+      }
+    },
+    {
+      "id": "unknown",
+      "title": {
+        "en": "Unknown",
+        "nl": "Onbekend",
+        "fr": "Inconnu"
+      }
+    }
+  ]
+}

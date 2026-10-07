@@ -1,0 +1,202 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Connection",
+      "nl": "Verbinding",
+      "fr": "Connexion"
+    },
+    "children": [
+      {
+        "id": "host",
+        "type": "text",
+        "value": "",
+        "label": {
+          "en": "IP address or host name",
+          "nl": "IP-adres of hostnaam",
+          "fr": "Adresse IP ou nom d'hôte"
+        },
+        "hint": {
+          "en": "Updated automatically when the NRGkick is found on the network with a new address.",
+          "nl": "Wordt automatisch aangepast als de NRGkick met een nieuw adres op het netwerk gevonden wordt.",
+          "fr": "Mis à jour automatiquement quand le NRGkick est trouvé sur le réseau avec une nouvelle adresse."
+        }
+      },
+      {
+        "id": "username",
+        "type": "text",
+        "value": "",
+        "label": {
+          "en": "Username",
+          "nl": "Gebruikersnaam",
+          "fr": "Nom d'utilisateur"
+        },
+        "hint": {
+          "en": "Only needed when Authentication (JSON) is on in the NRGkick app.",
+          "nl": "Alleen nodig als Authenticatie (JSON) aan staat in de NRGkick-app.",
+          "fr": "Uniquement nécessaire si l'authentification (JSON) est activée dans l'app NRGkick."
+        }
+      },
+      {
+        "id": "password",
+        "type": "password",
+        "value": "",
+        "label": {
+          "en": "Password",
+          "nl": "Wachtwoord",
+          "fr": "Mot de passe"
+        }
+      },
+      {
+        "id": "poll_interval",
+        "type": "number",
+        "value": 30,
+        "min": 10,
+        "max": 300,
+        "units": {
+          "en": "s"
+        },
+        "label": {
+          "en": "Update interval",
+          "nl": "Update-interval",
+          "fr": "Intervalle de mise à jour"
+        },
+        "hint": {
+          "en": "How often Homey reads the NRGkick. Shorter is more responsive, longer is lighter for Homey and the network.",
+          "nl": "Hoe vaak Homey de NRGkick uitleest. Korter reageert sneller, langer is lichter voor Homey en het netwerk.",
+          "fr": "Fréquence de lecture du NRGkick par Homey. Plus court réagit plus vite, plus long allège Homey et le réseau."
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device information",
+      "nl": "Toestelinformatie",
+      "fr": "Informations sur l'appareil"
+    },
+    "children": [
+      {
+        "id": "info_model",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Model",
+          "nl": "Model",
+          "fr": "Modèle"
+        }
+      },
+      {
+        "id": "info_serial",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Serial number",
+          "nl": "Serienummer",
+          "fr": "Numéro de série"
+        }
+      },
+      {
+        "id": "info_rated_current",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Rated current",
+          "nl": "Nominale stroom",
+          "fr": "Courant nominal"
+        }
+      },
+      {
+        "id": "info_attachment",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Attachment",
+          "nl": "Adapter",
+          "fr": "Adaptateur"
+        }
+      },
+      {
+        "id": "info_grid",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Grid",
+          "nl": "Net",
+          "fr": "Réseau"
+        }
+      },
+      {
+        "id": "info_network",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "WiFi",
+          "nl": "WiFi",
+          "fr": "WiFi"
+        }
+      },
+      {
+        "id": "info_mac",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "MAC address",
+          "nl": "MAC-adres",
+          "fr": "Adresse MAC"
+        }
+      },
+      {
+        "id": "info_charge_count",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Plug-in count",
+          "nl": "Aantal keer ingeplugd",
+          "fr": "Nombre de branchements"
+        }
+      },
+      {
+        "id": "info_fw_smartmodule",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "SmartModule software / hardware",
+          "nl": "SmartModule software / hardware",
+          "fr": "SmartModule logiciel / matériel"
+        }
+      },
+      {
+        "id": "info_fw_main",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Main controller software / hardware",
+          "nl": "Hoofdcontroller software / hardware",
+          "fr": "Contrôleur principal logiciel / matériel"
+        }
+      },
+      {
+        "id": "info_fw_touch",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Touch controller software / hardware",
+          "nl": "Touchcontroller software / hardware",
+          "fr": "Contrôleur tactile logiciel / matériel"
+        }
+      },
+      {
+        "id": "info_fw_star",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Star controller software / hardware",
+          "nl": "Star-controller software / hardware",
+          "fr": "Contrôleur Star logiciel / matériel"
+        }
+      }
+    ]
+  }
+]

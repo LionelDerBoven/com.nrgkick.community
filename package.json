@@ -1,0 +1,21 @@
+{
+  "name": "com.nrgkick.community",
+  "version": "0.1.0",
+  "main": "app.js",
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "lint": "eslint --ext .js --ignore-path .gitignore .",
+    "test": "node --test test/*.test.js"
+  },
+  "devDependencies": {
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
+    "eslint": "^7.32.0",
+    "eslint-config-athom": "^3.1.5"
+  },
+  "overrides": {
+    "minimatch@9": "^9.0.7"
+  }
+}

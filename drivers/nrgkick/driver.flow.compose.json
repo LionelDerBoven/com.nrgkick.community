@@ -1,0 +1,362 @@
+{
+  "triggers": [
+    {
+      "id": "status_changed",
+      "title": {
+        "en": "The status changed",
+        "nl": "De status veranderde",
+        "fr": "Le statut a changé"
+      },
+      "hint": {
+        "en": "Fires when the NRGkick status changes, for example from Connected to Charging.",
+        "nl": "Wordt geactiveerd als de status van de NRGkick verandert, bijvoorbeeld van Verbonden naar Aan het laden.",
+        "fr": "Se déclenche quand le statut du NRGkick change, par exemple de Connecté à En charge."
+      },
+      "tokens": [
+        {
+          "name": "status",
+          "type": "string",
+          "title": {
+            "en": "Status",
+            "nl": "Status",
+            "fr": "Statut"
+          },
+          "example": {
+            "en": "Charging",
+            "nl": "Aan het laden",
+            "fr": "En charge"
+          }
+        },
+        {
+          "name": "previous_status",
+          "type": "string",
+          "title": {
+            "en": "Previous status",
+            "nl": "Vorige status",
+            "fr": "Statut précédent"
+          },
+          "example": {
+            "en": "Connected",
+            "nl": "Verbonden",
+            "fr": "Connecté"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fault_occurred",
+      "title": {
+        "en": "A fault occurred",
+        "nl": "Er trad een storing op",
+        "fr": "Un défaut est survenu"
+      },
+      "hint": {
+        "en": "Fires when the NRGkick reports a new error or a residual current trip.",
+        "nl": "Wordt geactiveerd als de NRGkick een nieuwe fout of een lekstroomdetectie meldt.",
+        "fr": "Se déclenche quand le NRGkick signale une nouvelle erreur ou un déclenchement du différentiel."
+      },
+      "tokens": [
+        {
+          "name": "fault",
+          "type": "string",
+          "title": {
+            "en": "Fault",
+            "nl": "Storing",
+            "fr": "Défaut"
+          },
+          "example": {
+            "en": "Housing overtemperature",
+            "nl": "Behuizing oververhit",
+            "fr": "Surchauffe du boîtier"
+          }
+        },
+        {
+          "name": "code",
+          "type": "number",
+          "title": {
+            "en": "Error code",
+            "nl": "Foutcode",
+            "fr": "Code d'erreur"
+          },
+          "example": 81
+        }
+      ]
+    },
+    {
+      "id": "warning_occurred",
+      "title": {
+        "en": "A warning occurred",
+        "nl": "Er verscheen een waarschuwing",
+        "fr": "Un avertissement est apparu"
+      },
+      "hint": {
+        "en": "Fires when the NRGkick reports a new warning, such as a raised temperature.",
+        "nl": "Wordt geactiveerd als de NRGkick een nieuwe waarschuwing meldt, zoals een verhoogde temperatuur.",
+        "fr": "Se déclenche quand le NRGkick signale un nouvel avertissement, comme une température élevée."
+      },
+      "tokens": [
+        {
+          "name": "warning",
+          "type": "string",
+          "title": {
+            "en": "Warning",
+            "nl": "Waarschuwing",
+            "fr": "Avertissement"
+          },
+          "example": {
+            "en": "Raised housing temperature",
+            "nl": "Verhoogde temperatuur behuizing",
+            "fr": "Température du boîtier élevée"
+          }
+        },
+        {
+          "name": "code",
+          "type": "number",
+          "title": {
+            "en": "Warning code",
+            "nl": "Waarschuwingscode",
+            "fr": "Code d'avertissement"
+          },
+          "example": 17
+        }
+      ]
+    },
+    {
+      "id": "energy_limit_reached",
+      "title": {
+        "en": "The energy limit was reached",
+        "nl": "De energielimiet werd bereikt",
+        "fr": "La limite d'énergie a été atteinte"
+      },
+      "hint": {
+        "en": "Fires when the NRGkick stops charging because the energy limit was reached.",
+        "nl": "Wordt geactiveerd als de NRGkick stopt met laden omdat de energielimiet bereikt is.",
+        "fr": "Se déclenche quand le NRGkick arrête la charge parce que la limite d'énergie est atteinte."
+      },
+      "tokens": [
+        {
+          "name": "energy",
+          "type": "number",
+          "title": {
+            "en": "Charged energy (kWh)",
+            "nl": "Geladen energie (kWh)",
+            "fr": "Énergie chargée (kWh)"
+          },
+          "example": 10
+        }
+      ]
+    }
+  ],
+  "conditions": [
+    {
+      "id": "status_is",
+      "title": {
+        "en": "Status is !{{|not}} …",
+        "nl": "Status is !{{|niet}} …",
+        "fr": "Le statut !{{est|n'est pas}} …"
+      },
+      "titleFormatted": {
+        "en": "Status is !{{|not}} [[status]]",
+        "nl": "Status is !{{|niet}} [[status]]",
+        "fr": "Le statut !{{est|n'est pas}} [[status]]"
+      },
+      "args": [
+        {
+          "name": "status",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "standby",
+              "title": {
+                "en": "Standby",
+                "nl": "Stand-by",
+                "fr": "Veille"
+              }
+            },
+            {
+              "id": "connected",
+              "title": {
+                "en": "Connected",
+                "nl": "Verbonden",
+                "fr": "Connecté"
+              }
+            },
+            {
+              "id": "charging",
+              "title": {
+                "en": "Charging",
+                "nl": "Aan het laden",
+                "fr": "En charge"
+              }
+            },
+            {
+              "id": "error",
+              "title": {
+                "en": "Error",
+                "nl": "Fout",
+                "fr": "Erreur"
+              }
+            },
+            {
+              "id": "wakeup",
+              "title": {
+                "en": "Waking up the car",
+                "nl": "Auto wekken",
+                "fr": "Réveil du véhicule"
+              }
+            }
+          ],
+          "title": {
+            "en": "Status",
+            "nl": "Status",
+            "fr": "Statut"
+          }
+        }
+      ]
+    },
+    {
+      "id": "fault_active",
+      "title": {
+        "en": "A fault !{{is|isn't}} active",
+        "nl": "Er is !{{een|geen}} storing actief",
+        "fr": "Un défaut !{{est|n'est pas}} actif"
+      },
+      "hint": {
+        "en": "True while the NRGkick reports an error or a residual current trip.",
+        "nl": "Waar zolang de NRGkick een fout of een lekstroomdetectie meldt.",
+        "fr": "Vrai tant que le NRGkick signale une erreur ou un déclenchement du différentiel."
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "set_current",
+      "title": {
+        "en": "Set the charging current",
+        "nl": "Stel de laadstroom in",
+        "fr": "Régler le courant de charge"
+      },
+      "titleFormatted": {
+        "en": "Set the charging current to [[current]] A",
+        "nl": "Stel de laadstroom in op [[current]] A",
+        "fr": "Régler le courant de charge à [[current]] A"
+      },
+      "hint": {
+        "en": "From 6 A up to the maximum of the NRGkick and its attachment. Higher values are capped.",
+        "nl": "Van 6 A tot het maximum van de NRGkick en zijn adapter. Hogere waarden worden begrensd.",
+        "fr": "De 6 A jusqu'au maximum du NRGkick et de son adaptateur. Les valeurs plus élevées sont plafonnées."
+      },
+      "args": [
+        {
+          "name": "current",
+          "type": "number",
+          "min": 6,
+          "max": 32,
+          "step": 0.1,
+          "placeholder": {
+            "en": "Ampere",
+            "nl": "Ampère",
+            "fr": "Ampère"
+          },
+          "title": {
+            "en": "Charging current",
+            "nl": "Laadstroom",
+            "fr": "Courant de charge"
+          }
+        }
+      ]
+    },
+    {
+      "id": "set_energy_limit",
+      "title": {
+        "en": "Set the energy limit",
+        "nl": "Stel de energielimiet in",
+        "fr": "Régler la limite d'énergie"
+      },
+      "titleFormatted": {
+        "en": "Set the energy limit to [[limit]] kWh",
+        "nl": "Stel de energielimiet in op [[limit]] kWh",
+        "fr": "Régler la limite d'énergie à [[limit]] kWh"
+      },
+      "hint": {
+        "en": "The NRGkick stops charging after this amount of energy. 0 removes the limit.",
+        "nl": "De NRGkick stopt met laden na deze hoeveelheid energie. 0 schakelt de limiet uit.",
+        "fr": "Le NRGkick arrête la charge après cette quantité d'énergie. 0 supprime la limite."
+      },
+      "args": [
+        {
+          "name": "limit",
+          "type": "number",
+          "min": 0,
+          "max": 100,
+          "step": 0.1,
+          "placeholder": {
+            "en": "kWh",
+            "nl": "kWh",
+            "fr": "kWh"
+          },
+          "title": {
+            "en": "Energy limit",
+            "nl": "Energielimiet",
+            "fr": "Limite d'énergie"
+          }
+        }
+      ]
+    },
+    {
+      "id": "set_phase_count",
+      "title": {
+        "en": "Set the number of phases",
+        "nl": "Stel het aantal fases in",
+        "fr": "Régler le nombre de phases"
+      },
+      "titleFormatted": {
+        "en": "Set the number of phases to [[phases]]",
+        "nl": "Stel het aantal fases in op [[phases]]",
+        "fr": "Régler le nombre de phases à [[phases]]"
+      },
+      "hint": {
+        "en": "Only works when phase switching is enabled in the NRGkick app.",
+        "nl": "Werkt alleen als fasewisseling aan staat in de NRGkick-app.",
+        "fr": "Ne fonctionne que si la commutation de phases est activée dans l'app NRGkick."
+      },
+      "args": [
+        {
+          "name": "phases",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "1",
+              "title": {
+                "en": "1",
+                "nl": "1",
+                "fr": "1"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "2",
+                "nl": "2",
+                "fr": "2"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "3",
+                "nl": "3",
+                "fr": "3"
+              }
+            }
+          ],
+          "title": {
+            "en": "Phases",
+            "nl": "Fases",
+            "fr": "Phases"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# Kept out of the package that gets installed on the Homey. None of this is used at
+# runtime, and the Homey has better uses for the storage. The App Store reads
+# README*.txt; README.md is for GitHub only.
+/README.md
+/test/
+/tools/
+/package-lock.json
+/tsconfig.json
+/.eslintrc.json
+/.homeyreview.md
+/.env.example
+/env.json
+/node_modules/
+/.homeybuild/

@@ -1,0 +1,21 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Charging rate",
+    "nl": "Laadsnelheid",
+    "fr": "Vitesse de charge"
+  },
+  "desc": {
+    "en": "Range added per hour, based on the consumption set in the NRGkick app.",
+    "nl": "Bereik dat er per uur bijkomt, op basis van het verbruik dat in de NRGkick-app is ingesteld.",
+    "fr": "Autonomie ajoutée par heure, selon la consommation réglée dans l'app NRGkick."
+  },
+  "units": {
+    "en": "km/h"
+  },
+  "decimals": 1,
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "uiComponent": "sensor"
+}

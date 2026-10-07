@@ -1,0 +1,3 @@
+Control your NRGkick charging cable straight from Homey, over your own network and without the cloud. See at a glance whether the car is connected or charging, how much power it draws and how much energy each charge added, and get told when the NRGkick reports a fault or a raised temperature. Pause or resume charging, set the charging current, an energy limit or the number of phases from the device or from a Flow, and let Homey Energy steer the charging power, for example to charge on solar surplus.
+
+Works with the NRGkick (second generation, WiFi) with SmartModule firmware 4.0.0.0 or newer; turn on the JSON API in the NRGkick app under Extended, Local API. This is an unofficial app, not affiliated with or endorsed by DiniTech GmbH.
