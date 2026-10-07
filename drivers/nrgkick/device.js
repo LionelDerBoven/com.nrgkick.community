@@ -354,18 +354,24 @@ class NrgkickDevice extends Homey.Device {
     await this.set('meter_power', kwh(m.num(energy, 'total_charged_energy')));
     await this.set('meter_power.session', kwh(m.num(energy, 'charged_energy')));
 
-    await this.set('measure_power', round(m.num(powerflow, 'total_active_power'), 0));
+    // Outside a charge the meter still reads a watt or so of noise (also seen in HA). Show 0 then, so the status
+    // indicator and Homey Energy only show power while the car is really charging.
+    const statusRaw = m.pick(general, 'status');
+    const charging = statusRaw === undefined || m.codeToId(m.STATUS, statusRaw) === 'charging';
+    const live = (value) => (charging || value === null ? value : 0);
+
+    await this.set('measure_power', live(round(m.num(powerflow, 'total_active_power'), 0)));
     await this.set('measure_power.peak', round(m.num(powerflow, 'peak_power'), 0));
     await this.set('measure_voltage', round(m.num(powerflow, 'charging_voltage'), 1));
     await this.set('measure_current.offered', round(m.num(powerflow, 'charging_current'), 1));
     await this.set('measure_frequency', round(m.num(powerflow, 'grid_frequency'), 2));
     await this.set('nrgkick_power_factor', round(m.num(powerflow, 'total_power_factor'), 2));
     for (const [phase, data] of [['l1', l1], ['l2', l2], ['l3', l3]]) {
-      await this.set(`measure_power.${phase}`, round(m.num(data, 'active_power'), 0));
-      await this.set(`measure_current.${phase}`, round(m.num(data, 'current'), 2));
+      await this.set(`measure_power.${phase}`, live(round(m.num(data, 'active_power'), 0)));
+      await this.set(`measure_current.${phase}`, live(round(m.num(data, 'current'), 2)));
       await this.set(`measure_voltage.${phase}`, round(m.num(data, 'voltage'), 1));
     }
-    await this.set('measure_current.n', round(m.num(n, 'current'), 2));
+    await this.set('measure_current.n', live(round(m.num(n, 'current'), 2)));
 
     await this.set('measure_temperature', round(m.num(temperatures, 'housing'), 1));
     await this.set('measure_temperature.connector_l1', round(m.num(temperatures, 'connector_l1'), 1));

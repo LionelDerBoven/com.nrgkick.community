@@ -120,9 +120,9 @@ function fakeNrgkick() {
         charging_current: 16,
         grid_frequency: 50.01,
         peak_power: 0,
-        total_active_power: 0,
+        total_active_power: 0.79,
         total_power_factor: 0.16,
-        l1: { voltage: 231.2, current: 0, active_power: 0 },
+        l1: { voltage: 231.2, current: 0.02, active_power: 0.79 },
         l2: { voltage: 0, current: 0, active_power: 0 },
         l3: { voltage: 0, current: 0, active_power: 0 },
         n: { current: 0 },
@@ -217,6 +217,8 @@ test('first poll fills capabilities, labels and limits', async () => {
     assert.strictEqual(v('target_power'), 3680, '16 A on one phase');
     assert.strictEqual(v('measure_temperature'), 21.5);
     assert.strictEqual(v('measure_signal_strength'), -61);
+    assert.strictEqual(v('measure_power'), 0, 'standby noise shows as 0');
+    assert.strictEqual(v('measure_current.l1'), 0);
     assert.strictEqual(v('nrgkick_error'), 'none');
     assert.strictEqual(v('alarm_generic'), false);
     assert.deepStrictEqual(device.options.target_power, {
