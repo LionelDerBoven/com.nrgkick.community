@@ -1053,6 +1053,31 @@
           },
           "decimals": 0,
           "uiComponent": null
+        },
+        "target_power_mode": {
+          "title": {
+            "en": "Charging power controlled by",
+            "nl": "Laadvermogen bepaald door",
+            "fr": "Puissance de charge gérée par"
+          },
+          "values": [
+            {
+              "id": "device",
+              "title": {
+                "en": "NRGkick (own charging current)",
+                "nl": "NRGkick (eigen laadstroom)",
+                "fr": "NRGkick (courant propre)"
+              }
+            },
+            {
+              "id": "homey",
+              "title": {
+                "en": "Homey (target power)",
+                "nl": "Homey (doelvermogen)",
+                "fr": "Homey (puissance cible)"
+              }
+            }
+          ]
         }
       },
       "energy": {
