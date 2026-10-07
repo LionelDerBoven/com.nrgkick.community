@@ -8,6 +8,7 @@ const m = require('../../lib/mappings');
 const INFO_REFRESH_MS = 10 * 60 * 1000; // firmware, attachment and network change rarely
 const MAX_BACKOFF_MS = 5 * 60 * 1000;
 const AFTER_WRITE_MS = 2000; // /control lags a moment behind a write; re-read shortly after
+const FOLLOW_UP_MS = 8000; // and once more: a car takes 5-10 s to start or stop drawing power (measured)
 const FAILURES_BEFORE_UNAVAILABLE = 2; // ride out a single dropped poll
 const RELOCATE_INTERVAL_MS = 5 * 60 * 1000; // at most one address search per 5 minutes
 const CONNECTION_KEYS = ['host', 'username', 'password'];
@@ -40,7 +41,11 @@ class NrgkickDevice extends Homey.Device {
     this.pollTimer = null;
     this.polling = false;
     this.pollSoon = false;
+    this.followUp = false;
     this.stopped = false;
+    this.controlQueue = Promise.resolve(); // charging control batches run one after another
+    this.mode = null; // target_power_mode as last requested; Homey stores it only after the listener returns
+    this.targetPower = null;
 
     await this.ensureCapabilities();
 
@@ -55,7 +60,7 @@ class NrgkickDevice extends Homey.Device {
     // Homey sets these together (e.g. the "Set target power" card), so handle them as one change.
     this.registerMultipleCapabilityListener(
       ['evcharger_charging', 'target_power', 'target_power_mode'],
-      (changed) => this.onChargingControl(changed),
+      (changed) => this.queueChargingControl(changed),
       500,
     );
 
@@ -200,6 +205,9 @@ class NrgkickDevice extends Homey.Device {
       if (this.pollSoon) {
         this.pollSoon = false;
         next = AFTER_WRITE_MS;
+      } else if (this.followUp) {
+        this.followUp = false;
+        next = FOLLOW_UP_MS;
       }
       this.schedulePoll(next);
     }
@@ -469,6 +477,7 @@ class NrgkickDevice extends Homey.Device {
       throw new Error(describeError(this.homey, err));
     }
     await this.applyControl({ ...this.control, [key]: echoed });
+    this.followUp = true;
     this.refreshSoon();
     return echoed;
   }
@@ -480,6 +489,19 @@ class NrgkickDevice extends Homey.Device {
   }
 
   /**
+   * Homey can deliver a mode change and a target power as two batches in quick succession, and it stores a
+   * value only after its listener returns. So the requested mode and target are remembered at once, and the
+   * batches run one after another; otherwise the second batch could still see the old mode and be ignored.
+   */
+  queueChargingControl(changed) {
+    if (changed.target_power_mode !== undefined) this.mode = changed.target_power_mode;
+    if (changed.target_power !== undefined) this.targetPower = changed.target_power;
+    const run = this.controlQueue.then(() => this.onChargingControl(changed));
+    this.controlQueue = run.catch(() => {});
+    return run;
+  }
+
+  /**
    * evcharger_charging pauses or resumes. In Homey mode, target_power sets the charging current; in device mode
    * (the default) the NRGkick follows its own settings and target_power is ignored.
    */
@@ -487,13 +509,14 @@ class NrgkickDevice extends Homey.Device {
     if (mode === 'device') await this.leaveHomeyMode();
     if (mode === 'homey') await this.enterHomeyMode();
 
-    const homeyMode = (mode || this.getCapabilityValue('target_power_mode')) === 'homey';
+    const homeyMode = (mode || this.mode || this.getCapabilityValue('target_power_mode')) === 'homey';
     if (!homeyMode) {
       if (charging !== undefined) await this.setPaused(!charging);
       return;
     }
 
-    const target = power !== undefined ? power : (this.getCapabilityValue('target_power') || 0);
+    let target = power;
+    if (target === undefined) target = this.targetPower !== null ? this.targetPower : (this.getCapabilityValue('target_power') || 0);
     const enabled = charging !== undefined ? charging : this.getCapabilityValue('evcharger_charging') !== false;
     if (!enabled || target <= 0) {
       await this.setPaused(true);

@@ -459,3 +459,36 @@ test('a device that stops answering is found again at a discovered address', asy
     await dev.close();
   }
 });
+
+test('a mode change and a target power sent separately both apply (Homey stores values only afterwards)', async () => {
+  const { dev, device } = await startDevice();
+  try {
+    await device.poll();
+    // Homey calls the listener twice in quick succession and has not stored the new mode yet.
+    await Promise.all([
+      device.listeners.multi({ target_power_mode: 'homey' }),
+      device.listeners.multi({ target_power: 2300 }),
+    ]);
+    assert.strictEqual(device.getCapabilityValue('target_power_mode'), 'device', 'not yet stored by Homey');
+    assert.deepStrictEqual(dev.state.writes, ['current_set=10']);
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
+test('a write is re-read after 2 s and once more after 8 s', async () => {
+  const { dev, device } = await startDevice();
+  try {
+    await device.poll();
+    await device.listeners.nrgkick_current_set(10);
+    assert.strictEqual(device.timers[device.timers.length - 1].ms, 2000);
+    await device.poll();
+    assert.strictEqual(device.timers[device.timers.length - 1].ms, 8000);
+    await device.poll();
+    assert.strictEqual(device.timers[device.timers.length - 1].ms, 30000);
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
