@@ -341,19 +341,6 @@
       ]
     },
     {
-      "id": "fault_active",
-      "title": {
-        "en": "A fault !{{is|isn't}} active",
-        "nl": "Er is !{{een|geen}} storing actief",
-        "fr": "Un défaut !{{est|n'est pas}} actif"
-      },
-      "hint": {
-        "en": "True while the NRGkick reports an error or a residual current trip.",
-        "nl": "Waar zolang de NRGkick een fout of een lekstroomdetectie meldt.",
-        "fr": "Vrai tant que le NRGkick signale une erreur ou un déclenchement du différentiel."
-      }
-    },
-    {
       "id": "car_plugged_in",
       "title": {
         "en": "The car !{{is|isn't}} plugged in",

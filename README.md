@@ -18,7 +18,7 @@ to that API directly, without a cloud service. Unofficial, not affiliated with D
 | Energy limit | Slider in kWh (0 = no limit), or *Set the energy limit* |
 | Phases | Picker, or *Set the number of phases* (needs phase switching enabled in the NRGkick app) |
 | Homey Energy | Homey is in charge and the last command wins. A target power (Homey Energy or the card *Set target power*) becomes a charging current; below 6 A (about 1380 W on one phase) the NRGkick pauses, because a car cannot charge with less. When Homey Energy hands control back, your own current and pause state return |
-| Flows | Triggers: car plugged in / unplugged, charging session ended (energy, times, cost), status changed, fault, warning, energy limit reached, location changed (SIM models). Conditions: car is plugged in, status is, fault active. Actions: charging current (set, raise, lower), charge … kWh and then stop, energy limit, phases, electricity price |
+| Flows | Triggers: car plugged in / unplugged, charging session ended (energy, times, cost), status changed, fault, warning, energy limit reached, location changed (SIM models). Conditions: car is plugged in, status is, and Homey's own "alarm is on" for faults. Actions: charging current (set, raise, lower), charge … kWh and then stop, energy limit, phases, electricity price |
 | Safety limit | Device setting *Maximum charging current*: the slider, Flows and Homey Energy never go above it, and a higher current set in the NRGkick app is lowered to it |
 | Session cost | A fixed price per kWh in the device settings, or *Set the electricity price* from a Flow (e.g. Homey Energy's price trigger) for a dynamic tariff. Apps cannot read Homey Energy's prices directly |
 

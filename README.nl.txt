@@ -1,3 +1,3 @@
 Bedien je NRGkick-laadkabel rechtstreeks vanuit Homey, via je eigen netwerk en zonder cloud. Zie in één oogopslag of de auto verbonden is of laadt, hoeveel vermogen hij trekt en hoeveel energie elke laadbeurt opleverde, en krijg een melding als de NRGkick een storing of een verhoogde temperatuur meldt. Pauzeer of hervat het laden, stel de laadstroom, een energielimiet of het aantal fases in vanaf het toestel of in een Flow, en laat Homey Energy het laadvermogen sturen, bijvoorbeeld om op zonne-overschot te laden.
 
-Werkt met de NRGkick (tweede generatie, WiFi) met SmartModule-firmware 4.0.0.0 of nieuwer; zet de JSON-API aan in de NRGkick-app onder Uitgebreid, Lokale API. Dit is een onofficiële app, niet verbonden aan of goedgekeurd door DiniTech GmbH.
+Werkt met de NRGkick (tweede generatie, WiFi) met SmartModule-firmware 4.0.0.0 of nieuwer. Dit is een onofficiële app, niet verbonden aan of goedgekeurd door DiniTech GmbH.
