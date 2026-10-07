@@ -47,7 +47,6 @@ class NrgkickDevice extends Homey.Device {
     this.followUp = false;
     this.stopped = false;
     this.controlQueue = Promise.resolve(); // charging control batches run one after another
-    this.mode = null; // target_power_mode as last requested; Homey stores it only after the listener returns
     this.targetPower = null;
     this.targetPaused = false; // paused because the target power was too low, not by the user
     this.pluggedIn = null; // null: not read yet, so the first read never triggers a Flow
@@ -68,11 +67,6 @@ class NrgkickDevice extends Homey.Device {
     this.registerCapabilityListener('nrgkick_current_set', (value) => this.writeControl('current_set', Math.min(value, this.maxCurrent())));
     this.registerCapabilityListener('nrgkick_energy_limit', (value) => this.writeControl('energy_limit', Math.round(value * 1000)));
     this.registerPhaseListener();
-    this.registerCapabilityListener('nrgkick_homey_control', async (on) => {
-      const mode = on ? 'homey' : 'device';
-      this.setCapabilityValue('target_power_mode', mode).catch(this.error);
-      await this.queueChargingControl({ target_power_mode: mode });
-    });
     // Homey sets these together (e.g. the "Set target power" card), so handle them as one change.
     this.registerMultipleCapabilityListener(
       ['evcharger_charging', 'target_power', 'target_power_mode'],
@@ -408,7 +402,6 @@ class NrgkickDevice extends Homey.Device {
     if (c.phase_count) await this.set('nrgkick_phase_count', String(c.phase_count));
     // Homey Energy needs a starting point: device mode, and the power the current setting allows.
     if (this.getCapabilityValue('target_power_mode') === null) await this.set('target_power_mode', 'device');
-    await this.set('nrgkick_homey_control', (this.mode || this.getCapabilityValue('target_power_mode')) === 'homey');
     if (this.getCapabilityValue('target_power') === null && c.current_set !== null) {
       const voltage = m.nominalVoltage(this.info);
       const phases = m.activePhases(this.info, c);
@@ -636,21 +629,10 @@ class NrgkickDevice extends Homey.Device {
   }
 
   /**
-   * Homey can deliver a mode change and a target power as two batches in quick succession, and it stores a
-   * value only after its listener returns. So the requested mode and target are remembered at once, and the
-   * batches run one after another; otherwise the second batch could still see the old mode and be ignored.
+   * Charging controls run one after another, and the last requested target power is remembered at once:
+   * Homey stores a value only after its listener returns.
    */
   queueChargingControl(changed) {
-    // Setting a target power by hand only makes sense in Homey mode, so it switches to it.
-    const currentMode = this.mode || this.getCapabilityValue('target_power_mode');
-    if (changed.target_power !== undefined && changed.target_power_mode === undefined && currentMode !== 'homey') {
-      changed = { ...changed, target_power_mode: 'homey' };
-      this.setCapabilityValue('target_power_mode', 'homey').catch(this.error);
-    }
-    if (changed.target_power_mode !== undefined) {
-      this.mode = changed.target_power_mode;
-      this.set('nrgkick_homey_control', this.mode === 'homey').catch(this.error);
-    }
     if (changed.target_power !== undefined) this.targetPower = changed.target_power;
     const run = this.controlQueue.then(() => this.onChargingControl(changed));
     this.controlQueue = run.catch(() => {});
@@ -658,21 +640,26 @@ class NrgkickDevice extends Homey.Device {
   }
 
   /**
-   * evcharger_charging pauses or resumes. In Homey mode, target_power sets the charging current; in device mode
-   * (the default) the NRGkick follows its own settings and target_power is ignored.
+   * Homey is always in charge and the last command wins: evcharger_charging pauses or resumes, and a target power
+   * (a Flow or Homey Energy) becomes a charging current, or a pause below 6 A. target_power_mode only tells when
+   * Homey Energy takes over or hands back; handing back restores the current and pause state from before.
    */
   async onChargingControl({ evcharger_charging: charging, target_power: power, target_power_mode: mode }) {
     if (mode === 'device') await this.leaveHomeyMode();
     if (mode === 'homey') await this.enterHomeyMode();
 
-    const homeyMode = (mode || this.mode || this.getCapabilityValue('target_power_mode')) === 'homey';
-    if (!homeyMode) {
-      if (charging !== undefined) await this.setPaused(!charging);
+    let target = power;
+    if (target === undefined && mode === 'homey') {
+      target = this.targetPower !== null ? this.targetPower : (this.getCapabilityValue('target_power') || 0);
+    }
+    if (target === undefined) {
+      if (charging !== undefined) {
+        this.targetPaused = false;
+        await this.setPaused(!charging);
+      }
       return;
     }
 
-    let target = power;
-    if (target === undefined) target = this.targetPower !== null ? this.targetPower : (this.getCapabilityValue('target_power') || 0);
     // A pause that only came from a too low target power must not block charging once the target rises again.
     const enabled = charging !== undefined ? charging : (this.targetPaused || this.getCapabilityValue('evcharger_charging') !== false);
     const amps = m.wattsToCurrent(target, {
