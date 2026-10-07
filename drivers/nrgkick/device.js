@@ -633,6 +633,7 @@ class NrgkickDevice extends Homey.Device {
    * Homey stores a value only after its listener returns.
    */
   queueChargingControl(changed) {
+    this.log('Charging control', JSON.stringify(changed));
     if (changed.target_power !== undefined) this.targetPower = changed.target_power;
     const run = this.controlQueue.then(() => this.onChargingControl(changed));
     this.controlQueue = run.catch(() => {});
@@ -667,17 +668,19 @@ class NrgkickDevice extends Homey.Device {
       phases: m.activePhases(this.info, this.control),
       max: this.maxCurrent(),
     });
-    if (!enabled || amps <= 0) {
+    if (amps <= 0) {
       this.targetPaused = enabled;
       await this.setPaused(true);
       return;
     }
-    this.targetPaused = false;
+    // The current is set even while paused: Homey's "Set target power" card sends the target first and the
+    // matching evcharger_charging a moment later, as a separate change.
     const current = this.control && this.control.current_set;
     if (current === null || current === undefined || Math.abs(current - amps) >= 0.05) {
       await this.writeControl('current_set', amps);
     }
-    await this.setPaused(false);
+    this.targetPaused = false;
+    await this.setPaused(!enabled);
   }
 
   /** Remembers the user's own current and pause state, to restore them when Homey hands control back. */

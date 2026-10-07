@@ -385,6 +385,28 @@ test('a target power below 6 A pauses, and a higher one resumes on its own', asy
   }
 });
 
+test('the Set target power card: target and charging arrive as separate changes', async () => {
+  const { dev, device } = await startDevice();
+  try {
+    await device.poll();
+    // Homey sends the target power (with the mode) first, and evcharger_charging about half a second later.
+    const card = async (power) => {
+      await device.listeners.multi({ target_power: power, target_power_mode: 'homey' });
+      await device.setCapabilityValue('target_power_mode', 'homey');
+      await device.listeners.multi({ evcharger_charging: power > 0 });
+      await device.setCapabilityValue('evcharger_charging', power > 0);
+      await device.poll();
+    };
+    await card(1840);
+    await card(0);
+    await card(2990);
+    assert.deepStrictEqual(dev.state.writes, ['current_set=8', 'charge_pause=1', 'current_set=13', 'charge_pause=0']);
+  } finally {
+    device.stop();
+    await dev.close();
+  }
+});
+
 test('a refused write surfaces the device reason', async () => {
   const { dev, device } = await startDevice();
   try {
