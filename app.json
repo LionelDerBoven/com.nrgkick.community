@@ -1069,9 +1069,9 @@
         "lan"
       ],
       "images": {
-        "small": "/drivers/nrgkick/assets/images/nrgkick-small.png",
-        "large": "/drivers/nrgkick/assets/images/nrgkick-large.png",
-        "xlarge": "/drivers/nrgkick/assets/images/nrgkick-xlarge.png"
+        "small": "/drivers/nrgkick/assets/images/small.png",
+        "large": "/drivers/nrgkick/assets/images/large.png",
+        "xlarge": "/drivers/nrgkick/assets/images/xlarge.png"
       },
       "pair": [
         {
