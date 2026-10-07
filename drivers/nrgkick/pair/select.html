@@ -1,0 +1,74 @@
+<style>
+  .nrg-tile { display: block; width: 100%; margin: 0 0 10px; padding: 14px 16px; text-align: left; }
+  .nrg-tile small { display: block; opacity: .7; font-weight: normal; }
+  .nrg-error { color: var(--homey-color-danger, #e00); margin: 12px 0; }
+</style>
+
+<p class="homey-subtitle" data-i18n="pair.select_intro"></p>
+<div id="list"></div>
+<p id="error" class="nrg-error" hidden></p>
+<button id="manual" type="button" class="homey-button-secondary-shadow-full" data-i18n="pair.manual_button"></button>
+
+<script type="application/javascript">
+  (function () {
+    var list = document.getElementById('list');
+    var error = document.getElementById('error');
+    var busy = false;
+
+    function showError(message) {
+      error.textContent = message || '';
+      error.hidden = !message;
+    }
+
+    // Shared with manual.html and api_disabled.html: where to go after trying an address.
+    function route(result) {
+      if (result.status === 'auth') return Homey.showView('login_credentials');
+      if (result.status === 'api_disabled') return Homey.showView('api_disabled');
+      return Homey.showView('finish');
+    }
+
+    function probe(host) {
+      if (busy) return;
+      busy = true;
+      showError('');
+      Homey.showLoadingOverlay();
+      Homey.emit('probe', { host: host })
+        .then(function (result) {
+          Homey.hideLoadingOverlay();
+          route(result);
+        })
+        .catch(function (err) {
+          Homey.hideLoadingOverlay();
+          showError(err && err.message ? err.message : String(err));
+        })
+        .then(function () { busy = false; });
+    }
+
+    document.getElementById('manual').addEventListener('click', function () {
+      Homey.showView('manual');
+    });
+
+    Homey.showLoadingOverlay();
+    Homey.emit('discover')
+      .then(function (found) {
+        Homey.hideLoadingOverlay();
+        if (!found.length) return Homey.showView('manual');
+        found.forEach(function (item) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'homey-button-primary-full nrg-tile';
+          b.textContent = item.name;
+          var detail = document.createElement('small');
+          detail.textContent = item.host + (item.apiEnabled ? '' : ' · ' + Homey.__('pair.api_off'));
+          b.appendChild(detail);
+          b.addEventListener('click', function () { probe(item.host); });
+          list.appendChild(b);
+        });
+        return null;
+      })
+      .catch(function () {
+        Homey.hideLoadingOverlay();
+        Homey.showView('manual');
+      });
+  }());
+</script>

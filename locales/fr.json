@@ -70,7 +70,6 @@
   },
   "errors": {
     "auth": "Le NRGkick a refusé le nom d'utilisateur ou le mot de passe. Vérifiez-les dans les paramètres de l'appareil.",
-    "auth_required": "Ce NRGkick demande un nom d'utilisateur et un mot de passe. Saisissez ceux définis sous Authentication (JSON) dans l'app NRGkick.",
     "api_disabled": "L'API JSON locale est désactivée. Activez-la dans l'application NRGkick sous Avancé, API locale.",
     "rejected": "Le NRGkick a refusé la commande : __reason__",
     "timeout": "Le NRGkick n'a pas répondu à temps. Vérifiez qu'il est alimenté et connecté au réseau.",
@@ -82,16 +81,18 @@
     "other_device": "Cette adresse appartient à un autre NRGkick. Ajoutez-le comme appareil distinct."
   },
   "pair": {
-    "intro": "Assurez-vous que l'API JSON est activée dans l'application NRGkick (Avancé, API locale).",
-    "found": "Trouvé sur le réseau",
-    "searching": "Recherche sur le réseau…",
-    "none_found": "Aucun NRGkick trouvé automatiquement. Entrez son adresse IP ci-dessous ; vous pouvez la trouver dans l'application NRGkick.",
-    "api_off": "API JSON désactivée",
+    "select_intro": "Touchez votre NRGkick pour l'ajouter.",
+    "manual_button": "Saisir une adresse IP",
+    "manual_intro": "Saisissez l'adresse de votre NRGkick. Vérifiez que l'API JSON est activée dans l'app NRGkick (Avancé, API locale).",
     "host": "Adresse IP ou nom d'hôte",
-    "username": "Nom d'utilisateur (facultatif)",
-    "password": "Mot de passe (facultatif)",
-    "credentials_hint": "Laissez vide, sauf si vous avez défini un nom d'utilisateur et un mot de passe sous Authentication (JSON) dans l'app NRGkick. C'est un verrou facultatif sur l'API JSON, distinct de l'activation de l'API.",
+    "host_hint": "Vous la trouverez dans l'app NRGkick ou dans la liste des appareils de votre routeur.",
+    "api_off": "API JSON désactivée",
     "connect": "Connecter",
-    "connecting": "Connexion…"
+    "api_disabled_intro": "Ce NRGkick a été trouvé, mais son API JSON locale est désactivée. Activez-la, puis réessayez :",
+    "api_step_1": "Ouvrez l'app NRGkick et connectez-vous à votre NRGkick.",
+    "api_step_2": "Allez dans Avancé, API locale.",
+    "api_step_3": "Activez JSON API.",
+    "retry": "Réessayer",
+    "adding": "Ajout de votre NRGkick…"
   }
 }

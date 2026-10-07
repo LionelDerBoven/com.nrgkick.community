@@ -65,53 +65,89 @@ class NrgkickDriver extends Homey.Driver {
     }
   }
 
-  async onPair(session) {
-    session.setHandler('discover', async () => {
-      this.log(`Pairing: ${Object.keys(this.discovery.getDiscoveryResults()).length} NRGkick(s) found by mDNS`);
-      const usedHosts = new Set(this.getDevices().map((d) => d.getSetting('host')));
-      return Object.values(this.discovery.getDiscoveryResults())
-        .filter((r) => r.address && !usedHosts.has(r.address))
-        .slice(0, 5)
-        .map((r) => {
-          const txt = r.txt || {};
-          return {
-            host: r.address,
-            name: txt.device_name || txt.model_type || 'NRGkick',
-            model: txt.model_type || '',
-            apiEnabled: txt.json_api_enabled !== '0',
-          };
-        });
-    });
-
-    session.setHandler('connect', async ({ host, username, password }) => {
-      const address = String(host || '').trim();
-      if (!address) throw new Error(this.homey.__('errors.no_host'));
-      const user = String(username || '').trim();
-      const client = new NrgkickClient({
-        host: address, username: user, password, sleep: (ms) => new Promise((resolve) => this.homey.setTimeout(resolve, ms)),
+  /** NRGkicks announced over mDNS that are not added yet (at most 5). */
+  discoveredForPairing() {
+    const usedHosts = new Set(this.getDevices().map((d) => d.getSetting('host')));
+    return Object.values(this.discovery.getDiscoveryResults())
+      .filter((r) => r.address && !usedHosts.has(r.address))
+      .slice(0, 5)
+      .map((r) => {
+        const txt = r.txt || {};
+        return {
+          host: r.address,
+          name: txt.device_name || txt.model_type || 'NRGkick',
+          apiEnabled: txt.json_api_enabled !== '0',
+        };
       });
-      let info;
-      try {
-        info = await client.getInfo();
-      } catch (err) {
-        if (err.code === 'auth' && !user) throw new Error(this.homey.__('errors.auth_required'));
-        throw new Error(describeError(this.homey, err));
-      } finally {
-        client.destroy();
-      }
-      const serial = m.pick(info.general, 'serial_number');
-      if (!serial) throw new Error(this.homey.__('errors.no_serial'));
-      if (this.getDevices().some((d) => String(d.getData().id).toLowerCase() === String(serial).toLowerCase())) {
-        throw new Error(this.homey.__('errors.already_added'));
-      }
-      return {
-        name: m.pick(info.general, 'device_name') || 'NRGkick',
-        data: { id: String(serial) },
-        settings: { host: address, username: user, password: password || '' },
-      };
-    });
   }
 
+  /**
+   * Reads /info at `host` and returns the device to create. Throws an NrgkickError for auth, API disabled or
+   * connection problems, and a translated Error when the device has no serial or is already added.
+   */
+  async readDevice(host, username, password) {
+    const client = new NrgkickClient({
+      host, username, password, sleep: (ms) => new Promise((resolve) => this.homey.setTimeout(resolve, ms)),
+    });
+    let info;
+    try {
+      info = await client.getInfo();
+    } finally {
+      client.destroy();
+    }
+    const serial = m.pick(info.general, 'serial_number');
+    if (!serial) throw new Error(this.homey.__('errors.no_serial'));
+    if (this.getDevices().some((d) => String(d.getData().id).toLowerCase() === String(serial).toLowerCase())) {
+      throw new Error(this.homey.__('errors.already_added'));
+    }
+    return {
+      name: m.pick(info.general, 'device_name') || 'NRGkick',
+      data: { id: String(serial) },
+      settings: { host, username, password },
+    };
+  }
+
+  /**
+   * Pairing: pick a found NRGkick or enter an address (select / manual), the app tries it without login, and
+   * only asks for a username and password (login_credentials) when the NRGkick answers 401. The finish view
+   * creates the device.
+   */
+  async onPair(session) {
+    const pending = { host: '', device: null };
+
+    session.setHandler('discover', async () => this.discoveredForPairing());
+
+    // Tries an address without credentials. Returns { status: 'ok' | 'auth' | 'api_disabled' }.
+    session.setHandler('probe', async ({ host } = {}) => {
+      const address = String(host || pending.host || '').trim();
+      if (!address) throw new Error(this.homey.__('errors.no_host'));
+      pending.host = address;
+      pending.device = null;
+      try {
+        pending.device = await this.readDevice(address, '', '');
+        return { status: 'ok' };
+      } catch (err) {
+        if (err.code === 'auth') return { status: 'auth' };
+        if (err.code === 'api_disabled') return { status: 'api_disabled' };
+        throw err.code ? new Error(describeError(this.homey, err)) : err;
+      }
+    });
+
+    session.setHandler('login', async ({ username, password }) => {
+      try {
+        pending.device = await this.readDevice(pending.host, String(username || '').trim(), password || '');
+        return true;
+      } catch (err) {
+        if (err.code === 'auth') return false;
+        throw err.code ? new Error(describeError(this.homey, err)) : err;
+      }
+    });
+
+    session.setHandler('pending_device', async () => {
+      if (!pending.device) throw new Error(this.homey.__('errors.no_host'));
+      return pending.device;
+    });
+  }
 }
 
 module.exports = NrgkickDriver;

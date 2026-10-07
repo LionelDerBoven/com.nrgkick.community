@@ -8,8 +8,8 @@ to that API directly, without a cloud service. Unofficial, not affiliated with D
 ## Usage
 
 1. In the NRGkick app, turn on **Extended → Local API → JSON API**. Optionally turn on Authentication (JSON).
-2. In Homey, add a device: **NRGkick**. Pick the charger from the list (mDNS) or enter its IP address, plus the
-   username and password when authentication is on.
+2. In Homey, add a device: **NRGkick**. Tap the charger in the list (mDNS) or enter its IP address. The app
+   connects right away and only asks for a username and password when Authentication (JSON) is on.
 
 | What | How |
 |---|---|

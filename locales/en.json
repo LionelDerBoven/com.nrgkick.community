@@ -70,7 +70,6 @@
   },
   "errors": {
     "auth": "The NRGkick refused the username or password. Check them in the device settings.",
-    "auth_required": "This NRGkick asks for a username and password. Enter the ones set under Authentication (JSON) in the NRGkick app.",
     "api_disabled": "The local JSON API is off. Turn it on in the NRGkick app under Extended, Local API.",
     "rejected": "The NRGkick refused the command: __reason__",
     "timeout": "The NRGkick did not answer in time. Check that it is powered and on the network.",
@@ -82,16 +81,18 @@
     "other_device": "This address belongs to another NRGkick. Add that one as a separate device."
   },
   "pair": {
-    "intro": "Make sure the JSON API is on in the NRGkick app (Extended, Local API).",
-    "found": "Found on the network",
-    "searching": "Searching the network…",
-    "none_found": "No NRGkick found automatically. Enter its IP address below; you can find it in the NRGkick app.",
-    "api_off": "JSON API off",
+    "select_intro": "Tap your NRGkick to add it.",
+    "manual_button": "Enter an IP address",
+    "manual_intro": "Enter the address of your NRGkick. Make sure the JSON API is on in the NRGkick app (Extended, Local API).",
     "host": "IP address or host name",
-    "username": "Username (optional)",
-    "password": "Password (optional)",
-    "credentials_hint": "Leave empty unless you set a username and password under Authentication (JSON) in the NRGkick app. That is an optional extra lock on the JSON API, separate from turning the API on.",
+    "host_hint": "You find it in the NRGkick app, or in your router's list of devices.",
+    "api_off": "JSON API off",
     "connect": "Connect",
-    "connecting": "Connecting…"
+    "api_disabled_intro": "This NRGkick was found, but its local JSON API is off. Turn it on, then try again:",
+    "api_step_1": "Open the NRGkick app and connect to your NRGkick.",
+    "api_step_2": "Go to Extended, Local API.",
+    "api_step_3": "Turn on JSON API.",
+    "retry": "Try again",
+    "adding": "Adding your NRGkick…"
   }
 }

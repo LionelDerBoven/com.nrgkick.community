@@ -1,0 +1,50 @@
+<style>
+  .nrg-error { color: var(--homey-color-danger, #e00); margin: 12px 0; }
+  .nrg-muted { opacity: .7; font-size: 14px; }
+</style>
+
+<p class="homey-subtitle" data-i18n="pair.manual_intro"></p>
+<form id="form" class="homey-form">
+  <div class="homey-form-group">
+    <label class="homey-form-label" for="host" data-i18n="pair.host"></label>
+    <input class="homey-form-input" id="host" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="192.168.1.50" />
+    <p class="nrg-muted" data-i18n="pair.host_hint"></p>
+  </div>
+  <p id="error" class="nrg-error" hidden></p>
+  <button id="connect" type="submit" class="homey-button-primary-full" data-i18n="pair.connect"></button>
+</form>
+
+<script type="application/javascript">
+  (function () {
+    var error = document.getElementById('error');
+    var button = document.getElementById('connect');
+
+    function showError(message) {
+      error.textContent = message || '';
+      error.hidden = !message;
+    }
+
+    function route(result) {
+      if (result.status === 'auth') return Homey.showView('login_credentials');
+      if (result.status === 'api_disabled') return Homey.showView('api_disabled');
+      return Homey.showView('finish');
+    }
+
+    document.getElementById('form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      showError('');
+      button.disabled = true;
+      Homey.showLoadingOverlay();
+      Homey.emit('probe', { host: document.getElementById('host').value })
+        .then(function (result) {
+          Homey.hideLoadingOverlay();
+          route(result);
+        })
+        .catch(function (err) {
+          Homey.hideLoadingOverlay();
+          showError(err && err.message ? err.message : String(err));
+          button.disabled = false;
+        });
+    });
+  }());
+</script>

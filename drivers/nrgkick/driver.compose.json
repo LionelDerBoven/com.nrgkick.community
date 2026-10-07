@@ -277,7 +277,57 @@
   },
   "pair": [
     {
-      "id": "connect"
+      "id": "select"
+    },
+    {
+      "id": "manual",
+      "navigation": {
+        "prev": "select"
+      }
+    },
+    {
+      "id": "api_disabled",
+      "navigation": {
+        "prev": "select"
+      }
+    },
+    {
+      "id": "login_credentials",
+      "template": "login_credentials",
+      "navigation": {
+        "prev": "select",
+        "next": "finish"
+      },
+      "options": {
+        "title": {
+          "en": "Log in to your NRGkick",
+          "nl": "Log in op je NRGkick",
+          "fr": "Connectez-vous à votre NRGkick"
+        },
+        "usernameLabel": {
+          "en": "Username",
+          "nl": "Gebruikersnaam",
+          "fr": "Nom d'utilisateur"
+        },
+        "usernamePlaceholder": {
+          "en": "As set under Authentication (JSON)",
+          "nl": "Zoals ingesteld onder Authentication (JSON)",
+          "fr": "Tel que défini sous Authentication (JSON)"
+        },
+        "passwordLabel": {
+          "en": "Password",
+          "nl": "Wachtwoord",
+          "fr": "Mot de passe"
+        },
+        "passwordPlaceholder": {
+          "en": "Password",
+          "nl": "Wachtwoord",
+          "fr": "Mot de passe"
+        }
+      }
+    },
+    {
+      "id": "finish"
     }
   ]
 }

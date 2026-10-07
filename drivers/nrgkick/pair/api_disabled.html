@@ -1,0 +1,48 @@
+<style>
+  .nrg-error { color: var(--homey-color-danger, #e00); margin: 12px 0; }
+  .nrg-steps { margin: 12px 0 20px; padding-left: 20px; line-height: 1.6; }
+</style>
+
+<p class="homey-subtitle" data-i18n="pair.api_disabled_intro"></p>
+<ol class="nrg-steps">
+  <li data-i18n="pair.api_step_1"></li>
+  <li data-i18n="pair.api_step_2"></li>
+  <li data-i18n="pair.api_step_3"></li>
+</ol>
+<p id="error" class="nrg-error" hidden></p>
+<button id="retry" type="button" class="homey-button-primary-full" data-i18n="pair.retry"></button>
+
+<script type="application/javascript">
+  (function () {
+    var error = document.getElementById('error');
+    var button = document.getElementById('retry');
+
+    function showError(message) {
+      error.textContent = message || '';
+      error.hidden = !message;
+    }
+
+    function route(result) {
+      if (result.status === 'auth') return Homey.showView('login_credentials');
+      if (result.status === 'api_disabled') return showError(Homey.__('errors.api_disabled'));
+      return Homey.showView('finish');
+    }
+
+    button.addEventListener('click', function () {
+      showError('');
+      button.disabled = true;
+      Homey.showLoadingOverlay();
+      Homey.emit('probe', {})
+        .then(function (result) {
+          Homey.hideLoadingOverlay();
+          button.disabled = false;
+          route(result);
+        })
+        .catch(function (err) {
+          Homey.hideLoadingOverlay();
+          button.disabled = false;
+          showError(err && err.message ? err.message : String(err));
+        });
+    });
+  }());
+</script>

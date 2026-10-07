@@ -70,7 +70,6 @@
   },
   "errors": {
     "auth": "De NRGkick weigerde de gebruikersnaam of het wachtwoord. Controleer ze in de instellingen van het toestel.",
-    "auth_required": "Deze NRGkick vraagt een gebruikersnaam en wachtwoord. Vul die in die je onder Authentication (JSON) in de NRGkick-app hebt ingesteld.",
     "api_disabled": "De lokale JSON-API staat uit. Zet ze aan in de NRGkick-app onder Uitgebreid, Lokale API.",
     "rejected": "De NRGkick weigerde het commando: __reason__",
     "timeout": "De NRGkick antwoordde niet op tijd. Controleer of hij aan staat en met het netwerk verbonden is.",
@@ -82,16 +81,18 @@
     "other_device": "Dit adres hoort bij een andere NRGkick. Voeg die toe als een apart toestel."
   },
   "pair": {
-    "intro": "Zorg dat de JSON-API aan staat in de NRGkick-app (Uitgebreid, Lokale API).",
-    "found": "Gevonden op het netwerk",
-    "searching": "Netwerk doorzoeken…",
-    "none_found": "Geen NRGkick automatisch gevonden. Vul hieronder het IP-adres in; je vindt het in de NRGkick-app.",
-    "api_off": "JSON-API staat uit",
+    "select_intro": "Tik op je NRGkick om hem toe te voegen.",
+    "manual_button": "Een IP-adres invullen",
+    "manual_intro": "Vul het adres van je NRGkick in. Zorg dat de JSON-API aan staat in de NRGkick-app (Uitgebreid, Lokale API).",
     "host": "IP-adres of hostnaam",
-    "username": "Gebruikersnaam (optioneel)",
-    "password": "Wachtwoord (optioneel)",
-    "credentials_hint": "Laat leeg, tenzij je in de NRGkick-app onder Authentication (JSON) een gebruikersnaam en wachtwoord hebt ingesteld. Dat is een optioneel extra slot op de JSON-API, los van het aanzetten van de API zelf.",
+    "host_hint": "Je vindt het in de NRGkick-app, of in de toestellenlijst van je router.",
+    "api_off": "JSON-API staat uit",
     "connect": "Verbinden",
-    "connecting": "Verbinden…"
+    "api_disabled_intro": "Deze NRGkick is gevonden, maar zijn lokale JSON-API staat uit. Zet hem aan en probeer opnieuw:",
+    "api_step_1": "Open de NRGkick-app en maak verbinding met je NRGkick.",
+    "api_step_2": "Ga naar Uitgebreid, Lokale API.",
+    "api_step_3": "Zet JSON API aan.",
+    "retry": "Opnieuw proberen",
+    "adding": "Je NRGkick wordt toegevoegd…"
   }
 }

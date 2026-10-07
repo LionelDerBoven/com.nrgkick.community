@@ -1,0 +1,25 @@
+<style>
+  .nrg-error { color: var(--homey-color-danger, #e00); margin: 12px 0; }
+</style>
+
+<p id="status" class="homey-subtitle" data-i18n="pair.adding"></p>
+<p id="error" class="nrg-error" hidden></p>
+
+<script type="application/javascript">
+  (function () {
+    var error = document.getElementById('error');
+    Homey.showLoadingOverlay();
+    Homey.emit('pending_device')
+      .then(function (device) { return Homey.createDevice(device); })
+      .then(function () {
+        Homey.hideLoadingOverlay();
+        Homey.done();
+      })
+      .catch(function (err) {
+        Homey.hideLoadingOverlay();
+        document.getElementById('status').hidden = true;
+        error.textContent = err && err.message ? err.message : String(err);
+        error.hidden = false;
+      });
+  }());
+</script>
