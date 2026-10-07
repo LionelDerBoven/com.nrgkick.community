@@ -213,6 +213,8 @@ test('first poll fills capabilities, labels and limits', async () => {
     assert.strictEqual(v('nrgkick_current_set'), 16);
     assert.strictEqual(v('nrgkick_phase_count'), '3');
     assert.strictEqual(v('nrgkick_energy_limit'), 0);
+    assert.strictEqual(v('target_power_mode'), 'device');
+    assert.strictEqual(v('target_power'), 3680, '16 A on one phase');
     assert.strictEqual(v('measure_temperature'), 21.5);
     assert.strictEqual(v('measure_signal_strength'), -61);
     assert.strictEqual(v('nrgkick_error'), 'none');

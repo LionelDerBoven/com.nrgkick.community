@@ -334,6 +334,13 @@ class NrgkickDevice extends Homey.Device {
     if (c.charge_pause !== null) await this.set('evcharger_charging', c.charge_pause === 0);
     if (c.energy_limit !== null) await this.set('nrgkick_energy_limit', kwh(c.energy_limit));
     if (c.phase_count) await this.set('nrgkick_phase_count', String(c.phase_count));
+    // Homey Energy needs a starting point: device mode, and the power the current setting allows.
+    if (this.getCapabilityValue('target_power_mode') === null) await this.set('target_power_mode', 'device');
+    if (this.getCapabilityValue('target_power') === null && c.current_set !== null) {
+      const voltage = m.nominalVoltage(this.info);
+      const phases = m.activePhases(this.info, c);
+      await this.set('target_power', m.currentToWatts(c.current_set, { voltage, phases }));
+    }
   }
 
   async applyValues(values) {
