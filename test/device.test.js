@@ -219,7 +219,7 @@ test('first poll fills capabilities, labels and limits', async () => {
     assert.strictEqual(v('evcharger_charging_state'), 'plugged_out');
     assert.strictEqual(v('evcharger_charging'), true);
     assert.strictEqual(v('nrgkick_current_set'), 16);
-    assert.strictEqual(v('nrgkick_phase_count'), '3');
+    assert.strictEqual(device.hasCapability('nrgkick_phase_count'), false, 'one phase: no picker');
     assert.strictEqual(v('nrgkick_energy_limit'), 0);
     assert.strictEqual(v('target_power_mode'), 'device');
     assert.strictEqual(v('target_power'), 3680, '16 A on one phase');
@@ -292,13 +292,21 @@ test('residual current trip raises the fault alarm', async () => {
   }
 });
 
-test('a transient phase_count of 0 is ignored', async () => {
+test('the phase picker shows only with more than one phase; a transient 0 is ignored', async () => {
   const { dev, device } = await startDevice();
   try {
     await device.poll();
+    assert.strictEqual(device.hasCapability('nrgkick_phase_count'), false);
+    Object.assign(dev.state.info.connector, { phase_count: 3, max_current: 32, type: 3 });
+    dev.state.info.grid.phases = 7;
+    device.infoAt = 0;
+    await device.poll();
+    assert.strictEqual(device.getCapabilityValue('nrgkick_phase_count'), '3');
     dev.state.control.phase_count = 0;
     await device.poll();
     assert.strictEqual(device.getCapabilityValue('nrgkick_phase_count'), '3');
+    await device.setPhaseCount('1');
+    assert.deepStrictEqual(dev.state.writes, ['phase_count=1']);
   } finally {
     device.stop();
     await dev.close();
@@ -311,7 +319,7 @@ test('capability listeners write the device', async () => {
     await device.poll();
     await device.listeners.nrgkick_current_set(10.5);
     await device.listeners.nrgkick_energy_limit(7.5);
-    await device.listeners.nrgkick_phase_count('1');
+    await device.setPhaseCount('1');
     await device.listeners.multi({ evcharger_charging: false });
     assert.deepStrictEqual(dev.state.writes, ['current_set=10.5', 'energy_limit=7500', 'phase_count=1', 'charge_pause=1']);
     assert.strictEqual(device.getCapabilityValue('nrgkick_energy_limit'), 7.5);
@@ -353,7 +361,7 @@ test('a refused write surfaces the device reason', async () => {
   try {
     await device.poll();
     dev.state.status = 406;
-    await assert.rejects(device.listeners.nrgkick_phase_count('1'), { message: 'errors.rejected:nope' });
+    await assert.rejects(device.setPhaseCount('1'), { message: 'errors.rejected:nope' });
   } finally {
     device.stop();
     await dev.close();

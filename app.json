@@ -574,9 +574,9 @@
           "fr": "Régler le nombre de phases à [[phases]]"
         },
         "hint": {
-          "en": "Only works when phase switching is enabled in the NRGkick app.",
-          "nl": "Werkt alleen als fasewisseling aan staat in de NRGkick-app.",
-          "fr": "Ne fonctionne que si la commutation de phases est activée dans l'app NRGkick."
+          "en": "Only works when phase switching is enabled in the NRGkick app. Not every car tolerates phase switching: check first that yours supports it.",
+          "nl": "Werkt alleen als fasewisseling aan staat in de NRGkick-app. Niet elke auto verdraagt fasewisseling: kijk eerst na of jouw auto het ondersteunt.",
+          "fr": "Ne fonctionne que si la commutation de phases est activée dans l'app NRGkick. Tous les véhicules ne la supportent pas : vérifiez d'abord que le vôtre la prend en charge."
         },
         "args": [
           {
@@ -1706,9 +1706,9 @@
         "fr": "Phases"
       },
       "desc": {
-        "en": "Only works when phase switching is enabled in the NRGkick app.",
-        "nl": "Werkt alleen als fasewisseling aan staat in de NRGkick-app.",
-        "fr": "Ne fonctionne que si la commutation de phases est activée dans l'app NRGkick."
+        "en": "Only works when phase switching is enabled in the NRGkick app. Not every car tolerates phase switching: check first that yours supports it.",
+        "nl": "Werkt alleen als fasewisseling aan staat in de NRGkick-app. Niet elke auto verdraagt fasewisseling: kijk eerst na of jouw auto het ondersteunt.",
+        "fr": "Ne fonctionne que si la commutation de phases est activée dans l'app NRGkick. Tous les véhicules ne la supportent pas : vérifiez d'abord que le vôtre la prend en charge."
       },
       "getable": true,
       "setable": true,

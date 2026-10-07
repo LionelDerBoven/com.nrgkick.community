@@ -17,6 +17,8 @@ const SIM_CAPABILITIES = [
   'nrgkick_cellular_mode', 'nrgkick_cellular_signal', 'nrgkick_cellular_operator',
   'nrgkick_latitude', 'nrgkick_longitude', 'nrgkick_gps_accuracy',
 ];
+// Shown only when the attachment and the grid have more than one phase; with one phase it can do nothing.
+const PHASE_CAPABILITY = 'nrgkick_phase_count';
 const LOCATION_TRIGGER_METERS = 100; // above normal GPS jitter, well below a trip
 const SESSION_SAVE_MS = 5 * 60 * 1000; // persist the running session cost at most every 5 minutes (flash writes)
 
@@ -64,7 +66,7 @@ class NrgkickDevice extends Homey.Device {
 
     this.registerCapabilityListener('nrgkick_current_set', (value) => this.writeControl('current_set', Math.min(value, this.maxCurrent())));
     this.registerCapabilityListener('nrgkick_energy_limit', (value) => this.writeControl('energy_limit', Math.round(value * 1000)));
-    this.registerCapabilityListener('nrgkick_phase_count', (value) => this.writeControl('phase_count', Number(value)));
+    this.registerPhaseListener();
     // Homey sets these together (e.g. the "Set target power" card), so handle them as one change.
     this.registerMultipleCapabilityListener(
       ['evcharger_charging', 'target_power', 'target_power_mode'],
@@ -96,7 +98,7 @@ class NrgkickDevice extends Homey.Device {
   async ensureCapabilities() {
     const wanted = this.driver.manifest.capabilities;
     for (const cap of wanted) {
-      if (!this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
+      if (cap !== PHASE_CAPABILITY && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
     }
     for (const cap of this.getCapabilities()) {
       if (!wanted.includes(cap) && !SIM_CAPABILITIES.includes(cap)) await this.removeCapability(cap).catch(this.error);
@@ -129,6 +131,28 @@ class NrgkickDevice extends Homey.Device {
       await this.enforceMaxCurrent(newSettings).catch(this.error);
     }
     if (changedKeys.some((key) => CONNECTION_KEYS.includes(key) || key === 'poll_interval')) this.refreshSoon(1000);
+  }
+
+  /** The phase picker comes and goes with the attachment, so its listener is registered once it exists. */
+  registerPhaseListener() {
+    if (this.phaseListener || !this.hasCapability(PHASE_CAPABILITY)) return;
+    this.registerCapabilityListener(PHASE_CAPABILITY, (value) => this.setPhaseCount(value));
+    this.phaseListener = true;
+  }
+
+  async updatePhaseCapability() {
+    const useful = m.availablePhases(this.info) > 1;
+    if (useful && !this.hasCapability(PHASE_CAPABILITY)) {
+      await this.addCapability(PHASE_CAPABILITY).catch(this.error);
+      this.registerPhaseListener();
+      if (this.control && this.control.phase_count) await this.set(PHASE_CAPABILITY, String(this.control.phase_count));
+    }
+    if (!useful && this.hasCapability(PHASE_CAPABILITY)) await this.removeCapability(PHASE_CAPABILITY).catch(this.error);
+  }
+
+  /** From the Flow card; works whether or not the phase picker is shown. */
+  async setPhaseCount(phases) {
+    await this.writeControl('phase_count', Number(phases));
   }
 
   /** Highest current allowed: the charger and attachment maximum, lowered by the user's max_current setting. */
@@ -274,6 +298,7 @@ class NrgkickDevice extends Homey.Device {
       grid: { voltage: m.num(grid, 'voltage'), phases: m.pick(grid, 'phases') },
     };
     await this.updateLimits();
+    await this.updatePhaseCapability();
 
     const text = (value) => (value === undefined || value === null ? '' : String(value));
     const fw = (sw, hw) => [text(m.pick(versions, sw)), text(m.pick(versions, hw))].filter(Boolean).join(' / ');

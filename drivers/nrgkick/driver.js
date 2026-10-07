@@ -39,7 +39,7 @@ class NrgkickDriver extends Homey.Driver {
     flow.getActionCard('set_energy_limit')
       .registerRunListener(({ device, limit }) => device.triggerCapabilityListener('nrgkick_energy_limit', Math.max(0, limit)));
     flow.getActionCard('set_phase_count')
-      .registerRunListener(({ device, phases }) => device.triggerCapabilityListener('nrgkick_phase_count', phases));
+      .registerRunListener(({ device, phases }) => device.setPhaseCount(phases));
 
     // mDNS keeps the address current when DHCP hands out a new one. Devices also work without it (a manual
     // address, or a NRGkick on another subnet), so the strategy is not linked to the driver's availability.
