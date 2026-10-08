@@ -24,14 +24,38 @@ to that API directly, without a cloud service. Unofficial, not affiliated with D
 
 ## Limits
 
-- Second-generation NRGkick with WiFi only; SmartModule firmware 4.0.0.0 or newer. The first generation
-  (Bluetooth only) has no local API.
+- Second generation: WiFi models with SmartModule firmware 4.0.0.0 or newer.
 - The device offers no push, so the app polls (default every 30 s, configurable 10-300 s).
 - Solar charging and scheduled charging in the NRGkick app cannot be switched through the API.
 - **SIM models: untested.** Mobile network, signal, operator and GPS position (plus a *location changed* Flow
   card) are built from DiniTech's API documentation and tested against a simulated device only; no SIM model was
   available. They appear only on a model whose type contains "SIM". The position is read every 10 minutes.
   Feedback from SIM owners is welcome in the issues.
+
+## First generation (experimental, untested on hardware)
+
+The first-generation NRGkick has no local JSON API. Two experimental drivers cover it. Neither has been tested on a
+real unit yet: they follow the protocol descriptions below and are tested against simulated devices. Owners who
+try them: turn on **Debug logging** in the device settings, then send a report with *Report a problem*, or open an
+issue.
+
+| Driver | How it connects | What works |
+|---|---|---|
+| **NRGkick Gen1 via Connect** | The NRGkick Connect module (WiFi bridge) over HTTP. Found on the network (UDP discovery) or by IP address | Power, energy, current/voltage/power per phase, temperature, errors. Pause/resume, charging current (whole amperes), energy limit and Homey Energy. Control needs the NRGkick's Bluetooth PIN in the device settings |
+| **NRGkick Gen1 Bluetooth** | Homey's own Bluetooth, a short connection per read (default every 60 s) | Reading only: status, power, energy, current/voltage/power per phase, temperature, error code, current and energy limit. Control follows once the readings are confirmed |
+
+Limits:
+
+- **Connect**: the API cannot tell whether a car is plugged in, so without charging power the state shows "plugged
+  in" (or "paused"). The Connect module drops requests that follow each other too closely; the app spaces them out.
+- **Bluetooth: limited and untested.** It reads only; it cannot control charging yet.
+- **Bluetooth range is short.** Homey must be close to the NRGkick: typically within about 10 m, ideally without
+  walls in between. The cable often lies outside or in a garage while Homey stands inside, so check this first. If
+  Homey is too far away, the device turns unavailable ("cannot reach the NRGkick over Bluetooth").
+- While the NRGkick app on a phone is connected, Homey cannot connect, and while Homey reads, the phone app cannot.
+
+Sources: DiniTech's *NRGkick Connect – JSON WEB API* (version 0.2, 2019) for the Connect module, and the Bluetooth
+layout from [evcc](https://github.com/evcc-io/evcc) (MIT licence, `charger/nrg/ble`).
 
 ## Development
 
@@ -48,10 +72,13 @@ Copy `.env.example` to `.env` to read a real device with `node tools/probe.js` (
 - `lib/NrgkickClient.js`: HTTP client for the local API (auth, retries, error types, response size cap)
 - `lib/mappings.js`: code tables, charging state, limits and watt/ampere conversion
 - `drivers/nrgkick/device.js`: polling, capabilities, Flow triggers, control and Homey Energy
+- `lib/ConnectClient.js`, `lib/connectDiscovery.js`, `drivers/nrgkick_connect/`: first generation via the Connect module
+- `lib/gen1Ble.js`, `drivers/nrgkick_ble/`: first generation over Bluetooth (byte layout and reader)
 
 ## Credits
 
-Built by LDB Technology, with [Claude](https://claude.com/claude-code) (Anthropic) as co-author.
+Built by LDB Technology, with [Claude](https://claude.com/claude-code) (Anthropic) as co-author. The first-generation
+Bluetooth protocol description comes from [evcc](https://github.com/evcc-io/evcc) (MIT licence).
 
 ## License
 

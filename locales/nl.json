@@ -78,7 +78,14 @@
     "no_serial": "De NRGkick rapporteerde geen serienummer.",
     "already_added": "Deze NRGkick is al toegevoegd.",
     "no_host": "Voer het IP-adres van de NRGkick in.",
-    "other_device": "Dit adres hoort bij een andere NRGkick. Voeg die toe als een apart toestel."
+    "other_device": "Dit adres hoort bij een andere NRGkick. Voeg die toe als een apart toestel.",
+    "offline": "De NRGkick is niet verbonden met de Connect-module. Controleer of hij stroom heeft en dicht genoeg bij de module ligt.",
+    "no_connect_host": "Vul het IP-adres van de NRGkick Connect-module in.",
+    "no_connect_devices": "De Connect-module antwoordt, maar kent geen NRGkick die nog niet toegevoegd is.",
+    "connect_pin_needed": "Vul de NRGkick-pincode in bij de toestelinstellingen: de Connect-module heeft hem nodig om instellingen te wijzigen.",
+    "no_ble_devices": "Geen NRGkick gevonden via Bluetooth. Controleer of hij stroom heeft en dicht bij Homey ligt, en sluit de NRGkick-app op je telefoon: zolang die verbonden is, is de NRGkick niet te vinden.",
+    "ble_read_only": "Een NRGkick van de eerste generatie bedienen via Bluetooth kan nog niet. Deze driver leest voorlopig alleen uit.",
+    "ble_unreachable": "Homey bereikt de NRGkick niet via Bluetooth. Controleer of hij stroom heeft en dicht genoeg ligt, en of de NRGkick-app op je telefoon gesloten is."
   },
   "pair": {
     "select_intro": "Tik op je NRGkick om hem toe te voegen.",
@@ -93,6 +100,19 @@
     "api_step_2": "Ga naar Uitgebreid, Lokale API.",
     "api_step_3": "Zet JSON API aan.",
     "retry": "Opnieuw proberen",
-    "adding": "Je NRGkick wordt toegevoegd…"
+    "adding": "Je NRGkick wordt toegevoegd…",
+    "connect_intro": "Voeg een NRGkick van de eerste generatie toe via zijn NRGkick Connect-module. Deze ondersteuning is experimenteel.",
+    "connect_searching": "Zoeken naar Connect-modules op je netwerk…",
+    "connect_host": "IP-adres van de Connect-module",
+    "connect_pin": "NRGkick-pincode (optioneel)",
+    "connect_pin_hint": "De Bluetooth-pincode uit de NRGkick-app. Nodig om het laden te bedienen; uitlezen werkt zonder.",
+    "ble_intro": "Voeg een NRGkick van de eerste generatie toe via Bluetooth. Voor je begint:",
+    "ble_point_untested": "Deze ondersteuning is beperkt en niet getest: ze leest alleen waarden uit en kan het laden nog niet bedienen.",
+    "ble_point_range": "Bluetooth heeft een kort bereik. Homey moet dicht bij de NRGkick staan, meestal binnen ongeveer 10 meter en liefst zonder muren ertussen.",
+    "ble_point_phone": "Sluit de NRGkick-app op je telefoon: zolang die verbonden is, kan Homey de NRGkick niet vinden of uitlezen.",
+    "ble_search": "Zoeken"
+  },
+  "gen1": {
+    "error_codes": "Foutcode __codes__"
   }
 }

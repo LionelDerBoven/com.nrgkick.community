@@ -1,0 +1,79 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Connection",
+      "nl": "Verbinding",
+      "fr": "Connexion"
+    },
+    "children": [
+      {
+        "id": "poll_interval",
+        "type": "number",
+        "value": 60,
+        "min": 30,
+        "max": 600,
+        "units": {
+          "en": "s",
+          "nl": "s",
+          "fr": "s"
+        },
+        "label": {
+          "en": "Update interval",
+          "nl": "Update-interval",
+          "fr": "Intervalle de mise à jour"
+        },
+        "hint": {
+          "en": "How often Homey reads the NRGkick over Bluetooth. Each read connects briefly; while it does, the NRGkick app on your phone cannot connect.",
+          "nl": "Hoe vaak Homey de NRGkick via Bluetooth uitleest. Elke uitlezing verbindt even; zolang dat duurt kan de NRGkick-app op je telefoon niet verbinden.",
+          "fr": "Fréquence de lecture du NRGkick par Bluetooth. Chaque lecture se connecte brièvement ; pendant ce temps, l'app NRGkick de votre téléphone ne peut pas se connecter."
+        }
+      },
+      {
+        "id": "debug_logging",
+        "type": "checkbox",
+        "value": false,
+        "label": {
+          "en": "Debug logging",
+          "nl": "Debuglogging",
+          "fr": "Journal de débogage"
+        },
+        "hint": {
+          "en": "Writes the raw data from the NRGkick to the app log. Turn it on before you send a report with 'Report a problem', so the developer can check the data format.",
+          "nl": "Schrijft de ruwe gegevens van de NRGkick naar het app-logboek. Zet dit aan voor je een rapport stuurt via 'Probleem melden', zodat de ontwikkelaar het gegevensformaat kan nakijken.",
+          "fr": "Écrit les données brutes du NRGkick dans le journal de l'app. Activez-le avant d'envoyer un rapport via « Signaler un problème », pour que le développeur puisse vérifier le format des données."
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device information",
+      "nl": "Toestelinformatie",
+      "fr": "Informations sur l'appareil"
+    },
+    "children": [
+      {
+        "id": "info_mac",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Bluetooth address",
+          "nl": "Bluetooth-adres",
+          "fr": "Adresse Bluetooth"
+        }
+      },
+      {
+        "id": "info_max_current",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Maximum current",
+          "nl": "Maximale stroom",
+          "fr": "Courant maximal"
+        }
+      }
+    ]
+  }
+]

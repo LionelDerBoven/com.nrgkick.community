@@ -22,7 +22,9 @@
   "category": [
     "energy"
   ],
-  "permissions": [],
+  "permissions": [
+    "homey:wireless:ble"
+  ],
   "images": {
     "small": "assets/images/small.jpg",
     "large": "assets/images/large.jpg",
@@ -768,6 +770,90 @@
             }
           }
         ]
+      },
+      {
+        "id": "connect_set_current",
+        "title": {
+          "en": "Set the charging current",
+          "nl": "Stel de laadstroom in",
+          "fr": "Régler le courant de charge"
+        },
+        "titleFormatted": {
+          "en": "Set the charging current to [[current]] A",
+          "nl": "Stel de laadstroom in op [[current]] A",
+          "fr": "Régler le courant de charge à [[current]] A"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick_connect"
+          },
+          {
+            "type": "number",
+            "name": "current",
+            "min": 6,
+            "max": 32,
+            "step": 1,
+            "placeholder": {
+              "en": "Ampere",
+              "nl": "Ampère",
+              "fr": "Ampère"
+            },
+            "title": {
+              "en": "Charging current",
+              "nl": "Laadstroom",
+              "fr": "Courant de charge"
+            }
+          }
+        ],
+        "hint": {
+          "en": "From 6 A up to the maximum the Connect module reports. Higher values are capped.",
+          "nl": "Van 6 A tot het maximum dat de Connect-module meldt. Hogere waarden worden begrensd.",
+          "fr": "De 6 A jusqu'au maximum indiqué par le module Connect. Les valeurs plus élevées sont plafonnées."
+        }
+      },
+      {
+        "id": "connect_set_energy_limit",
+        "title": {
+          "en": "Set the energy limit",
+          "nl": "Stel de energielimiet in",
+          "fr": "Régler la limite d'énergie"
+        },
+        "titleFormatted": {
+          "en": "Set the energy limit to [[limit]] kWh",
+          "nl": "Stel de energielimiet in op [[limit]] kWh",
+          "fr": "Régler la limite d'énergie à [[limit]] kWh"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=nrgkick_connect"
+          },
+          {
+            "type": "number",
+            "name": "limit",
+            "min": 0,
+            "max": 200,
+            "step": 0.5,
+            "placeholder": {
+              "en": "kWh",
+              "nl": "kWh",
+              "fr": "kWh"
+            },
+            "title": {
+              "en": "Energy limit",
+              "nl": "Energielimiet",
+              "fr": "Limite d'énergie"
+            }
+          }
+        ],
+        "hint": {
+          "en": "0 means no limit.",
+          "nl": "0 betekent geen limiet.",
+          "fr": "0 signifie sans limite."
+        }
       }
     ]
   },
@@ -1372,6 +1458,586 @@
                 "en": "Only on NRGkick models with a SIM card.",
                 "nl": "Alleen op NRGkick-modellen met een simkaart.",
                 "fr": "Uniquement sur les modèles NRGkick avec carte SIM."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "NRGkick Gen1 Bluetooth (experimental, read-only)",
+        "nl": "NRGkick Gen1 Bluetooth (experimenteel, alleen uitlezen)",
+        "fr": "NRGkick Gen1 Bluetooth (expérimental, lecture seule)"
+      },
+      "class": "evcharger",
+      "capabilities": [
+        "evcharger_charging",
+        "evcharger_charging_state",
+        "nrgkick_status",
+        "measure_power",
+        "nrgkick_current_set",
+        "nrgkick_energy_limit",
+        "meter_power",
+        "meter_power.session",
+        "measure_current.l1",
+        "measure_current.l2",
+        "measure_current.l3",
+        "measure_temperature",
+        "nrgkick_error",
+        "alarm_generic",
+        "measure_power.peak",
+        "measure_power.l1",
+        "measure_power.l2",
+        "measure_power.l3",
+        "measure_voltage.l1",
+        "measure_voltage.l2",
+        "measure_voltage.l3",
+        "measure_frequency"
+      ],
+      "capabilitiesOptions": {
+        "meter_power": {
+          "title": {
+            "en": "Total charged energy",
+            "nl": "Totaal geladen energie",
+            "fr": "Énergie chargée totale"
+          }
+        },
+        "meter_power.session": {
+          "title": {
+            "en": "Last charge energy",
+            "nl": "Energie laatste laadbeurt",
+            "fr": "Énergie de la dernière charge"
+          }
+        },
+        "measure_power": {
+          "title": {
+            "en": "Charging power",
+            "nl": "Laadvermogen",
+            "fr": "Puissance de charge"
+          }
+        },
+        "measure_current.l1": {
+          "title": {
+            "en": "Current L1",
+            "nl": "Stroom L1",
+            "fr": "Courant L1"
+          }
+        },
+        "measure_current.l2": {
+          "title": {
+            "en": "Current L2",
+            "nl": "Stroom L2",
+            "fr": "Courant L2"
+          }
+        },
+        "measure_current.l3": {
+          "title": {
+            "en": "Current L3",
+            "nl": "Stroom L3",
+            "fr": "Courant L3"
+          }
+        },
+        "measure_temperature": {
+          "title": {
+            "en": "Housing temperature",
+            "nl": "Temperatuur behuizing",
+            "fr": "Température du boîtier"
+          }
+        },
+        "alarm_generic": {
+          "title": {
+            "en": "Fault",
+            "nl": "Storing",
+            "fr": "Défaut"
+          }
+        },
+        "measure_power.peak": {
+          "title": {
+            "en": "Peak power last charge",
+            "nl": "Piekvermogen laatste laadbeurt",
+            "fr": "Puissance maximale de la dernière charge"
+          },
+          "uiComponent": null
+        },
+        "measure_power.l1": {
+          "title": {
+            "en": "Power L1",
+            "nl": "Vermogen L1",
+            "fr": "Puissance L1"
+          },
+          "uiComponent": null
+        },
+        "measure_power.l2": {
+          "title": {
+            "en": "Power L2",
+            "nl": "Vermogen L2",
+            "fr": "Puissance L2"
+          },
+          "uiComponent": null
+        },
+        "measure_power.l3": {
+          "title": {
+            "en": "Power L3",
+            "nl": "Vermogen L3",
+            "fr": "Puissance L3"
+          },
+          "uiComponent": null
+        },
+        "measure_voltage.l1": {
+          "title": {
+            "en": "Voltage L1",
+            "nl": "Spanning L1",
+            "fr": "Tension L1"
+          },
+          "uiComponent": null
+        },
+        "measure_voltage.l2": {
+          "title": {
+            "en": "Voltage L2",
+            "nl": "Spanning L2",
+            "fr": "Tension L2"
+          },
+          "uiComponent": null
+        },
+        "measure_voltage.l3": {
+          "title": {
+            "en": "Voltage L3",
+            "nl": "Spanning L3",
+            "fr": "Tension L3"
+          },
+          "uiComponent": null
+        },
+        "measure_frequency": {
+          "title": {
+            "en": "Grid frequency",
+            "nl": "Netfrequentie",
+            "fr": "Fréquence du réseau"
+          },
+          "uiComponent": null
+        },
+        "evcharger_charging": {
+          "setable": false
+        },
+        "nrgkick_current_set": {
+          "setable": false,
+          "uiComponent": "sensor"
+        },
+        "nrgkick_energy_limit": {
+          "setable": false,
+          "uiComponent": "sensor",
+          "max": 200
+        }
+      },
+      "energy": {
+        "evCharger": true,
+        "meterPowerImportedCapability": "meter_power"
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "ble"
+      ],
+      "images": {
+        "small": "/drivers/nrgkick_ble/assets/images/small.png",
+        "large": "/drivers/nrgkick_ble/assets/images/large.png",
+        "xlarge": "/drivers/nrgkick_ble/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "ble_intro"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "prev": "ble_intro",
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "nrgkick_ble",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Connection",
+            "nl": "Verbinding",
+            "fr": "Connexion"
+          },
+          "children": [
+            {
+              "id": "poll_interval",
+              "type": "number",
+              "value": 60,
+              "min": 30,
+              "max": 600,
+              "units": {
+                "en": "s",
+                "nl": "s",
+                "fr": "s"
+              },
+              "label": {
+                "en": "Update interval",
+                "nl": "Update-interval",
+                "fr": "Intervalle de mise à jour"
+              },
+              "hint": {
+                "en": "How often Homey reads the NRGkick over Bluetooth. Each read connects briefly; while it does, the NRGkick app on your phone cannot connect.",
+                "nl": "Hoe vaak Homey de NRGkick via Bluetooth uitleest. Elke uitlezing verbindt even; zolang dat duurt kan de NRGkick-app op je telefoon niet verbinden.",
+                "fr": "Fréquence de lecture du NRGkick par Bluetooth. Chaque lecture se connecte brièvement ; pendant ce temps, l'app NRGkick de votre téléphone ne peut pas se connecter."
+              }
+            },
+            {
+              "id": "debug_logging",
+              "type": "checkbox",
+              "value": false,
+              "label": {
+                "en": "Debug logging",
+                "nl": "Debuglogging",
+                "fr": "Journal de débogage"
+              },
+              "hint": {
+                "en": "Writes the raw data from the NRGkick to the app log. Turn it on before you send a report with 'Report a problem', so the developer can check the data format.",
+                "nl": "Schrijft de ruwe gegevens van de NRGkick naar het app-logboek. Zet dit aan voor je een rapport stuurt via 'Probleem melden', zodat de ontwikkelaar het gegevensformaat kan nakijken.",
+                "fr": "Écrit les données brutes du NRGkick dans le journal de l'app. Activez-le avant d'envoyer un rapport via « Signaler un problème », pour que le développeur puisse vérifier le format des données."
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Device information",
+            "nl": "Toestelinformatie",
+            "fr": "Informations sur l'appareil"
+          },
+          "children": [
+            {
+              "id": "info_mac",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Bluetooth address",
+                "nl": "Bluetooth-adres",
+                "fr": "Adresse Bluetooth"
+              }
+            },
+            {
+              "id": "info_max_current",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Maximum current",
+                "nl": "Maximale stroom",
+                "fr": "Courant maximal"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "NRGkick Gen1 via Connect (experimental)",
+        "nl": "NRGkick Gen1 via Connect (experimenteel)",
+        "fr": "NRGkick Gen1 via Connect (expérimental)"
+      },
+      "class": "evcharger",
+      "capabilities": [
+        "evcharger_charging",
+        "evcharger_charging_state",
+        "measure_power",
+        "target_power",
+        "target_power_mode",
+        "nrgkick_current_set",
+        "nrgkick_energy_limit",
+        "meter_power",
+        "meter_power.session",
+        "measure_current.l1",
+        "measure_current.l2",
+        "measure_current.l3",
+        "measure_temperature",
+        "nrgkick_error",
+        "alarm_generic",
+        "measure_power.l1",
+        "measure_power.l2",
+        "measure_power.l3",
+        "measure_voltage.l1",
+        "measure_voltage.l2",
+        "measure_voltage.l3",
+        "measure_frequency"
+      ],
+      "capabilitiesOptions": {
+        "target_power": {
+          "min": 0,
+          "max": 7360,
+          "step": 230,
+          "excludeMin": 0,
+          "excludeMax": 1380,
+          "uiComponent": null
+        },
+        "meter_power": {
+          "title": {
+            "en": "Total charged energy",
+            "nl": "Totaal geladen energie",
+            "fr": "Énergie chargée totale"
+          }
+        },
+        "meter_power.session": {
+          "title": {
+            "en": "Current session energy",
+            "nl": "Energie huidige laadbeurt",
+            "fr": "Énergie de la session en cours"
+          }
+        },
+        "measure_power": {
+          "title": {
+            "en": "Charging power",
+            "nl": "Laadvermogen",
+            "fr": "Puissance de charge"
+          }
+        },
+        "measure_current.l1": {
+          "title": {
+            "en": "Current L1",
+            "nl": "Stroom L1",
+            "fr": "Courant L1"
+          }
+        },
+        "measure_current.l2": {
+          "title": {
+            "en": "Current L2",
+            "nl": "Stroom L2",
+            "fr": "Courant L2"
+          }
+        },
+        "measure_current.l3": {
+          "title": {
+            "en": "Current L3",
+            "nl": "Stroom L3",
+            "fr": "Courant L3"
+          }
+        },
+        "measure_temperature": {
+          "title": {
+            "en": "Housing temperature",
+            "nl": "Temperatuur behuizing",
+            "fr": "Température du boîtier"
+          }
+        },
+        "alarm_generic": {
+          "title": {
+            "en": "Fault",
+            "nl": "Storing",
+            "fr": "Défaut"
+          }
+        },
+        "target_power_mode": {
+          "uiComponent": null
+        },
+        "measure_power.l1": {
+          "title": {
+            "en": "Power L1",
+            "nl": "Vermogen L1",
+            "fr": "Puissance L1"
+          },
+          "uiComponent": null
+        },
+        "measure_power.l2": {
+          "title": {
+            "en": "Power L2",
+            "nl": "Vermogen L2",
+            "fr": "Puissance L2"
+          },
+          "uiComponent": null
+        },
+        "measure_power.l3": {
+          "title": {
+            "en": "Power L3",
+            "nl": "Vermogen L3",
+            "fr": "Puissance L3"
+          },
+          "uiComponent": null
+        },
+        "measure_voltage.l1": {
+          "title": {
+            "en": "Voltage L1",
+            "nl": "Spanning L1",
+            "fr": "Tension L1"
+          },
+          "uiComponent": null
+        },
+        "measure_voltage.l2": {
+          "title": {
+            "en": "Voltage L2",
+            "nl": "Spanning L2",
+            "fr": "Tension L2"
+          },
+          "uiComponent": null
+        },
+        "measure_voltage.l3": {
+          "title": {
+            "en": "Voltage L3",
+            "nl": "Spanning L3",
+            "fr": "Tension L3"
+          },
+          "uiComponent": null
+        },
+        "measure_frequency": {
+          "title": {
+            "en": "Grid frequency",
+            "nl": "Netfrequentie",
+            "fr": "Fréquence du réseau"
+          },
+          "uiComponent": null
+        },
+        "nrgkick_energy_limit": {
+          "max": 200
+        }
+      },
+      "energy": {
+        "evCharger": true,
+        "meterPowerImportedCapability": "meter_power"
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "images": {
+        "small": "/drivers/nrgkick_connect/assets/images/small.png",
+        "large": "/drivers/nrgkick_connect/assets/images/large.png",
+        "xlarge": "/drivers/nrgkick_connect/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "connect_address"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "prev": "connect_address",
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "nrgkick_connect",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Connection",
+            "nl": "Verbinding",
+            "fr": "Connexion"
+          },
+          "children": [
+            {
+              "id": "host",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Address of the Connect module",
+                "nl": "Adres van de Connect-module",
+                "fr": "Adresse du module Connect"
+              },
+              "hint": {
+                "en": "IP address of the NRGkick Connect module on your network.",
+                "nl": "IP-adres van de NRGkick Connect-module op je netwerk.",
+                "fr": "Adresse IP du module NRGkick Connect sur votre réseau."
+              }
+            },
+            {
+              "id": "password",
+              "type": "password",
+              "value": "",
+              "label": {
+                "en": "NRGkick PIN",
+                "nl": "NRGkick-pincode",
+                "fr": "Code PIN du NRGkick"
+              },
+              "hint": {
+                "en": "The Bluetooth PIN of the NRGkick (as in the NRGkick app). The Connect module needs it to change settings; reading works without it.",
+                "nl": "De Bluetooth-pincode van de NRGkick (zoals in de NRGkick-app). De Connect-module heeft hem nodig om instellingen te wijzigen; uitlezen werkt zonder.",
+                "fr": "Le code PIN Bluetooth du NRGkick (comme dans l'app NRGkick). Le module Connect en a besoin pour modifier les réglages ; la lecture fonctionne sans."
+              }
+            },
+            {
+              "id": "poll_interval",
+              "type": "number",
+              "value": 30,
+              "min": 10,
+              "max": 300,
+              "units": {
+                "en": "s",
+                "nl": "s",
+                "fr": "s"
+              },
+              "label": {
+                "en": "Update interval",
+                "nl": "Update-interval",
+                "fr": "Intervalle de mise à jour"
+              },
+              "hint": {
+                "en": "How often Homey reads the NRGkick.",
+                "nl": "Hoe vaak Homey de NRGkick uitleest.",
+                "fr": "Fréquence de lecture du NRGkick par Homey."
+              }
+            },
+            {
+              "id": "debug_logging",
+              "type": "checkbox",
+              "value": false,
+              "label": {
+                "en": "Debug logging",
+                "nl": "Debuglogging",
+                "fr": "Journal de débogage"
+              },
+              "hint": {
+                "en": "Writes the raw data from the NRGkick to the app log. Turn it on before you send a report with 'Report a problem', so the developer can check the data format.",
+                "nl": "Schrijft de ruwe gegevens van de NRGkick naar het app-logboek. Zet dit aan voor je een rapport stuurt via 'Probleem melden', zodat de ontwikkelaar het gegevensformaat kan nakijken.",
+                "fr": "Écrit les données brutes du NRGkick dans le journal de l'app. Activez-le avant d'envoyer un rapport via « Signaler un problème », pour que le développeur puisse vérifier le format des données."
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Device information",
+            "nl": "Toestelinformatie",
+            "fr": "Informations sur l'appareil"
+          },
+          "children": [
+            {
+              "id": "info_mac",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Bluetooth address",
+                "nl": "Bluetooth-adres",
+                "fr": "Adresse Bluetooth"
+              }
+            },
+            {
+              "id": "info_firmware",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Firmware / hardware",
+                "nl": "Firmware / hardware",
+                "fr": "Firmware / matériel"
               }
             }
           ]

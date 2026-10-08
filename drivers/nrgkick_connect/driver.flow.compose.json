@@ -1,0 +1,78 @@
+{
+  "actions": [
+    {
+      "id": "connect_set_current",
+      "title": {
+        "en": "Set the charging current",
+        "nl": "Stel de laadstroom in",
+        "fr": "Régler le courant de charge"
+      },
+      "titleFormatted": {
+        "en": "Set the charging current to [[current]] A",
+        "nl": "Stel de laadstroom in op [[current]] A",
+        "fr": "Régler le courant de charge à [[current]] A"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "current",
+          "min": 6,
+          "max": 32,
+          "step": 1,
+          "placeholder": {
+            "en": "Ampere",
+            "nl": "Ampère",
+            "fr": "Ampère"
+          },
+          "title": {
+            "en": "Charging current",
+            "nl": "Laadstroom",
+            "fr": "Courant de charge"
+          }
+        }
+      ],
+      "hint": {
+        "en": "From 6 A up to the maximum the Connect module reports. Higher values are capped.",
+        "nl": "Van 6 A tot het maximum dat de Connect-module meldt. Hogere waarden worden begrensd.",
+        "fr": "De 6 A jusqu'au maximum indiqué par le module Connect. Les valeurs plus élevées sont plafonnées."
+      }
+    },
+    {
+      "id": "connect_set_energy_limit",
+      "title": {
+        "en": "Set the energy limit",
+        "nl": "Stel de energielimiet in",
+        "fr": "Régler la limite d'énergie"
+      },
+      "titleFormatted": {
+        "en": "Set the energy limit to [[limit]] kWh",
+        "nl": "Stel de energielimiet in op [[limit]] kWh",
+        "fr": "Régler la limite d'énergie à [[limit]] kWh"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "limit",
+          "min": 0,
+          "max": 200,
+          "step": 0.5,
+          "placeholder": {
+            "en": "kWh",
+            "nl": "kWh",
+            "fr": "kWh"
+          },
+          "title": {
+            "en": "Energy limit",
+            "nl": "Energielimiet",
+            "fr": "Limite d'énergie"
+          }
+        }
+      ],
+      "hint": {
+        "en": "0 means no limit.",
+        "nl": "0 betekent geen limiet.",
+        "fr": "0 signifie sans limite."
+      }
+    }
+  ]
+}

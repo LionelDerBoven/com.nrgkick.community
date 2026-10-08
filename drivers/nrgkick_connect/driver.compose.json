@@ -1,0 +1,192 @@
+{
+  "name": {
+    "en": "NRGkick Gen1 via Connect (experimental)",
+    "nl": "NRGkick Gen1 via Connect (experimenteel)",
+    "fr": "NRGkick Gen1 via Connect (expérimental)"
+  },
+  "class": "evcharger",
+  "capabilities": [
+    "evcharger_charging",
+    "evcharger_charging_state",
+    "measure_power",
+    "target_power",
+    "target_power_mode",
+    "nrgkick_current_set",
+    "nrgkick_energy_limit",
+    "meter_power",
+    "meter_power.session",
+    "measure_current.l1",
+    "measure_current.l2",
+    "measure_current.l3",
+    "measure_temperature",
+    "nrgkick_error",
+    "alarm_generic",
+    "measure_power.l1",
+    "measure_power.l2",
+    "measure_power.l3",
+    "measure_voltage.l1",
+    "measure_voltage.l2",
+    "measure_voltage.l3",
+    "measure_frequency"
+  ],
+  "capabilitiesOptions": {
+    "target_power": {
+      "min": 0,
+      "max": 7360,
+      "step": 230,
+      "excludeMin": 0,
+      "excludeMax": 1380,
+      "uiComponent": null
+    },
+    "meter_power": {
+      "title": {
+        "en": "Total charged energy",
+        "nl": "Totaal geladen energie",
+        "fr": "Énergie chargée totale"
+      }
+    },
+    "meter_power.session": {
+      "title": {
+        "en": "Current session energy",
+        "nl": "Energie huidige laadbeurt",
+        "fr": "Énergie de la session en cours"
+      }
+    },
+    "measure_power": {
+      "title": {
+        "en": "Charging power",
+        "nl": "Laadvermogen",
+        "fr": "Puissance de charge"
+      }
+    },
+    "measure_current.l1": {
+      "title": {
+        "en": "Current L1",
+        "nl": "Stroom L1",
+        "fr": "Courant L1"
+      }
+    },
+    "measure_current.l2": {
+      "title": {
+        "en": "Current L2",
+        "nl": "Stroom L2",
+        "fr": "Courant L2"
+      }
+    },
+    "measure_current.l3": {
+      "title": {
+        "en": "Current L3",
+        "nl": "Stroom L3",
+        "fr": "Courant L3"
+      }
+    },
+    "measure_temperature": {
+      "title": {
+        "en": "Housing temperature",
+        "nl": "Temperatuur behuizing",
+        "fr": "Température du boîtier"
+      }
+    },
+    "alarm_generic": {
+      "title": {
+        "en": "Fault",
+        "nl": "Storing",
+        "fr": "Défaut"
+      }
+    },
+    "target_power_mode": {
+      "uiComponent": null
+    },
+    "measure_power.l1": {
+      "title": {
+        "en": "Power L1",
+        "nl": "Vermogen L1",
+        "fr": "Puissance L1"
+      },
+      "uiComponent": null
+    },
+    "measure_power.l2": {
+      "title": {
+        "en": "Power L2",
+        "nl": "Vermogen L2",
+        "fr": "Puissance L2"
+      },
+      "uiComponent": null
+    },
+    "measure_power.l3": {
+      "title": {
+        "en": "Power L3",
+        "nl": "Vermogen L3",
+        "fr": "Puissance L3"
+      },
+      "uiComponent": null
+    },
+    "measure_voltage.l1": {
+      "title": {
+        "en": "Voltage L1",
+        "nl": "Spanning L1",
+        "fr": "Tension L1"
+      },
+      "uiComponent": null
+    },
+    "measure_voltage.l2": {
+      "title": {
+        "en": "Voltage L2",
+        "nl": "Spanning L2",
+        "fr": "Tension L2"
+      },
+      "uiComponent": null
+    },
+    "measure_voltage.l3": {
+      "title": {
+        "en": "Voltage L3",
+        "nl": "Spanning L3",
+        "fr": "Tension L3"
+      },
+      "uiComponent": null
+    },
+    "measure_frequency": {
+      "title": {
+        "en": "Grid frequency",
+        "nl": "Netfrequentie",
+        "fr": "Fréquence du réseau"
+      },
+      "uiComponent": null
+    },
+    "nrgkick_energy_limit": {
+      "max": 200
+    }
+  },
+  "energy": {
+    "evCharger": true,
+    "meterPowerImportedCapability": "meter_power"
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "lan"
+  ],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "connect_address"
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "prev": "connect_address",
+        "next": "add_devices"
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ]
+}

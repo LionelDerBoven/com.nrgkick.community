@@ -1,0 +1,198 @@
+{
+  "name": {
+    "en": "NRGkick Gen1 Bluetooth (experimental, read-only)",
+    "nl": "NRGkick Gen1 Bluetooth (experimenteel, alleen uitlezen)",
+    "fr": "NRGkick Gen1 Bluetooth (expérimental, lecture seule)"
+  },
+  "class": "evcharger",
+  "capabilities": [
+    "evcharger_charging",
+    "evcharger_charging_state",
+    "nrgkick_status",
+    "measure_power",
+    "nrgkick_current_set",
+    "nrgkick_energy_limit",
+    "meter_power",
+    "meter_power.session",
+    "measure_current.l1",
+    "measure_current.l2",
+    "measure_current.l3",
+    "measure_temperature",
+    "nrgkick_error",
+    "alarm_generic",
+    "measure_power.peak",
+    "measure_power.l1",
+    "measure_power.l2",
+    "measure_power.l3",
+    "measure_voltage.l1",
+    "measure_voltage.l2",
+    "measure_voltage.l3",
+    "measure_frequency"
+  ],
+  "capabilitiesOptions": {
+    "meter_power": {
+      "title": {
+        "en": "Total charged energy",
+        "nl": "Totaal geladen energie",
+        "fr": "Énergie chargée totale"
+      }
+    },
+    "meter_power.session": {
+      "title": {
+        "en": "Last charge energy",
+        "nl": "Energie laatste laadbeurt",
+        "fr": "Énergie de la dernière charge"
+      }
+    },
+    "measure_power": {
+      "title": {
+        "en": "Charging power",
+        "nl": "Laadvermogen",
+        "fr": "Puissance de charge"
+      }
+    },
+    "measure_current.l1": {
+      "title": {
+        "en": "Current L1",
+        "nl": "Stroom L1",
+        "fr": "Courant L1"
+      }
+    },
+    "measure_current.l2": {
+      "title": {
+        "en": "Current L2",
+        "nl": "Stroom L2",
+        "fr": "Courant L2"
+      }
+    },
+    "measure_current.l3": {
+      "title": {
+        "en": "Current L3",
+        "nl": "Stroom L3",
+        "fr": "Courant L3"
+      }
+    },
+    "measure_temperature": {
+      "title": {
+        "en": "Housing temperature",
+        "nl": "Temperatuur behuizing",
+        "fr": "Température du boîtier"
+      }
+    },
+    "alarm_generic": {
+      "title": {
+        "en": "Fault",
+        "nl": "Storing",
+        "fr": "Défaut"
+      }
+    },
+    "measure_power.peak": {
+      "title": {
+        "en": "Peak power last charge",
+        "nl": "Piekvermogen laatste laadbeurt",
+        "fr": "Puissance maximale de la dernière charge"
+      },
+      "uiComponent": null
+    },
+    "measure_power.l1": {
+      "title": {
+        "en": "Power L1",
+        "nl": "Vermogen L1",
+        "fr": "Puissance L1"
+      },
+      "uiComponent": null
+    },
+    "measure_power.l2": {
+      "title": {
+        "en": "Power L2",
+        "nl": "Vermogen L2",
+        "fr": "Puissance L2"
+      },
+      "uiComponent": null
+    },
+    "measure_power.l3": {
+      "title": {
+        "en": "Power L3",
+        "nl": "Vermogen L3",
+        "fr": "Puissance L3"
+      },
+      "uiComponent": null
+    },
+    "measure_voltage.l1": {
+      "title": {
+        "en": "Voltage L1",
+        "nl": "Spanning L1",
+        "fr": "Tension L1"
+      },
+      "uiComponent": null
+    },
+    "measure_voltage.l2": {
+      "title": {
+        "en": "Voltage L2",
+        "nl": "Spanning L2",
+        "fr": "Tension L2"
+      },
+      "uiComponent": null
+    },
+    "measure_voltage.l3": {
+      "title": {
+        "en": "Voltage L3",
+        "nl": "Spanning L3",
+        "fr": "Tension L3"
+      },
+      "uiComponent": null
+    },
+    "measure_frequency": {
+      "title": {
+        "en": "Grid frequency",
+        "nl": "Netfrequentie",
+        "fr": "Fréquence du réseau"
+      },
+      "uiComponent": null
+    },
+    "evcharger_charging": {
+      "setable": false
+    },
+    "nrgkick_current_set": {
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "nrgkick_energy_limit": {
+      "setable": false,
+      "uiComponent": "sensor",
+      "max": 200
+    }
+  },
+  "energy": {
+    "evCharger": true,
+    "meterPowerImportedCapability": "meter_power"
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "ble"
+  ],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "ble_intro"
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "prev": "ble_intro",
+        "next": "add_devices"
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ]
+}

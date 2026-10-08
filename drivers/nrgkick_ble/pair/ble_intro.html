@@ -1,0 +1,16 @@
+<style>
+  .nrg-list { margin: 12px 0 20px 18px; }
+  .nrg-list li { margin: 6px 0; }
+</style>
+
+<p class="homey-subtitle" data-i18n="pair.ble_intro"></p>
+<ul class="nrg-list">
+  <li data-i18n="pair.ble_point_untested"></li>
+  <li data-i18n="pair.ble_point_range"></li>
+  <li data-i18n="pair.ble_point_phone"></li>
+</ul>
+<button id="next" type="button" class="homey-button-primary-full" data-i18n="pair.ble_search"></button>
+
+<script type="application/javascript">
+  document.getElementById('next').addEventListener('click', function () { Homey.showView('list_devices'); });
+</script>

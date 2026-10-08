@@ -1,0 +1,109 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Connection",
+      "nl": "Verbinding",
+      "fr": "Connexion"
+    },
+    "children": [
+      {
+        "id": "host",
+        "type": "text",
+        "value": "",
+        "label": {
+          "en": "Address of the Connect module",
+          "nl": "Adres van de Connect-module",
+          "fr": "Adresse du module Connect"
+        },
+        "hint": {
+          "en": "IP address of the NRGkick Connect module on your network.",
+          "nl": "IP-adres van de NRGkick Connect-module op je netwerk.",
+          "fr": "Adresse IP du module NRGkick Connect sur votre réseau."
+        }
+      },
+      {
+        "id": "password",
+        "type": "password",
+        "value": "",
+        "label": {
+          "en": "NRGkick PIN",
+          "nl": "NRGkick-pincode",
+          "fr": "Code PIN du NRGkick"
+        },
+        "hint": {
+          "en": "The Bluetooth PIN of the NRGkick (as in the NRGkick app). The Connect module needs it to change settings; reading works without it.",
+          "nl": "De Bluetooth-pincode van de NRGkick (zoals in de NRGkick-app). De Connect-module heeft hem nodig om instellingen te wijzigen; uitlezen werkt zonder.",
+          "fr": "Le code PIN Bluetooth du NRGkick (comme dans l'app NRGkick). Le module Connect en a besoin pour modifier les réglages ; la lecture fonctionne sans."
+        }
+      },
+      {
+        "id": "poll_interval",
+        "type": "number",
+        "value": 30,
+        "min": 10,
+        "max": 300,
+        "units": {
+          "en": "s",
+          "nl": "s",
+          "fr": "s"
+        },
+        "label": {
+          "en": "Update interval",
+          "nl": "Update-interval",
+          "fr": "Intervalle de mise à jour"
+        },
+        "hint": {
+          "en": "How often Homey reads the NRGkick.",
+          "nl": "Hoe vaak Homey de NRGkick uitleest.",
+          "fr": "Fréquence de lecture du NRGkick par Homey."
+        }
+      },
+      {
+        "id": "debug_logging",
+        "type": "checkbox",
+        "value": false,
+        "label": {
+          "en": "Debug logging",
+          "nl": "Debuglogging",
+          "fr": "Journal de débogage"
+        },
+        "hint": {
+          "en": "Writes the raw data from the NRGkick to the app log. Turn it on before you send a report with 'Report a problem', so the developer can check the data format.",
+          "nl": "Schrijft de ruwe gegevens van de NRGkick naar het app-logboek. Zet dit aan voor je een rapport stuurt via 'Probleem melden', zodat de ontwikkelaar het gegevensformaat kan nakijken.",
+          "fr": "Écrit les données brutes du NRGkick dans le journal de l'app. Activez-le avant d'envoyer un rapport via « Signaler un problème », pour que le développeur puisse vérifier le format des données."
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device information",
+      "nl": "Toestelinformatie",
+      "fr": "Informations sur l'appareil"
+    },
+    "children": [
+      {
+        "id": "info_mac",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Bluetooth address",
+          "nl": "Bluetooth-adres",
+          "fr": "Adresse Bluetooth"
+        }
+      },
+      {
+        "id": "info_firmware",
+        "type": "label",
+        "value": "",
+        "label": {
+          "en": "Firmware / hardware",
+          "nl": "Firmware / hardware",
+          "fr": "Firmware / matériel"
+        }
+      }
+    ]
+  }
+]

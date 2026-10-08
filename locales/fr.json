@@ -78,7 +78,14 @@
     "no_serial": "Le NRGkick n'a pas signalé de numéro de série.",
     "already_added": "Ce NRGkick a déjà été ajouté.",
     "no_host": "Entrez l'adresse IP du NRGkick.",
-    "other_device": "Cette adresse appartient à un autre NRGkick. Ajoutez-le comme appareil distinct."
+    "other_device": "Cette adresse appartient à un autre NRGkick. Ajoutez-le comme appareil distinct.",
+    "offline": "Le NRGkick n'est pas connecté au module Connect. Vérifiez qu'il est alimenté et assez proche du module.",
+    "no_connect_host": "Saisissez l'adresse IP du module NRGkick Connect.",
+    "no_connect_devices": "Le module Connect répond, mais il ne connaît aucun NRGkick qui ne soit pas encore ajouté.",
+    "connect_pin_needed": "Saisissez le code PIN du NRGkick dans les réglages de l'appareil : le module Connect en a besoin pour modifier les réglages.",
+    "no_ble_devices": "Aucun NRGkick trouvé par Bluetooth. Vérifiez qu'il est alimenté et proche de Homey, et fermez l'app NRGkick sur votre téléphone : tant qu'elle est connectée, le NRGkick est introuvable.",
+    "ble_read_only": "Le pilotage d'un NRGkick de première génération par Bluetooth n'est pas encore disponible. Ce pilote ne fait que lire pour l'instant.",
+    "ble_unreachable": "Homey ne joint pas le NRGkick par Bluetooth. Vérifiez qu'il est alimenté et assez proche, et que l'app NRGkick de votre téléphone est fermée."
   },
   "pair": {
     "select_intro": "Touchez votre NRGkick pour l'ajouter.",
@@ -93,6 +100,19 @@
     "api_step_2": "Allez dans Avancé, API locale.",
     "api_step_3": "Activez JSON API.",
     "retry": "Réessayer",
-    "adding": "Ajout de votre NRGkick…"
+    "adding": "Ajout de votre NRGkick…",
+    "connect_intro": "Ajoutez un NRGkick de première génération via son module NRGkick Connect. Cette prise en charge est expérimentale.",
+    "connect_searching": "Recherche de modules Connect sur votre réseau…",
+    "connect_host": "Adresse IP du module Connect",
+    "connect_pin": "Code PIN du NRGkick (facultatif)",
+    "connect_pin_hint": "Le code PIN Bluetooth de l'app NRGkick. Nécessaire pour piloter la recharge ; la lecture fonctionne sans.",
+    "ble_intro": "Ajoutez un NRGkick de première génération par Bluetooth. Avant de commencer :",
+    "ble_point_untested": "Cette prise en charge est limitée et non testée : elle ne fait que lire les valeurs et ne peut pas encore piloter la recharge.",
+    "ble_point_range": "Le Bluetooth a une portée courte. Homey doit être proche du NRGkick, en général à moins d'une dizaine de mètres et idéalement sans mur entre les deux.",
+    "ble_point_phone": "Fermez l'app NRGkick sur votre téléphone : tant qu'elle est connectée, Homey ne peut ni trouver ni lire le NRGkick.",
+    "ble_search": "Rechercher"
+  },
+  "gen1": {
+    "error_codes": "Code d'erreur __codes__"
   }
 }

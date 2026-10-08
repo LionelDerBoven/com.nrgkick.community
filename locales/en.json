@@ -78,7 +78,14 @@
     "no_serial": "The NRGkick did not report a serial number.",
     "already_added": "This NRGkick has already been added.",
     "no_host": "Enter the IP address of the NRGkick.",
-    "other_device": "This address belongs to another NRGkick. Add that one as a separate device."
+    "other_device": "This address belongs to another NRGkick. Add that one as a separate device.",
+    "offline": "The NRGkick is not connected to the Connect module. Check that it is powered and close enough to the module.",
+    "no_connect_host": "Enter the IP address of the NRGkick Connect module.",
+    "no_connect_devices": "The Connect module answered, but it knows no NRGkick that is not added yet.",
+    "connect_pin_needed": "Enter the NRGkick PIN in the device settings: the Connect module needs it to change settings.",
+    "no_ble_devices": "No NRGkick found over Bluetooth. Check that it is powered and close to Homey, and close the NRGkick app on your phone: while it is connected, the NRGkick cannot be found.",
+    "ble_read_only": "Controlling a first-generation NRGkick over Bluetooth is not available yet. This driver only reads for now.",
+    "ble_unreachable": "Homey cannot reach the NRGkick over Bluetooth. Check that it is powered and close enough, and that the NRGkick app on your phone is closed."
   },
   "pair": {
     "select_intro": "Tap your NRGkick to add it.",
@@ -93,6 +100,19 @@
     "api_step_2": "Go to Extended, Local API.",
     "api_step_3": "Turn on JSON API.",
     "retry": "Try again",
-    "adding": "Adding your NRGkick…"
+    "adding": "Adding your NRGkick…",
+    "connect_intro": "Add a first-generation NRGkick through its NRGkick Connect module. This support is experimental.",
+    "connect_searching": "Looking for Connect modules on your network…",
+    "connect_host": "IP address of the Connect module",
+    "connect_pin": "NRGkick PIN (optional)",
+    "connect_pin_hint": "The Bluetooth PIN from the NRGkick app. Needed to control charging; reading works without it.",
+    "ble_intro": "Add a first-generation NRGkick over Bluetooth. Before you start:",
+    "ble_point_untested": "This support is limited and untested: it only reads values and cannot control charging yet.",
+    "ble_point_range": "Bluetooth has a short range. Homey must be close to the NRGkick, typically within about 10 metres and ideally without walls in between.",
+    "ble_point_phone": "Close the NRGkick app on your phone: while it is connected, Homey cannot find or read the NRGkick.",
+    "ble_search": "Search"
+  },
+  "gen1": {
+    "error_codes": "Error code __codes__"
   }
 }

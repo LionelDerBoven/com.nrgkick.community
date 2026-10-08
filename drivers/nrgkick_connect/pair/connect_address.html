@@ -1,0 +1,70 @@
+<style>
+  .nrg-error { color: var(--homey-color-danger, #e00); margin: 12px 0; }
+  .nrg-muted { opacity: .7; font-size: 14px; }
+  .nrg-found { margin: 8px 0 16px; }
+  .nrg-found button { display: block; width: 100%; margin: 6px 0; text-align: left; }
+</style>
+
+<p class="homey-subtitle" data-i18n="pair.connect_intro"></p>
+<p id="searching" class="nrg-muted" data-i18n="pair.connect_searching"></p>
+<div id="found" class="nrg-found"></div>
+<form id="form" class="homey-form">
+  <div class="homey-form-group">
+    <label class="homey-form-label" for="host" data-i18n="pair.connect_host"></label>
+    <input class="homey-form-input" id="host" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="192.168.1.60" />
+  </div>
+  <div class="homey-form-group">
+    <label class="homey-form-label" for="password" data-i18n="pair.connect_pin"></label>
+    <input class="homey-form-input" id="password" type="password" autocomplete="off" />
+    <p class="nrg-muted" data-i18n="pair.connect_pin_hint"></p>
+  </div>
+  <p id="error" class="nrg-error" hidden></p>
+  <button id="next" type="submit" class="homey-button-primary-full" data-i18n="pair.connect"></button>
+</form>
+
+<script type="application/javascript">
+  (function () {
+    var error = document.getElementById('error');
+    var button = document.getElementById('next');
+    var host = document.getElementById('host');
+    var found = document.getElementById('found');
+    var searching = document.getElementById('searching');
+
+    function showError(message) {
+      error.textContent = message || '';
+      error.hidden = !message;
+    }
+
+    Homey.emit('discover')
+      .then(function (modules) {
+        searching.hidden = true;
+        modules.forEach(function (mod) {
+          var item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'homey-button-secondary-full';
+          item.textContent = mod.name + ' (' + mod.host + ')';
+          item.addEventListener('click', function () { host.value = mod.host; });
+          found.appendChild(item);
+        });
+        if (modules.length === 1 && !host.value) host.value = modules[0].host;
+      })
+      .catch(function () { searching.hidden = true; });
+
+    document.getElementById('form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      showError('');
+      button.disabled = true;
+      Homey.showLoadingOverlay();
+      Homey.emit('connect', { host: host.value, password: document.getElementById('password').value })
+        .then(function () {
+          Homey.hideLoadingOverlay();
+          Homey.showView('list_devices');
+        })
+        .catch(function (err) {
+          Homey.hideLoadingOverlay();
+          showError(err && err.message ? err.message : String(err));
+          button.disabled = false;
+        });
+    });
+  }());
+</script>
