@@ -60,7 +60,8 @@ class NrgkickConnectDevice extends PollingDevice {
         test = new ConnectClient({ host: newSettings.host, sleep: (ms) => this.wait(ms) });
         await test.getSettings(this.getData().id);
       } catch (err) {
-        throw new Error(describe(this.homey, err));
+        // The module answered but the NRGkick is away (often unplugged and in the car): the address is right.
+        if (err.code !== 'offline') throw new Error(describe(this.homey, err));
       } finally {
         if (test) test.destroy();
       }
@@ -218,6 +219,8 @@ class NrgkickConnectDevice extends PollingDevice {
    * charging current, and below 6 A charging pauses until the target rises again.
    */
   async onChargingControl({ evcharger_charging: charging, target_power: power, target_power_mode: mode }) {
+    if (mode === 'device') await this.leaveHomeyMode();
+    if (mode === 'homey') await this.enterHomeyMode();
     if (power !== undefined) this.targetPower = power;
     let target = power;
     if (target === undefined && mode === 'homey') target = this.targetPower !== null ? this.targetPower : (this.getCapabilityValue('target_power') || 0);
@@ -239,6 +242,23 @@ class NrgkickConnectDevice extends PollingDevice {
     }
     this.targetPaused = false;
     await this.write({ charging: enabled, current: this.clampCurrent(amps) });
+  }
+
+  /** Remembers the user's own current and charging state, to restore them when Homey Energy hands control back. */
+  async enterHomeyMode() {
+    if (this.getStoreValue('beforeHomey') || !this.state) return;
+    await this.setStoreValue('beforeHomey', { current: this.state.current, enabled: this.state.enabled });
+  }
+
+  async leaveHomeyMode() {
+    this.targetPaused = false;
+    const before = this.getStoreValue('beforeHomey');
+    if (!before) return;
+    await this.unsetStoreValue('beforeHomey');
+    const change = {};
+    if (typeof before.enabled === 'boolean') change.charging = before.enabled;
+    if (Number.isFinite(before.current)) change.current = this.clampCurrent(before.current);
+    if (Object.keys(change).length) await this.write(change);
   }
 
 }

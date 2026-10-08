@@ -252,6 +252,36 @@ test('Connect: a target power becomes a current, and too little power pauses', a
   }
 });
 
+test('Connect: handing back from Homey Energy restores the user\'s own current and charging state', async () => {
+  const mod = await fakeModule();
+  const device = await connectDevice(mod);
+  try {
+    await device.listeners.multi({ target_power_mode: 'homey', target_power: 1000 });
+    assert.strictEqual(mod.state.charging, false, 'paused: too little power');
+    await device.poll();
+    await device.listeners.multi({ target_power_mode: 'device' });
+    assert.deepStrictEqual(mod.state.puts.pop(), {
+      DeviceMetadata: { Password: '1234' }, ChargingStatus: { Charging: true }, ChargingCurrent: { Value: 16 },
+    });
+    assert.strictEqual(device.store.beforeHomey, undefined);
+  } finally {
+    device.stop();
+    await mod.close();
+  }
+});
+
+test('Connect: a new module address is accepted while the NRGkick is away', async () => {
+  const mod = await fakeModule();
+  const device = await connectDevice(mod);
+  try {
+    mod.state.offline = true;
+    await device.onSettings({ newSettings: { host: mod.host }, changedKeys: ['host'] });
+  } finally {
+    device.stop();
+    await mod.close();
+  }
+});
+
 test('Connect: an NRGkick that left the module makes the device unavailable at once', async () => {
   const mod = await fakeModule();
   const device = await connectDevice(mod);
