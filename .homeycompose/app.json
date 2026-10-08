@@ -1,6 +1,6 @@
 {
   "id": "com.nrgkick.community",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "compatibility": ">=12.13.0",
   "sdk": 3,
   "runtime": "nodejs",

@@ -1,6 +1,6 @@
 {
   "name": "com.nrgkick.community",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "app.js",
   "license": "GPL-3.0-or-later",
   "engines": {

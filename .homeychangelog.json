@@ -1,4 +1,9 @@
 {
+  "0.2.0": {
+    "en": "Experimental support for the first-generation NRGkick: through the NRGkick Connect module (reading and control), or directly over Bluetooth (limited: reading only, and Homey must be close to the NRGkick). Neither is tested on real devices yet; feedback from owners is welcome.",
+    "nl": "Experimentele ondersteuning voor de NRGkick van de eerste generatie: via de NRGkick Connect-module (uitlezen en bedienen), of rechtstreeks via Bluetooth (beperkt: alleen uitlezen, en Homey moet dicht bij de NRGkick staan). Geen van beide is al getest op echte toestellen; feedback van eigenaars is welkom.",
+    "fr": "Prise en charge expérimentale du NRGkick de première génération : via le module NRGkick Connect (lecture et pilotage), ou directement par Bluetooth (limité : lecture seule, et Homey doit être proche du NRGkick). Aucun des deux n'est encore testé sur de vrais appareils ; les retours des propriétaires sont les bienvenus."
+  },
   "0.1.0": {
     "en": "First test version: live charging data, pause and resume, charging current with a safety limit, energy limit, phases, Homey Energy control, and Flow cards for plugging in, unplugging and the end of a charging session with its cost. Mobile network and GPS data for SIM models are included but not yet tested on a real SIM model.",
     "nl": "Eerste testversie: live laadgegevens, pauzeren en hervatten, laadstroom met een veiligheidsgrens, energielimiet, fases, sturing via Homey Energy, en Flowkaarten voor inpluggen, uittrekken en het einde van een laadbeurt met de kosten. Mobiel netwerk en GPS voor SIM-modellen zitten erin, maar zijn nog niet getest op een echt SIM-model.",
