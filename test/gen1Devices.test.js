@@ -316,6 +316,32 @@ test('Connect: an empty or unreachable address is refused with a translated text
   }
 });
 
+test('Connect: limits that failed to apply are tried again on the next read', async () => {
+  const mod = await fakeModule();
+  const device = new ConnectDevice({
+    id: MAC, capabilities: connectManifest.capabilities, settings: { host: mod.host, password: '1234' },
+  });
+  device.driver.discoverModules = async () => [];
+  let fail = true;
+  const original = device.setCapabilityOptions.bind(device);
+  device.setCapabilityOptions = async (cap, options) => {
+    if (fail) throw new Error('busy');
+    return original(cap, options);
+  };
+  try {
+    await device.onInit();
+    await device.poll();
+    assert.strictEqual(device.store.limits, undefined);
+    fail = false;
+    await device.poll();
+    assert.strictEqual(device.options.nrgkick_current_set.max, 16);
+    assert.ok(device.store.limits);
+  } finally {
+    device.stop();
+    await mod.close();
+  }
+});
+
 // ---- Bluetooth ----
 
 function blePeripheral({ fail = false } = {}) {

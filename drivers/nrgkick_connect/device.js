@@ -189,11 +189,8 @@ class NrgkickConnectDevice extends Homey.Device {
   }
 
   async apply(state) {
-    const previous = this.state;
     this.state = state;
-    if (!previous || previous.maxCurrent !== state.maxCurrent || previous.activePhases !== state.activePhases) {
-      await this.updateLimits(state);
-    }
+    await this.updateLimits(state); // cheap when nothing changed: compares a stored key
 
     if (state.enabled !== null) await this.set('evcharger_charging', state.enabled);
     await this.set('evcharger_charging_state', connectChargingState(state));
@@ -254,12 +251,17 @@ class NrgkickConnectDevice extends Homey.Device {
     const phases = state.activePhases;
     const key = JSON.stringify([max, phases]);
     if (this.getStoreValue('limits') === key) return;
-    await this.setCapabilityOptions('nrgkick_current_set', {
-      min: m.MIN_CURRENT, max, step: 1, decimals: 0,
-    }).catch(this.error);
-    await this.setCapabilityOptions('target_power', {
-      min: 0, max: Math.round(max * VOLTAGE * phases), step: VOLTAGE, excludeMin: 0, excludeMax: Math.round(m.MIN_CURRENT * VOLTAGE * phases),
-    }).catch(this.error);
+    try {
+      await this.setCapabilityOptions('nrgkick_current_set', {
+        min: m.MIN_CURRENT, max, step: 1, decimals: 0,
+      });
+      await this.setCapabilityOptions('target_power', {
+        min: 0, max: Math.round(max * VOLTAGE * phases), step: VOLTAGE, excludeMin: 0, excludeMax: Math.round(m.MIN_CURRENT * VOLTAGE * phases),
+      });
+    } catch (err) {
+      this.error('Could not update the limits', err.message); // tried again on the next change
+      return;
+    }
     await this.setStoreValue('limits', key);
   }
 
