@@ -85,7 +85,11 @@
     "connect_pin_needed": "Vul de NRGkick-pincode in bij de toestelinstellingen: de Connect-module heeft hem nodig om instellingen te wijzigen.",
     "no_ble_devices": "Geen NRGkick gevonden via Bluetooth. Controleer of hij stroom heeft en dicht bij Homey ligt, en sluit de NRGkick-app op je telefoon: zolang die verbonden is, is de NRGkick niet te vinden.",
     "ble_read_only": "Een NRGkick van de eerste generatie bedienen via Bluetooth kan nog niet. Deze driver leest voorlopig alleen uit.",
-    "ble_unreachable": "Homey bereikt de NRGkick niet via Bluetooth. Controleer of hij stroom heeft en dicht genoeg ligt, en of de NRGkick-app op je telefoon gesloten is."
+    "ble_unreachable": "Homey bereikt de NRGkick niet via Bluetooth. Controleer of hij stroom heeft en dicht genoeg ligt, en of de NRGkick-app op je telefoon gesloten is.",
+    "connect_timeout": "De NRGkick Connect-module antwoordde niet op tijd. Controleer of hij stroom heeft en op het netwerk is.",
+    "connect_connection": "De NRGkick Connect-module is niet bereikbaar. Controleer zijn IP-adres en of hij op het netwerk is.",
+    "connect_invalid_response": "De NRGkick Connect-module stuurde een onverwacht antwoord. Controleer of het adres bij de Connect-module hoort.",
+    "connect_pin_wrong": "De Connect-module meldt dat de NRGkick-pincode niet klopt. Uitlezen werkt, maar wijzigingen worden geweigerd: controleer de pincode in de toestelinstellingen."
   },
   "pair": {
     "select_intro": "Tik op je NRGkick om hem toe te voegen.",

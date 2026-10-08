@@ -71,7 +71,7 @@ class NrgkickConnectDriver extends Homey.Driver {
       try {
         found = await this.readDevices(address, String(password || '').trim());
       } catch (err) {
-        throw err.code ? new Error(describeError(this.homey, err)) : err;
+        throw err.code ? new Error(describeError(this.homey, err, { connect: true })) : err;
       }
       if (!found.length) throw new Error(this.homey.__('errors.no_connect_devices'));
       return found.length;

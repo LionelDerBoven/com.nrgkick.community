@@ -90,6 +90,7 @@ test('recognises NRGkick advertisements by name or address', () => {
   assert.ok(ble.looksLikeNrgkick({ localName: 'NRGkick_eGolf_30A0', address: 'aa:bb:cc:dd:ee:ff' }));
   assert.ok(ble.looksLikeNrgkick({ localName: '', address: '00:1e:c0:59:30:a0' }));
   assert.ok(!ble.looksLikeNrgkick({ localName: 'Speaker', address: '11:22:33:44:55:66' }));
+  assert.ok(!ble.looksLikeNrgkick({ localName: 'Other product', address: '00:1e:c0:11:22:33' }), 'a named device is judged by its name');
   assert.ok(!ble.looksLikeNrgkick(null));
 });
 

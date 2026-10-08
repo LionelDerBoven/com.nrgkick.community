@@ -22,6 +22,7 @@ class FakeDevice {
     this.listeners = {};
     this.available = true;
     this.unavailableReason = null;
+    this.warning = null;
     this.logs = [];
     this.id = id;
     this.driver = { manifest: { capabilities } };
@@ -85,6 +86,10 @@ class FakeDevice {
     this.unavailableReason = reason;
   }
 
+  async setWarning(text) { this.warning = text; }
+
+  async unsetWarning() { this.warning = null; }
+
   log(...args) { this.logs.push(args.join(' ')); }
 
   error() {}
@@ -111,7 +116,7 @@ const MAC = '00:1E:C0:59:30:A0';
 
 async function fakeModule() {
   const state = {
-    charging: true, current: 16, limit: null, power: 3.68, offline: false, puts: [],
+    charging: true, current: 16, limit: null, power: 3.68, offline: false, pinMatch: true, puts: [],
   };
   const server = http.createServer((req, res) => {
     let body = '';
@@ -136,7 +141,7 @@ async function fakeModule() {
             ChargingStatus: { Charging: state.charging },
             ChargingEnergy: { Value: state.limit || 200, Limited: state.limit !== null },
             ChargingCurrent: { Value: state.current, Min: 6, Max: 16 },
-            DeviceMetadata: { Name: 'Garage', PasswordMatch: true },
+            DeviceMetadata: { Name: 'Garage', PasswordMatch: state.pinMatch },
           },
           FirmwareVersion: '2',
           HardwareVersion: '1',
@@ -167,7 +172,7 @@ async function fakeModule() {
   };
 }
 
-async function connectDevice(mod, settings = {}) {
+async function connectDevice(mod, settings = {}, modules = []) {
   const device = new ConnectDevice({
     id: MAC,
     capabilities: connectManifest.capabilities,
@@ -175,6 +180,7 @@ async function connectDevice(mod, settings = {}) {
       host: mod.host, password: '1234', poll_interval: 30, ...settings,
     },
   });
+  device.driver.discoverModules = async () => modules;
   await device.onInit();
   await device.poll();
   return device;
@@ -254,6 +260,56 @@ test('Connect: an NRGkick that left the module makes the device unavailable at o
     await device.poll();
     assert.strictEqual(device.available, false);
     assert.strictEqual(device.unavailableReason, 'errors.offline:');
+  } finally {
+    device.stop();
+    await mod.close();
+  }
+});
+
+test('Connect: a module with a new address is found again through discovery', async () => {
+  const mod = await fakeModule();
+  const [hostname, port] = mod.host.split(':');
+  const device = await connectDevice(mod, { host: '127.0.0.1:1' }, [
+    { ip: '192.0.2.9', nrgMac: '11:22:33:44:55:66' },
+    { ip: `${hostname}:${port}`, nrgMac: MAC.toLowerCase() },
+  ]);
+  try {
+    await device.poll(); // second failure: unavailable, and a search
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    assert.strictEqual(device.settings.host, mod.host);
+    await device.poll();
+    assert.strictEqual(device.available, true);
+    assert.strictEqual(device.getCapabilityValue('measure_power'), 3680);
+  } finally {
+    device.stop();
+    await mod.close();
+  }
+});
+
+test('Connect: a wrong PIN shows a warning until it is fixed', async () => {
+  const mod = await fakeModule();
+  mod.state.pinMatch = false;
+  const device = await connectDevice(mod);
+  try {
+    assert.strictEqual(device.warning, 'errors.connect_pin_wrong');
+    mod.state.pinMatch = true;
+    await device.poll();
+    assert.strictEqual(device.warning, null);
+  } finally {
+    device.stop();
+    await mod.close();
+  }
+});
+
+test('Connect: an empty or unreachable address is refused with a translated text', async () => {
+  const mod = await fakeModule();
+  const device = await connectDevice(mod);
+  try {
+    await assert.rejects(device.onSettings({ newSettings: { host: '' }, changedKeys: ['host'] }), /errors\.no_connect_host/);
+    await assert.rejects(
+      device.onSettings({ newSettings: { host: '127.0.0.1:1' }, changedKeys: ['host'] }),
+      /errors\.connect_connection/,
+    );
   } finally {
     device.stop();
     await mod.close();

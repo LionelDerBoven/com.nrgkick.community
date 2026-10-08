@@ -4,12 +4,15 @@ const Homey = require('homey');
 const { ConnectClient } = require('../../lib/ConnectClient');
 const { parseConnect, connectChargingState } = require('../../lib/connectMappings');
 const describeError = require('../../lib/describeError');
+
+const describe = (homey, err) => describeError(homey, err, { connect: true });
 const m = require('../../lib/mappings');
 
 const MAX_BACKOFF_MS = 5 * 60 * 1000;
 const AFTER_WRITE_MS = 3000;
 const WRITE_GAP_MS = 1500; // the module drops a request that follows another too closely (seen by evcc)
 const FAILURES_BEFORE_UNAVAILABLE = 2;
+const RELOCATE_INTERVAL_MS = 5 * 60 * 1000; // at most one network search per 5 minutes
 const VOLTAGE = 230; // the Connect API reports no nominal voltage
 
 const round = (value, decimals) => {
@@ -77,17 +80,41 @@ class NrgkickConnectDevice extends Homey.Device {
 
   async onSettings({ newSettings, changedKeys }) {
     if (changedKeys.includes('host')) {
-      const test = new ConnectClient({ host: newSettings.host, sleep: (ms) => this.wait(ms) });
+      if (!String(newSettings.host || '').trim()) throw new Error(this.homey.__('errors.no_connect_host'));
+      let test = null;
       try {
+        test = new ConnectClient({ host: newSettings.host, sleep: (ms) => this.wait(ms) });
         await test.getSettings(this.getData().id);
       } catch (err) {
-        throw new Error(describeError(this.homey, err));
+        throw new Error(describe(this.homey, err));
       } finally {
-        test.destroy();
+        if (test) test.destroy();
       }
       this.client.configure({ host: newSettings.host });
     }
     if (changedKeys.some((key) => ['host', 'poll_interval', 'password'].includes(key))) this.refreshSoon(1000);
+  }
+
+  /**
+   * The module may have a new address (DHCP): ask the network for Connect modules and take the one that reports
+   * this NRGkick. Its discovery answer names the NRGkick it is connected to (NRGMAC).
+   */
+  async relocate() {
+    if (this.stopped || this.relocating || Date.now() - (this.relocatedAt || 0) < RELOCATE_INTERVAL_MS) return false;
+    this.relocating = true;
+    this.relocatedAt = Date.now();
+    try {
+      const mac = String(this.getData().id).toUpperCase();
+      const found = (await this.driver.discoverModules()).find((mod) => String(mod.nrgMac).toUpperCase() === mac);
+      if (!found || this.stopped || found.ip === this.getSetting('host')) return false;
+      this.log('Connect module found at a new address');
+      await this.setSettings({ host: found.ip });
+      this.client.configure({ host: found.ip });
+      this.refreshSoon(0);
+      return true;
+    } finally {
+      this.relocating = false;
+    }
   }
 
   // ---- Polling ----
@@ -124,8 +151,10 @@ class NrgkickConnectDevice extends Homey.Device {
       next = Math.min(next * 2 ** Math.min(this.failures - 1, 4), MAX_BACKOFF_MS);
       this.log(`Poll failed (${this.failures}): ${err.code || ''} ${err.message}`);
       if (err.code === 'offline' || this.failures >= FAILURES_BEFORE_UNAVAILABLE) {
-        await this.setUnavailable(describeError(this.homey, err)).catch(this.error);
+        await this.setUnavailable(describe(this.homey, err)).catch(this.error);
       }
+      const unreachable = err.code === 'timeout' || err.code === 'connection';
+      if (unreachable && this.failures >= FAILURES_BEFORE_UNAVAILABLE) this.relocate().catch(this.error);
     } finally {
       this.polling = false;
       if (this.pollSoon) {
@@ -184,6 +213,14 @@ class NrgkickConnectDevice extends Homey.Device {
       await this.set(`measure_voltage.${phase}`, round(p.voltage, 1));
     }
 
+    if (state.passwordMatch === false && this.getSetting('password')) {
+      if (!this.pinWarning) await this.setWarning(this.homey.__('errors.connect_pin_wrong')).catch(this.error);
+      this.pinWarning = true;
+    } else if (this.pinWarning) {
+      await this.unsetWarning().catch(this.error);
+      this.pinWarning = false;
+    }
+
     const fault = state.errors.length > 0;
     await this.set('alarm_generic', fault);
     await this.set('nrgkick_error', fault
@@ -236,7 +273,7 @@ class NrgkickConnectDevice extends Homey.Device {
       try {
         await this.client.putSettings(this.getData().id, password, change);
       } catch (err) {
-        throw new Error(describeError(this.homey, err));
+        throw new Error(describe(this.homey, err));
       } finally {
         await this.wait(WRITE_GAP_MS);
       }

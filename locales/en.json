@@ -85,7 +85,11 @@
     "connect_pin_needed": "Enter the NRGkick PIN in the device settings: the Connect module needs it to change settings.",
     "no_ble_devices": "No NRGkick found over Bluetooth. Check that it is powered and close to Homey, and close the NRGkick app on your phone: while it is connected, the NRGkick cannot be found.",
     "ble_read_only": "Controlling a first-generation NRGkick over Bluetooth is not available yet. This driver only reads for now.",
-    "ble_unreachable": "Homey cannot reach the NRGkick over Bluetooth. Check that it is powered and close enough, and that the NRGkick app on your phone is closed."
+    "ble_unreachable": "Homey cannot reach the NRGkick over Bluetooth. Check that it is powered and close enough, and that the NRGkick app on your phone is closed.",
+    "connect_timeout": "The NRGkick Connect module did not answer in time. Check that it is powered and on the network.",
+    "connect_connection": "Cannot reach the NRGkick Connect module. Check its IP address and that it is on the network.",
+    "connect_invalid_response": "The NRGkick Connect module sent an unexpected answer. Check that the address belongs to the Connect module.",
+    "connect_pin_wrong": "The Connect module reports that the NRGkick PIN is wrong. Reading works, but changes will be refused: check the PIN in the device settings."
   },
   "pair": {
     "select_intro": "Tap your NRGkick to add it.",
