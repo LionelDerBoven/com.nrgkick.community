@@ -1,12 +1,12 @@
 'use strict';
 
-const Homey = require('homey');
+const PollingDevice = require('../../lib/PollingDevice');
 const { ConnectClient } = require('../../lib/ConnectClient');
 const { parseConnect, connectChargingState } = require('../../lib/connectMappings');
 const describeError = require('../../lib/describeError');
+const m = require('../../lib/mappings');
 
 const describe = (homey, err) => describeError(homey, err, { connect: true });
-const m = require('../../lib/mappings');
 
 const MAX_BACKOFF_MS = 5 * 60 * 1000;
 const AFTER_WRITE_MS = 3000;
@@ -15,25 +15,19 @@ const FAILURES_BEFORE_UNAVAILABLE = 2;
 const RELOCATE_INTERVAL_MS = 5 * 60 * 1000; // at most one network search per 5 minutes
 const VOLTAGE = 230; // the Connect API reports no nominal voltage
 
-const round = (value, decimals) => {
-  if (value === null || value === undefined) return value;
-  const f = 10 ** decimals;
-  return Math.round(value * f) / f;
-};
+const { round } = m;
 
 /**
  * A first-generation NRGkick behind an NRGkick Connect module. Experimental: written from DiniTech's Connect API
  * documentation and tested against a simulated module only.
  */
-class NrgkickConnectDevice extends Homey.Device {
+class NrgkickConnectDevice extends PollingDevice {
 
   async onInit() {
     this.state = null; // last parsed answer
-    this.failures = 0;
-    this.pollTimer = null;
-    this.polling = false;
-    this.pollSoon = false;
-    this.stopped = false;
+    this.initPolling({
+      interval: { value: 30, min: 10, max: 300 }, maxBackoffMs: MAX_BACKOFF_MS, afterWriteMs: AFTER_WRITE_MS, keepOnNull: true,
+    });
     this.writeQueue = Promise.resolve();
     this.targetPower = null;
     this.targetPaused = false;
@@ -53,29 +47,9 @@ class NrgkickConnectDevice extends Homey.Device {
     this.schedulePoll(0);
   }
 
-  async onUninit() {
-    this.stop();
-  }
-
-  async onDeleted() {
-    this.stop();
-  }
-
   stop() {
-    this.stopped = true;
-    if (this.pollTimer) this.homey.clearTimeout(this.pollTimer);
-    this.pollTimer = null;
+    super.stop();
     if (this.client) this.client.destroy();
-  }
-
-  wait(ms) {
-    return new Promise((resolve) => this.homey.setTimeout(resolve, ms));
-  }
-
-  async ensureCapabilities() {
-    const wanted = this.driver.manifest.capabilities;
-    for (const cap of wanted) if (!this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
-    for (const cap of this.getCapabilities()) if (!wanted.includes(cap)) await this.removeCapability(cap).catch(this.error);
   }
 
   async onSettings({ newSettings, changedKeys }) {
@@ -119,50 +93,13 @@ class NrgkickConnectDevice extends Homey.Device {
 
   // ---- Polling ----
 
-  interval() {
-    const seconds = Number(this.getSetting('poll_interval')) || 30;
-    return Math.min(300, Math.max(10, seconds)) * 1000;
-  }
-
-  schedulePoll(delay) {
-    if (this.stopped) return;
-    if (this.pollTimer) this.homey.clearTimeout(this.pollTimer);
-    this.pollTimer = this.homey.setTimeout(() => {
-      this.pollTimer = null;
-      this.poll().catch(this.error);
-    }, delay);
-  }
-
-  refreshSoon(delay = AFTER_WRITE_MS) {
-    if (this.polling) this.pollSoon = true;
-    else this.schedulePoll(delay);
-  }
-
-  async poll() {
-    if (this.polling || this.stopped) return;
-    this.polling = true;
-    let next = this.interval();
-    try {
-      await this.refresh();
-      this.failures = 0;
-      if (!this.getAvailable()) await this.setAvailable();
-    } catch (err) {
-      this.failures++;
-      next = Math.min(next * 2 ** Math.min(this.failures - 1, 4), MAX_BACKOFF_MS);
-      this.log(`Poll failed (${this.failures}): ${err.code || ''} ${err.message}`);
-      if (err.code === 'offline' || this.failures >= FAILURES_BEFORE_UNAVAILABLE) {
-        await this.setUnavailable(describe(this.homey, err)).catch(this.error);
-      }
-      const unreachable = err.code === 'timeout' || err.code === 'connection';
-      if (unreachable && this.failures >= FAILURES_BEFORE_UNAVAILABLE) this.relocate().catch(this.error);
-    } finally {
-      this.polling = false;
-      if (this.pollSoon) {
-        this.pollSoon = false;
-        next = AFTER_WRITE_MS;
-      }
-      this.schedulePoll(next);
+  /** An NRGkick that left the module is reported at once; an unreachable module after two tries, then searched. */
+  async onPollError(err) {
+    if (err.code === 'offline' || this.failures >= FAILURES_BEFORE_UNAVAILABLE) {
+      await this.setUnavailable(describe(this.homey, err)).catch(this.error);
     }
+    const unreachable = err.code === 'timeout' || err.code === 'connection';
+    if (unreachable && this.failures >= FAILURES_BEFORE_UNAVAILABLE) this.relocate().catch(this.error);
   }
 
   async refresh() {
@@ -180,12 +117,6 @@ class NrgkickConnectDevice extends Homey.Device {
       throw err;
     }
     await this.apply(state);
-  }
-
-  async set(capability, value) {
-    if (value === undefined || value === null || !this.hasCapability(capability)) return;
-    if (this.getCapabilityValue(capability) === value) return;
-    await this.setCapabilityValue(capability, value).catch((err) => this.error(capability, err.message));
   }
 
   async apply(state) {
@@ -229,10 +160,7 @@ class NrgkickConnectDevice extends Homey.Device {
       await this.set('target_power', m.currentToWatts(state.current, { voltage: VOLTAGE, phases: state.activePhases }));
     }
 
-    const labels = { info_mac: String(this.getData().id), info_firmware: state.firmware };
-    const current = this.getSettings();
-    const changed = Object.fromEntries(Object.entries(labels).filter(([key, value]) => current[key] !== value));
-    if (Object.keys(changed).length) await this.setSettings(changed).catch(this.error);
+    await this.updateLabels({ info_mac: String(this.getData().id), info_firmware: state.firmware });
   }
 
   maxCurrent() {

@@ -1,6 +1,6 @@
 'use strict';
 
-const Homey = require('homey');
+const PollingDevice = require('../../lib/PollingDevice');
 const { NrgkickClient } = require('../../lib/NrgkickClient');
 const describeError = require('../../lib/describeError');
 const m = require('../../lib/mappings');
@@ -22,15 +22,11 @@ const PHASE_CAPABILITY = 'nrgkick_phase_count';
 const LOCATION_TRIGGER_METERS = 100; // above normal GPS jitter, well below a trip
 const SESSION_SAVE_MS = 5 * 60 * 1000; // persist the running session cost at most every 5 minutes (flash writes)
 
-const round = (value, decimals) => {
-  if (value === null || value === undefined) return value;
-  const f = 10 ** decimals;
-  return Math.round(value * f) / f;
-};
+const { round } = m;
 const kwh = (wh) => (wh === null ? null : round(wh / 1000, 3));
 const minutes = (s) => (s === null ? null : Math.round(s / 60));
 
-class NrgkickDevice extends Homey.Device {
+class NrgkickDevice extends PollingDevice {
 
   async onInit() {
     this.info = null; // trimmed /info: only the fields the limits need
@@ -40,12 +36,9 @@ class NrgkickDevice extends Homey.Device {
     this.faultId = undefined; // undefined: not read yet, so the first read never triggers a Flow
     this.warningId = undefined;
     this.location = null; // last position that was reported to Flows
-    this.failures = 0;
-    this.pollTimer = null;
-    this.polling = false;
-    this.pollSoon = false;
-    this.followUp = false;
-    this.stopped = false;
+    this.initPolling({
+      interval: { value: 30, min: 10, max: 300 }, maxBackoffMs: MAX_BACKOFF_MS, afterWriteMs: AFTER_WRITE_MS, followUpMs: FOLLOW_UP_MS,
+    });
     this.controlQueue = Promise.resolve(); // charging control batches run one after another
     this.targetPower = null;
     this.targetPaused = false; // paused because the target power was too low, not by the user
@@ -79,30 +72,14 @@ class NrgkickDevice extends Homey.Device {
     this.schedulePoll(0);
   }
 
-  async onUninit() {
-    this.stop();
-  }
-
-  async onDeleted() {
-    this.stop();
-  }
-
   stop() {
-    this.stopped = true;
-    if (this.pollTimer) this.homey.clearTimeout(this.pollTimer);
-    this.pollTimer = null;
+    super.stop();
     if (this.client) this.client.destroy();
   }
 
-  /** Adds capabilities that a newer app version introduced, and drops ones it removed (SIM ones are managed in applySim). */
-  async ensureCapabilities() {
-    const wanted = this.driver.manifest.capabilities;
-    for (const cap of wanted) {
-      if (cap !== PHASE_CAPABILITY && !this.hasCapability(cap)) await this.addCapability(cap).catch(this.error);
-    }
-    for (const cap of this.getCapabilities()) {
-      if (!wanted.includes(cap) && !SIM_CAPABILITIES.includes(cap)) await this.removeCapability(cap).catch(this.error);
-    }
+  /** The phase picker and the SIM capabilities are added and removed by the device itself. */
+  ensureCapabilities() {
+    return super.ensureCapabilities({ skipAdd: [PHASE_CAPABILITY], keep: SIM_CAPABILITIES });
   }
 
   async onSettings({ newSettings, changedKeys }) {
@@ -227,54 +204,13 @@ class NrgkickDevice extends Homey.Device {
 
   // ---- Polling ----
 
-  interval() {
-    const seconds = Number(this.getSetting('poll_interval')) || 30;
-    return Math.min(300, Math.max(10, seconds)) * 1000;
-  }
-
-  schedulePoll(delay) {
-    if (this.stopped) return;
-    if (this.pollTimer) this.homey.clearTimeout(this.pollTimer);
-    this.pollTimer = this.homey.setTimeout(() => {
-      this.pollTimer = null;
-      this.poll().catch(this.error);
-    }, delay);
-  }
-
-  /** Re-reads the device soon, e.g. after a write; waits for a poll that is running. */
-  refreshSoon(delay = AFTER_WRITE_MS) {
-    if (this.polling) this.pollSoon = true;
-    else this.schedulePoll(delay);
-  }
-
-  async poll() {
-    if (this.polling || this.stopped) return;
-    this.polling = true;
-    let next = this.interval();
-    try {
-      await this.refresh();
-      this.failures = 0;
-      if (!this.getAvailable()) await this.setAvailable();
-    } catch (err) {
-      this.failures++;
-      next = Math.min(next * 2 ** Math.min(this.failures - 1, 4), MAX_BACKOFF_MS);
-      this.log(`Poll failed (${this.failures}): ${err.code || ''} ${err.message}`);
-      const permanent = err.code === 'auth' || err.code === 'api_disabled';
-      if (permanent || this.failures >= FAILURES_BEFORE_UNAVAILABLE) {
-        await this.setUnavailable(describeError(this.homey, err)).catch(this.error);
-      }
-      if (!permanent && this.failures >= FAILURES_BEFORE_UNAVAILABLE) this.relocate().catch(this.error);
-    } finally {
-      this.polling = false;
-      if (this.pollSoon) {
-        this.pollSoon = false;
-        next = AFTER_WRITE_MS;
-      } else if (this.followUp) {
-        this.followUp = false;
-        next = FOLLOW_UP_MS;
-      }
-      this.schedulePoll(next);
+  /** Auth and a disabled API need the user; anything else is retried, and after a second failure the address searched. */
+  async onPollError(err) {
+    const permanent = err.code === 'auth' || err.code === 'api_disabled';
+    if (permanent || this.failures >= FAILURES_BEFORE_UNAVAILABLE) {
+      await this.setUnavailable(describeError(this.homey, err)).catch(this.error);
     }
+    if (!permanent && this.failures >= FAILURES_BEFORE_UNAVAILABLE) this.relocate().catch(this.error);
   }
 
   async refresh() {
@@ -285,12 +221,6 @@ class NrgkickDevice extends Homey.Device {
     }
     await this.applyControl(await this.client.getControl());
     await this.applyValues(await this.client.getValues());
-  }
-
-  async set(capability, value) {
-    if (value === undefined || !this.hasCapability(capability)) return;
-    if (this.getCapabilityValue(capability) === value) return;
-    await this.setCapabilityValue(capability, value).catch((err) => this.error(capability, err.message));
   }
 
   // ---- Applying device data ----
@@ -370,13 +300,6 @@ class NrgkickDevice extends Homey.Device {
     await this.driver.triggers.locationChanged.trigger(this, {
       latitude: round(fix.latitude, 6), longitude: round(fix.longitude, 6), distance: Math.round(distance),
     }).catch(this.error);
-  }
-
-  /** Writes only labels that changed: every settings write is a flash write. */
-  async updateLabels(labels) {
-    const current = this.getSettings();
-    const changed = Object.fromEntries(Object.entries(labels).filter(([key, value]) => current[key] !== value));
-    if (Object.keys(changed).length) await this.setSettings(changed).catch(this.error);
   }
 
   /** Slider and Homey Energy ranges follow the unit, attachment and grid. setCapabilityOptions is costly: only on change. */

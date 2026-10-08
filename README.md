@@ -71,6 +71,7 @@ Copy `.env.example` to `.env` to read a real device with `node tools/probe.js` (
 
 - `lib/NrgkickClient.js`: HTTP client for the local API (auth, retries, error types, response size cap)
 - `lib/mappings.js`: code tables, charging state, limits and watt/ampere conversion
+- `lib/PollingDevice.js`: what the three devices share: polling with back-off, change-only writes, capability upkeep
 - `drivers/nrgkick/device.js`: polling, capabilities, Flow triggers, control and Homey Energy
 - `lib/ConnectClient.js`, `lib/connectDiscovery.js`, `drivers/nrgkick_connect/`: first generation via the Connect module
 - `lib/gen1Ble.js`, `drivers/nrgkick_ble/`: first generation over Bluetooth (byte layout and reader)
